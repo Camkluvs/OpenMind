@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OpenMind AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="bg-pattern">
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+    </div>
+
+    <header class="header">
+    <a href="index.html" class="logo">
+        <div class="logo-icon">
+            <i class="fas fa-brain"></i>
+        </div>
+        OpenMind AI
+    </a>
+    
+    <div class="header-controls">
+        <button class="control-btn" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+            <span data-i18n="common.themeToggle">Cambiar Tema</span>
+        </button>
+        
+        <div class="language-selector">
+            <button class="control-btn" onclick="toggleLanguageDropdown()">
+                <i class="fas fa-globe"></i>
+                <span data-i18n="common.language">Idioma</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                <!-- Se generará dinámicamente -->
+            </div>
+        </div>
+        
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> 
+            <span data-i18n="common.back">Volver</span>
+        </a>
+    </div>
+</header>
+
+    <main class="main-content">
+        <div class="auth-container">
+            <h1 class="auth-title">Bienvenido</h1>
+            <p class="auth-subtitle">Inicia sesión o crea tu cuenta para continuar</p>
+
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Iniciar Sesión</button>
+                <button class="tab-btn" data-tab="register">Registrarse</button>
+            </div>
+
+            <div id="error-message" class="error-message hidden"></div>
+            <div id="success-message" class="success-message hidden"></div>
+
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="login-email" class="form-label">Email</label>
+                        <input 
+                            type="email" 
+                            id="login-email" 
+                            class="form-input" 
+                            placeholder="tu@email.com"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password" class="form-label">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="login-password" 
+                            class="form-input" 
+                            placeholder="••••••••"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="submit-btn" id="login-btn">
+                        <span class="btn-text">Iniciar Sesión</span>
+                    </button>
+                </form>
+
+                <div class="forgot-link">
+                    <a href="#" id="forgot-password">¿Olvidaste tu contraseña?</a>
+                </div>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="auth-form hidden">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="register-name" class="form-label">Nombre completo</label>
+                        <input 
+                            type="text" 
+                            id="register-name" 
+                            class="form-input" 
+                            placeholder="Tu nombre"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email" class="form-label">Email</label>
+                        <input 
+                            type="email" 
+                            id="register-email" 
+                            class="form-input" 
+                            placeholder="tu@email.com"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password" class="form-label">Contraseña</label>
+                        <input 
+                            type="password" 
+                            id="register-password" 
+                            class="form-input" 
+                            placeholder="••••••••"
+                            minlength="6"
+                            required
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm" class="form-label">Confirmar contraseña</label>
+                        <input 
+                            type="password" 
+                            id="register-confirm" 
+                            class="form-input" 
+                            placeholder="••••••••"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="submit-btn" id="register-btn">
+                        <span class="btn-text">Crear Cuenta</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Probar con diferentes versiones de Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  
+    <script>
+        // Verificar si Supabase se cargó correctamente
+        if (typeof supabase === 'undefined') {
+            console.error('Supabase no se cargó correctamente');
+            alert('Error cargando Supabase. Por favor recarga la página.');
+        } else {
+            console.log('Supabase cargado correctamente');
+        }
+    </script>
+    <script src="js/login.js"></script>
+</body>
+</html>

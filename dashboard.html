@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="css/noti.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(74, 158, 255, 0.2);
+            padding: 20px;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a9eff;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #8892a6;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(74, 158, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 0;
+            transition: margin-left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+             position: relative;
+    z-index: 100; 
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #8892a6;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .project-name-header {
+            font-size: 14px;
+            color: #4a9eff;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-text {
+            color: #8892a6;
+            font-size: 13px;
+        }
+
+        .user-name {
+            color: #4a9eff;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dashboard Home View */
+       .dashboard-home {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+    z-index: 1; /* Agregar esta línea */
+       }
+
+.project-info-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    position: relative;
+    z-index: 2; /* Agregar esta línea */
+}
+
+        .project-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a9c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .project-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #8892a6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .invite-code {
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #4a9eff;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .invite-code:hover {
+            background: rgba(74, 158, 255, 0.15);
+            border-color: rgba(74, 158, 255, 0.5);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .project-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    
+        /* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8892a6;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.control-btn:hover {
+    background: rgba(74, 158, 255, 0.1);
+    border-color: #4a9eff;
+    color: #4a9eff;
+}
+
+/* Language Selector */
+.language-selector {
+    position: relative;
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 99999; 
+}
+
+.language-dropdown.show {
+    display: block;
+}
+
+.language-option {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #8892a6;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-option:hover {
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+}
+
+.language-option.active {
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+}
+
+/* Light theme */
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    color: #1e293b;
+}
+
+[data-theme="light"] .sidebar {
+    background: rgba(248, 250, 252, 0.95);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .logo {
+    color: #3b82f6;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .nav-link {
+    color: #64748b;
+}
+
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .header {
+    background: rgba(248, 250, 252, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .page-title {
+    color: #1e293b;
+}
+
+[data-theme="light"] .project-name-header {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .welcome-text {
+    color: #64748b;
+}
+
+[data-theme="light"] .user-name {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .logout-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .logout-btn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+[data-theme="light"] .dashboard-home {
+    background: transparent;
+}
+
+[data-theme="light"] .project-info-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .project-name {
+    background: linear-gradient(135deg, #1e293b 0%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="light"] .stat-label {
+    color: #64748b;
+}
+
+[data-theme="light"] .stat-value {
+    color: #1e293b;
+}
+
+[data-theme="light"] .invite-code {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .invite-code:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+[data-theme="light"] .control-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .control-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+[data-theme="light"] .language-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+}
+
+[data-theme="light"] .language-option {
+    color: #64748b;
+}
+
+[data-theme="light"] .language-option:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .language-option.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .menu-toggle {
+    color: #64748b;
+}
+
+[data-theme="light"] .menu-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #3b82f6;
+}
+/* Fondo principal corregido */
+[data-theme="light"] .main-content {
+    background: transparent;
+}
+
+[data-theme="light"] .dashboard-home {
+    background: transparent;
+}
+
+/* Asegurar que todo el contenido tenga fondo claro */
+[data-theme="light"] .main-content::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 260px;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    z-index: -1;
+}
+
+[data-theme="light"] .main-content.expanded::before {
+    left: 0;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .header-controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .control-btn span {
+        display: none;
+    }
+}
+/* Scrollbar personalizado para toda la página */
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: rgba(74, 158, 255, 0.4);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 158, 255, 0.6);
+}
+
+/* Para contenedores con scroll también */
+.view::-webkit-scrollbar,
+.content-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.view::-webkit-scrollbar-track,
+.content-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.view::-webkit-scrollbar-thumb,
+.content-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(74, 158, 255, 0.4);
+    border-radius: 4px;
+}
+
+.view::-webkit-scrollbar-thumb:hover,
+.content-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 158, 255, 0.6);
+}
+
+/* Tema claro */
+[data-theme="light"] body::-webkit-scrollbar-track,
+[data-theme="light"] .view::-webkit-scrollbar-track,
+[data-theme="light"] .content-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] body::-webkit-scrollbar-thumb,
+[data-theme="light"] .view::-webkit-scrollbar-thumb,
+[data-theme="light"] .content-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+}
+
+[data-theme="light"] body::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .view::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] .content-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.7);
+}
+
+/* Para Firefox */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(74, 158, 255, 0.4) rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] html {
+    scrollbar-color: rgba(59, 130, 246, 0.5) rgba(0, 0, 0, 0.08);
+}
+
+
+  /* Nuevos estilos para el contenido adicional */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4a9eff;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-content {
+            font-size: 14px;
+            color: #8892a6;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #4a9eff;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .mini-stat {
+            text-align: center;
+            padding: 15px;
+            background: rgba(74, 158, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .mini-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4a9eff;
+            margin-bottom: 5px;
+        }
+
+        .mini-stat-label {
+            font-size: 12px;
+            color: #8892a6;
+            text-transform: uppercase;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 12px;
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 8px;
+            color: #4a9eff;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(74, 158, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8892a6;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: rgba(74, 158, 255, 0.5);
+        }
+
+        /* Tema claro para el nuevo contenido */
+        [data-theme="light"] .dashboard-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .card-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .card-title {
+            color: #3b82f6;
+        }
+
+        [data-theme="light"] .activity-content {
+            color: #64748b;
+        }
+
+        [data-theme="light"] .activity-time {
+            color: #3b82f6;
+        }
+
+        [data-theme="light"] .mini-stat {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        [data-theme="light"] .mini-stat-value {
+            color: #3b82f6;
+        }
+
+        [data-theme="light"] .action-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        [data-theme="light"] .action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stat-grid,
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            OpenMind AI
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link active">
+                        <i class="fas fa-home"></i>
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="discussions.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        Foros
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="code-editor.html" class="nav-link">
+                        <i class="fas fa-code"></i>
+                        Editor de Código
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="members.html" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Miembros
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="voice-calls.html" class="nav-link">
+                        <i class="fas fa-phone"></i>
+                        Llamadas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Configuración
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Header -->
+       <header class="header">
+    <div class="header-left">
+        <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div>
+            <div class="page-title" data-i18n="dashboard.home">Inicio</div>
+            <div class="project-name-header" id="project-name-header">Cargando...</div>
+        </div>
+    </div>
+    
+    <div class="header-controls">
+        <button class="control-btn" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+            <span data-i18n="common.themeToggle">Cambiar Tema</span>
+        </button>
+        
+        <div class="language-selector">
+            <button class="control-btn" onclick="toggleLanguageDropdown()">
+                <i class="fas fa-globe"></i>
+                <span data-i18n="common.language">Idioma</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+        <div class="notifications-container">
+    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+    </button>
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notifications-header">
+            <h4>Notificaciones</h4>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <div class="notification-item loading">
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <div class="user-info">
+            <div class="welcome-text">
+                <span class="user-name" id="user-name">Cargando...</span>
+            </div>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> 
+                <span data-i18n="common.logout">Salir</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+        <!-- Home View -->
+        <!-- Home View -->
+    <div class="dashboard-home">
+        <div class="project-info-card">
+            <h2 class="project-name" id="project-name">Cargando proyecto...</h2>
+            <div class="project-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Código de Invitación</div>
+                    <div class="invite-code" id="invite-code-container">
+                        <span id="invite-code">Cargando...</span>
+                        <button class="copy-btn" id="copy-btn" title="Copiar código">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Creado por</div>
+                    <div class="stat-value" id="project-owner">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Miembros</div>
+                    <div class="stat-value" id="total-members">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nuevo contenido adicional -->
+        <div class="dashboard-grid">
+            <!-- Tarjeta de Actividad Reciente -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title"> Actividad Reciente</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                </div>
+                <div id="recent-activity">
+                    <div class="loading">Cargando actividad...</div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Estadísticas -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Estadísticas del Proyecto</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                </div>
+                <div class="stat-grid" id="project-stats">
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="files-count">0</div>
+                        <div class="mini-stat-label">Archivos</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="discussions-count">0</div>
+                        <div class="mini-stat-label">Discusiones</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="tasks-count">0</div>
+                        <div class="mini-stat-label">Tareas</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-value" id="activity-count">0</div>
+                        <div class="mini-stat-label">Actividades</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Acciones Rápidas -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Acciones Rápidas</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <div class="action-btn" onclick="openCodeEditor()">
+                        <i class="fas fa-code"></i>
+                        <div>Editor de Código</div>
+                    </div>
+                    <div class="action-btn" onclick="openDiscussions()">
+                        <i class="fas fa-comments"></i>
+                        <div>Foros</div>
+                    </div>
+                    <div class="action-btn" onclick="openMembers()">
+                        <i class="fas fa-users"></i>
+                        <div>Miembros</div>
+                    </div>
+                    <div class="action-btn" onclick="openSettings()">
+                        <i class="fas fa-cog"></i>
+                        <div>Configuración</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta de Miembros Activos -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Miembros Activos</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div id="active-members">
+                    <div class="loading">Cargando miembros...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+    <script src="js/project-session.js"></script>
+    <script src="js/noti.js"></script>
+
+    <script>
+        // Configuración de Supabase
+const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+       
+let supabaseClient;
+let currentUser = null;
+let currentProjectId = null;
+let currentUserRole = null;
+
+// Variables para tema e idioma
+let currentTheme = localStorage.getItem('theme') || 'dark';
+let currentLanguage = localStorage.getItem('language') || 'es';
+
+// Idiomas soportados
+const supportedLanguages = {
+    'en': { name: 'English', flag: '🇺🇸' },
+    'es': { name: 'Español', flag: '🇪🇸' }
+};
+
+// Traducciones
+const translations = {
+    es: {
+        'common.themeToggle': 'Cambiar Tema',
+        'common.language': 'Idioma',
+        'common.logout': 'Salir',
+        'dashboard.home': 'Inicio'
+    },
+    en: {
+        'common.themeToggle': 'Toggle Theme',
+        'common.language': 'Language',
+        'common.logout': 'Logout',
+        'dashboard.home': 'Home'
+    }
+};
+
+// Función para obtener traducción
+function t(key) {
+    return translations[currentLanguage] && translations[currentLanguage][key] 
+        ? translations[currentLanguage][key] 
+        : translations['es'][key] || key;
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Esperar a que el Session Manager se inicialice primero
+    setTimeout(() => {
+        setupEventListeners();
+        checkAuthenticationAndLoadData();
+    }, 100);
+});
+
+function setupEventListeners() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    
+    const copyBtn = document.getElementById('copy-btn');
+    if (copyBtn) copyBtn.addEventListener('click', () => copyInviteCode('invite-code'));
+    
+    const menuToggle = document.getElementById('menu-toggle');
+    if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+}
+
+async function checkAuthenticationAndLoadData() {
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (error || !session) {
+            console.log('No session found, redirecting to login');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        currentUser = session.user;
+        
+        const userName = currentUser.user_metadata?.full_name || 
+                        currentUser.user_metadata?.name || 
+                        currentUser.email.split('@')[0];
+        
+        document.getElementById('user-name').textContent = userName;
+
+        // Obtener projectId del Session Manager o de la URL
+        let projectId = getProjectId();
+        
+        if (!projectId) {
+            console.error('No project ID available');
+            redirectToHome('Proyecto no especificado');
+            return;
+        }
+
+        currentProjectId = projectId;
+
+        const hasAccess = await verifyProjectAccess(projectId);
+        if (!hasAccess) {
+            console.error('User does not have access to this project');
+            redirectToHome('No tienes acceso a este proyecto');
+            return;
+        }
+
+        // Cargar datos principales
+        await loadProjectData(projectId);
+        await loadProjectMembers(projectId);
+        
+        // Cargar datos adicionales
+        await loadAdditionalData(projectId);
+
+        console.log('Dashboard loaded successfully');
+        initializeThemeAndLanguage();
+        updateSidebarLinks();
+
+    } catch (error) {
+        console.error('Error in checkAuthenticationAndLoadData:', error);
+        if (error.message && !error.message.includes('CORS')) {
+            redirectToHome('Error cargando el proyecto: ' + error.message);
+        }
+    }
+}
+
+function getProjectId() {
+    // 1. Intentar del Session Manager
+    if (window.ProjectSession && window.ProjectSession.getCurrentProject) {
+        const project = window.ProjectSession.getCurrentProject();
+        if (project && project.projectId) {
+            console.log('Project ID from Session Manager:', project.projectId);
+            return project.projectId;
+        }
+    }
+    
+    // 2. Intentar de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlProjectId = urlParams.get('project');
+    if (urlProjectId) {
+        console.log('Project ID from URL:', urlProjectId);
+        return urlProjectId;
+    }
+    
+    // 3. Intentar de localStorage (como fallback)
+    const localProjectId = localStorage.getItem('current_project_id');
+    if (localProjectId) {
+        console.log('Project ID from localStorage:', localProjectId);
+        return localProjectId;
+    }
+    
+    return null;
+}
+
+function getProjectId() {
+    // 1. Intentar del Session Manager
+    if (window.ProjectSession && window.ProjectSession.getCurrentProject) {
+        const project = window.ProjectSession.getCurrentProject();
+        if (project && project.projectId) {
+            console.log('Project ID from Session Manager:', project.projectId);
+            return project.projectId;
+        }
+    }
+    
+    // 2. Intentar de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlProjectId = urlParams.get('project');
+    if (urlProjectId) {
+        console.log('Project ID from URL:', urlProjectId);
+        return urlProjectId;
+    }
+    
+    // 3. Intentar de localStorage (como fallback)
+    const localProjectId = localStorage.getItem('current_project_id');
+    if (localProjectId) {
+        console.log('Project ID from localStorage:', localProjectId);
+        return localProjectId;
+    }
+    
+    console.error('No project ID found in any source');
+    return null;
+}
+
+
+async function loadAdditionalData(projectId) {
+    try {
+        console.log('Loading additional data for project:', projectId);
+        
+        // Cargar todos los datos adicionales en paralelo
+        await Promise.allSettled([
+            loadRecentActivity(projectId),
+            loadProjectStatistics(projectId),
+            loadActiveMembers(projectId)
+        ]);
+        
+        console.log('Additional data loaded successfully');
+    } catch (error) {
+        console.error('Error loading additional data:', error);
+    }
+}
+
+async function loadRecentActivity(projectId) {
+    try {
+        console.log('Loading recent activity for project:', projectId);
+        
+        // Intentar cargar actividad de file_activity
+        const { data: activity, error } = await supabaseClient
+            .from('file_activity')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('last_activity', { ascending: false })
+            .limit(5);
+
+        if (error) {
+            console.log('No activity data available:', error.message);
+            // No es un error crítico, continuar
+            throw new Error('No activity data');
+        }
+
+        const container = document.getElementById('recent-activity');
+        if (!container) return;
+
+        if (!activity || activity.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <p>No hay actividad reciente</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <ul class="activity-list">
+                ${activity.map(item => `
+                    <li class="activity-item">
+                        <div class="activity-content">
+                            ${item.user_name || 'Usuario'} editó un archivo
+                        </div>
+                        <div class="activity-time">
+                            ${formatRelativeTime(item.last_activity)}
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+
+    } catch (error) {
+        console.log('Info: No se pudo cargar actividad reciente:', error.message);
+        const container = document.getElementById('recent-activity');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <p>Sin actividad reciente</p>
+                </div>
+            `;
+        }
+    }
+}
+
+
+async function loadProjectStatistics(projectId) {
+    try {
+        console.log('Loading project statistics for project:', projectId);
+        
+        // Obtener estadísticas en paralelo
+        const [filesResult, discussionsResult] = await Promise.allSettled([
+            supabaseClient
+                .from('project_files')
+                .select('*', { count: 'exact', head: true })
+                .eq('project_id', projectId),
+                
+            supabaseClient
+                .from('discussions')
+                .select('*', { count: 'exact', head: true })
+                .eq('project_id', projectId)
+        ]);
+
+        // Procesar resultados
+        const filesCount = filesResult.status === 'fulfilled' ? (filesResult.value.count || 0) : 0;
+        const discussionsCount = discussionsResult.status === 'fulfilled' ? (discussionsResult.value.count || 0) : 0;
+
+        // Actualizar UI
+        const filesElement = document.getElementById('files-count');
+        const discussionsElement = document.getElementById('discussions-count');
+        const tasksElement = document.getElementById('tasks-count');
+        const activityElement = document.getElementById('activity-count');
+        
+        if (filesElement) filesElement.textContent = filesCount;
+        if (discussionsElement) discussionsElement.textContent = discussionsCount;
+        if (tasksElement) tasksElement.textContent = '0'; // Placeholder
+        if (activityElement) activityElement.textContent = '0'; // Placeholder
+
+        console.log('Project statistics loaded:', { filesCount, discussionsCount });
+
+    } catch (error) {
+        console.error('Error loading project statistics:', error);
+    }
+}
+
+async function loadActiveMembers(projectId) {
+    try {
+        console.log('Loading active members for project:', projectId);
+        
+        const { data: members, error } = await supabaseClient
+            .from('project_members')
+            .select('user_name, user_email, role, joined_at')
+            .eq('project_id', projectId)
+            .order('joined_at', { ascending: true })
+            .limit(5);
+
+        if (error) {
+            console.log('Error loading members:', error);
+            throw error;
+        }
+
+        const container = document.getElementById('active-members');
+        if (!container) return;
+
+        if (!members || members.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <p>No hay miembros en el proyecto</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <ul class="activity-list">
+                ${members.map(member => `
+                    <li class="activity-item">
+                        <div class="activity-content">
+                            <strong>${member.user_name || 'Usuario'}</strong>
+                            <div style="font-size: 12px; color: #8892a6;">${member.user_email || 'Sin email'}</div>
+                        </div>
+                        <div class="activity-time">
+                            ${member.role || 'Miembro'}
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+
+        console.log('Active members loaded:', members.length);
+
+    } catch (error) {
+        console.error('Error loading active members:', error);
+        const container = document.getElementById('active-members');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <p>Error cargando miembros</p>
+                </div>
+            `;
+        }
+    }
+}
+
+function formatRelativeTime(dateString) {
+    if (!dateString) return 'Fecha desconocida';
+    
+    try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+        
+        if (diffInMinutes < 1) return 'Ahora mismo';
+        if (diffInMinutes < 60) return `Hace ${diffInMinutes} min`;
+        if (diffInMinutes < 1440) return `Hace ${Math.floor(diffInMinutes / 60)} h`;
+        return `Hace ${Math.floor(diffInMinutes / 1440)} días`;
+    } catch (e) {
+        return 'Fecha inválida';
+    }
+}
+
+function updateSidebarLinks() {
+    if (!currentProjectId) {
+        console.warn('No project ID available for updating sidebar links');
+        return;
+    }
+    
+    console.log('Updating sidebar links with project ID:', currentProjectId);
+    
+    // Actualizar enlaces del sidebar
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        // Solo actualizar enlaces que NO sean dashboard.html
+        if (href && href.includes('.html') && !href.includes('dashboard.html')) {
+            if (!href.includes('?')) {
+                link.setAttribute('href', `${href}?project=${currentProjectId}`);
+            } else if (!href.includes('project=')) {
+                link.setAttribute('href', `${href}&project=${currentProjectId}`);
+            }
+        }
+    });
+    
+    console.log('Sidebar links updated successfully');
+}
+
+function initializeThemeAndLanguage() {
+    // Aplicar tema
+    document.body.setAttribute('data-theme', currentTheme);
+    updateThemeIcon();
+    
+    // Configurar idioma
+    updateLanguageContent();
+    generateLanguageDropdown();
+    
+    console.log('Theme and language initialized:', { theme: currentTheme, language: currentLanguage });
+}
+async function verifyProjectAccess(projectId) {
+    try {
+        const { data: membership, error } = await supabaseClient
+            .from('project_members')
+            .select('id, role, project_id')
+            .eq('project_id', projectId)
+            .eq('user_id', currentUser.id)
+            .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') {
+            console.error('Error checking project membership:', error);
+            return false;
+        }
+
+        if (!membership) {
+            console.log('Usuario no es miembro del proyecto');
+            return false;
+        }
+
+        currentUserRole = membership.role;
+        console.log('Usuario verificado como miembro:', membership.role);
+        return true;
+
+    } catch (error) {
+        console.error('Error in verifyProjectAccess:', error);
+        return false;
+    }
+}
+
+async function loadProjectData(projectId) {
+    try {
+        const { data: projectData, error } = await supabaseClient
+            .from('projects')
+            .select('*')
+            .eq('id', projectId)
+            .single();
+
+        if (error) throw error;
+
+        const elements = {
+            'project-name': projectData.name,
+            'project-name-header': projectData.name,
+            'invite-code': projectData.invite_code,
+            'project-owner': projectData.owner_name
+        };
+
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+
+        console.log('Proyecto cargado correctamente:', projectData.name);
+
+    } catch (error) {
+        console.error('Error loading project data:', error);
+        redirectToHome('Error cargando datos del proyecto');
+    }
+}
+
+async function loadProjectMembers(projectId) {
+    try {
+        const { data: members, error } = await supabaseClient
+            .from('project_members')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('joined_at', { ascending: true });
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        const projectMembers = members || [];
+        
+        const totalMembersEl = document.getElementById('total-members');
+        if (totalMembersEl) {
+            totalMembersEl.textContent = projectMembers.length.toString();
+        }
+
+        console.log('Miembros cargados:', projectMembers.length);
+
+    } catch (error) {
+        console.error('Error loading project members:', error);
+    }
+}
+
+async function loadAdditionalData(projectId) {
+    try {
+        await Promise.all([
+            loadRecentActivity(projectId),
+            loadProjectStatistics(projectId),
+            loadActiveMembers(projectId)
+        ]);
+    } catch (error) {
+        console.error('Error loading additional data:', error);
+    }
+}
+
+async function loadRecentActivity(projectId) {
+    try {
+        // Esta tabla puede no existir o tener una estructura diferente
+        // Usamos un try-catch más amplio para evitar errores
+        const { data: activity, error } = await supabaseClient
+            .from('file_activity')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('last_activity', { ascending: false })
+            .limit(5)
+            .catch(() => ({ data: null, error: true }));
+
+        if (error) {
+            throw new Error('No se pudo cargar la actividad');
+        }
+
+        const container = document.getElementById('recent-activity');
+        if (!container) return;
+
+        if (!activity || activity.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <p>No hay actividad reciente</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <ul class="activity-list">
+                ${activity.map(item => `
+                    <li class="activity-item">
+                        <div class="activity-content">
+                            ${item.user_name || 'Usuario'} editó un archivo
+                        </div>
+                        <div class="activity-time">
+                            ${formatRelativeTime(item.last_activity)}
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+
+    } catch (error) {
+        console.log('Info: No se pudo cargar actividad reciente:', error.message);
+        const container = document.getElementById('recent-activity');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <p>Sin actividad reciente</p>
+                </div>
+            `;
+        }
+    }
+}
+
+async function loadProjectStatistics(projectId) {
+    try {
+        // Obtener estadísticas de archivos
+        const { count: filesCount } = await supabaseClient
+            .from('project_files')
+            .select('*', { count: 'exact', head: true })
+            .eq('project_id', projectId);
+
+        // Obtener estadísticas de discusiones
+        const { count: discussionsCount } = await supabaseClient
+            .from('discussions')
+            .select('*', { count: 'exact', head: true })
+            .eq('project_id', projectId);
+
+        // Actualizar UI
+        const filesElement = document.getElementById('files-count');
+        const discussionsElement = document.getElementById('discussions-count');
+        
+        if (filesElement) filesElement.textContent = filesCount || 0;
+        if (discussionsElement) discussionsElement.textContent = discussionsCount || 0;
+        
+        // Valores de ejemplo para tareas y actividades
+        const tasksElement = document.getElementById('tasks-count');
+        const activityElement = document.getElementById('activity-count');
+        
+        if (tasksElement) tasksElement.textContent = '0';
+        if (activityElement) activityElement.textContent = '0';
+
+    } catch (error) {
+        console.error('Error loading project statistics:', error);
+    }
+}
+
+async function loadActiveMembers(projectId) {
+    try {
+        const { data: members, error } = await supabaseClient
+            .from('project_members')
+            .select('user_name, user_email, role, joined_at')
+            .eq('project_id', projectId)
+            .order('joined_at', { ascending: true })
+            .limit(5);
+
+        if (error) throw error;
+
+        const container = document.getElementById('active-members');
+        if (!container) return;
+
+        if (!members || members.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <p>No hay miembros en el proyecto</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <ul class="activity-list">
+                ${members.map(member => `
+                    <li class="activity-item">
+                        <div class="activity-content">
+                            <strong>${member.user_name || 'Usuario'}</strong>
+                            <div style="font-size: 12px; color: #8892a6;">${member.user_email || 'Sin email'}</div>
+                        </div>
+                        <div class="activity-time">
+                            ${member.role || 'Miembro'}
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+
+    } catch (error) {
+        console.error('Error loading active members:', error);
+        const container = document.getElementById('active-members');
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <p>Error cargando miembros</p>
+                </div>
+            `;
+        }
+    }
+}
+
+function formatRelativeTime(dateString) {
+    if (!dateString) return 'Fecha desconocida';
+    
+    try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+        
+        if (diffInMinutes < 1) return 'Ahora mismo';
+        if (diffInMinutes < 60) return `Hace ${diffInMinutes} min`;
+        if (diffInMinutes < 1440) return `Hace ${Math.floor(diffInMinutes / 60)} h`;
+        return `Hace ${Math.floor(diffInMinutes / 1440)} días`;
+    } catch (e) {
+        return 'Fecha inválida';
+    }
+}
+
+function updateSidebarLinks() {
+    if (!currentProjectId) return;
+    
+    // Actualizar enlaces del sidebar
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        // Solo actualizar enlaces que NO sean dashboard.html
+        if (href && href.includes('.html') && !href.includes('dashboard.html')) {
+            if (!href.includes('?')) {
+                link.setAttribute('href', `${href}?project=${currentProjectId}`);
+            }
+        }
+    });
+    
+    console.log('Enlaces actualizados con projectId:', currentProjectId);
+}
+
+// Resto de funciones (handleLogout, copyInviteCode, toggleSidebar, redirectToHome, showToast)
+// [Mantén todas las demás funciones como están]
+
+async function handleLogout() {
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        window.location.href = 'login.html';
+    } catch (error) {
+        console.error('Error logging out:', error);
+        showToast('Error al cerrar sesión', 'error');
+    }
+}
+
+async function copyInviteCode(elementId) {
+    try {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        
+        const code = element.textContent;
+        await navigator.clipboard.writeText(code);
+        showToast('Código copiado al portapapeles');
+    } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        showToast('Error al copiar código', 'error');
+    }
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    
+    if (sidebar && mainContent) {
+        sidebar.classList.toggle('hidden');
+        mainContent.classList.toggle('expanded');
+    }
+}
+
+function redirectToHome(reason) {
+    console.log('Redirecting to home:', reason);
+    
+    if (!reason.includes('Proyecto no especificado')) {
+        showToast(reason, 'error');
+    }
+    
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Funciones de tema e idioma (mantén las que ya tienes)
+function initializeThemeAndLanguage() {
+    document.body.setAttribute('data-theme', currentTheme);
+    updateThemeIcon();
+    updateLanguageContent();
+    generateLanguageDropdown();
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const themeIcon = document.querySelector('.control-btn i.fa-moon, .control-btn i.fa-sun');
+    if (themeIcon) {
+        themeIcon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+    }
+}
+
+function generateLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.innerHTML = Object.entries(supportedLanguages).map(([code, lang]) => 
+            `<div class="language-option ${currentLanguage === code ? 'active' : ''}" 
+                  onclick="changeLanguage('${code}')">
+                ${lang.flag} ${lang.name}
+             </div>`
+        ).join('');
+    }
+}
+
+function changeLanguage(lang) {
+    if (supportedLanguages[lang]) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
+        updateLanguageContent();
+        generateLanguageDropdown();
+        
+        const dropdown = document.getElementById('languageDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+}
+
+function updateLanguageContent() {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = t(key);
+        if (translation && translation !== key) {
+            element.textContent = translation;
+        }
+    });
+}
+
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Funciones de navegación
+function openCodeEditor() {
+    if (!currentProjectId) return;
+    window.location.href = `code-editor.html?project=${currentProjectId}`;
+}
+
+function openDiscussions() {
+    if (!currentProjectId) return;
+    window.location.href = `discussions.html?project=${currentProjectId}`;
+}
+
+function openMembers() {
+    if (!currentProjectId) return;
+    window.location.href = `members.html?project=${currentProjectId}`;
+}
+
+function openSettings() {
+    if (!currentProjectId) return;
+    window.location.href = `settings.html?project=${currentProjectId}`;
+}
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector');
+    const dropdown = document.getElementById('languageDropdown');
+    
+    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+    </script>
+</body>
+</html>

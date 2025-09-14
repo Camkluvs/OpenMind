@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miembros - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(74, 158, 255, 0.2);
+            padding: 20px;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a9eff;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #8892a6;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(74, 158, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 0;
+            transition: margin-left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #8892a6;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .project-name-header {
+            font-size: 14px;
+            color: #4a9eff;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-text {
+            color: #8892a6;
+            font-size: 13px;
+        }
+
+        .user-name {
+            color: #4a9eff;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Members View */
+        .members-container {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .members-header {
+            margin-bottom: 30px;
+        }
+
+        .members-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .members-subtitle {
+            font-size: 16px;
+            color: #8892a6;
+        }
+
+        /* Members Table */
+        .members-table-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .members-table-header {
+            display: grid;
+            grid-template-columns: 2.5fr 1.5fr 1.5fr 1fr;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            font-weight: 600;
+            color: #8892a6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .member-row {
+            display: grid;
+            grid-template-columns: 2.5fr 1.5fr 1.5fr 1fr;
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .member-row:hover {
+            background: rgba(74, 158, 255, 0.05);
+        }
+
+        .member-row:last-child {
+            border-bottom: none;
+        }
+
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .member-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .member-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .member-email {
+            font-size: 13px;
+            color: #8892a6;
+        }
+
+        /* Role Badge */
+        .member-role-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+        }
+
+        .member-role-badge.owner {
+            background: rgba(250, 204, 21, 0.2);
+            color: #facc15;
+            border: 1px solid rgba(250, 204, 21, 0.3);
+        }
+
+        .member-role-badge.admin {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .member-role-badge.member {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Status Toggle & Badge */
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-toggle {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: #1f2937;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .status-toggle.active {
+            background: #10b981;
+        }
+
+        .status-toggle.disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .status-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .status-toggle.active .status-toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .status-toggle.disabled .status-toggle-slider {
+            transform: translateX(24px);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.disabled {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Actions */
+        .member-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #8892a6;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .action-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            background: #1f2937;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            min-width: 180px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            color: #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(74, 158, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .dropdown-item.danger {
+            color: #ef4444;
+        }
+
+        .dropdown-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        /* Avatar colors */
+        .avatar-color-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .avatar-color-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .avatar-color-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .avatar-color-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .avatar-color-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .avatar-color-6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .members-table-header,
+            .member-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .members-table-header {
+                display: none;
+            }
+
+            .member-row {
+                padding: 20px;
+                border-radius: 12px;
+                margin-bottom: 15px;
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .status-container {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .member-actions {
+                justify-content: flex-start;
+                width: 100%;
+            }
+        }
+        /* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8892a6;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.control-btn:hover {
+    background: rgba(74, 158, 255, 0.1);
+    border-color: #4a9eff;
+    color: #4a9eff;
+}
+
+/* Language Selector */
+.language-selector {
+    position: relative;
+    z-index: 200;
+}
+
+.language-dropdown {
+    position: fixed;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 99999;
+}
+
+.language-dropdown.show {
+    display: block;
+}
+
+.language-option {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #8892a6;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-option:hover {
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+}
+
+.language-option.active {
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+}
+
+/* Header z-index */
+.header {
+    position: relative;
+    z-index: 50;
+}
+
+/* Light theme */
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    color: #1e293b;
+}
+
+[data-theme="light"] .sidebar {
+    background: rgba(248, 250, 252, 0.95);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .logo {
+    color: #3b82f6;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .nav-link {
+    color: #64748b;
+}
+
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .header {
+    background: rgba(248, 250, 252, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .page-title {
+    color: #1e293b;
+}
+
+[data-theme="light"] .project-name-header {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .welcome-text {
+    color: #64748b;
+}
+
+[data-theme="light"] .user-name {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .logout-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .logout-btn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+[data-theme="light"] .members-container {
+    background: transparent;
+}
+
+[data-theme="light"] .members-title {
+    color: #1e293b;
+}
+
+[data-theme="light"] .members-subtitle {
+    color: #64748b;
+}
+
+[data-theme="light"] .members-table-container {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .members-table-header {
+    background: rgba(248, 250, 252, 0.9);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .member-row {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .member-row:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+[data-theme="light"] .member-name {
+    color: #1e293b;
+}
+
+[data-theme="light"] .member-email {
+    color: #64748b;
+}
+
+[data-theme="light"] .action-btn {
+    color: #64748b;
+}
+
+[data-theme="light"] .action-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .action-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+[data-theme="light"] .dropdown-menu {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .dropdown-item {
+    color: #64748b;
+}
+
+[data-theme="light"] .dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .dropdown-item.danger {
+    color: #ef4444;
+}
+
+[data-theme="light"] .dropdown-item.danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+[data-theme="light"] .control-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .control-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+[data-theme="light"] .language-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .language-option {
+    color: #64748b;
+}
+
+[data-theme="light"] .language-option:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .language-option.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .menu-toggle {
+    color: #64748b;
+}
+
+[data-theme="light"] .menu-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #3b82f6;
+}
+
+/* Fondo principal corregido para tema claro */
+[data-theme="light"] .main-content::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 260px;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    z-index: -1;
+}
+
+[data-theme="light"] .main-content.expanded::before {
+    left: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .control-btn span {
+        display: none;
+    }
+}
+
+.members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    margin-top: 15px;
+}
+
+.invite-btn {
+    background: linear-gradient(45deg, #4a9eff, #00d4ff);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.invite-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(74, 158, 255, 0.3);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #8892a6;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #4a9eff, #00d4ff);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.notifications-container {
+    position: relative;
+}
+
+.notifications-btn {
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.notifications-dropdown {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 350px;
+    max-height: 400px;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 12px;
+    display: none;
+    z-index: 99999;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.notifications-dropdown.show {
+    display: block;
+}
+
+.notifications-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notifications-header h4 {
+    color: #ffffff;
+    font-size: 16px;
+    margin: 0;
+}
+
+.notifications-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-item:hover {
+    background: rgba(74, 158, 255, 0.1);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-title {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.notification-message {
+    color: #8892a6;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.notification-btn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notification-btn.accept {
+    background: #10b981;
+    color: white;
+}
+
+.notification-btn.reject {
+    background: rgba(255, 255, 255, 0.1);
+    color: #8892a6;
+}
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            OpenMind AI
+        </div>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="discussions.html" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        Foros
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="code-editor.html" class="nav-link">
+                        <i class="fas fa-code"></i>
+                        Editor de Código
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="members.html" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        Miembros
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="voice-calls.html" class="nav-link">
+                        <i class="fas fa-phone"></i>
+                        Llamadas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Configuración
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Header -->
+        <header class="header">
+    <div class="header-left">
+        <button class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div>
+            <div class="page-title" data-i18n="members.title">Miembros del Equipo</div>
+            <div class="project-name-header" id="project-name-header">Cargando...</div>
+        </div>
+    </div>
+    
+    <div class="header-controls">
+        <button class="control-btn" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+            <span data-i18n="common.themeToggle">Cambiar Tema</span>
+        </button>
+        
+        <div class="language-selector">
+            <button class="control-btn" onclick="toggleLanguageDropdown()">
+                <i class="fas fa-globe"></i>
+                <span data-i18n="common.language">Idioma</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+        <div class="notifications-container">
+    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+    </button>
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notifications-header">
+            <h4>Notificaciones</h4>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <div class="notification-item loading">
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <div class="user-info">
+            <div class="welcome-text">
+                <span class="user-name" id="user-name">Cargando...</span>
+            </div>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> 
+                <span data-i18n="common.logout">Salir</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+        <!-- Members View -->
+        <div class="members-container">
+           <div class="members-header">
+    <div class="members-header-left">
+        <h1 class="members-title">Team Members</h1>
+        <p class="members-subtitle">Invita usuarios al proyecto y gestiona sus permisos.</p>
+    </div>
+    <div class="members-header-right">
+        <button class="invite-btn" id="invite-btn" onclick="openInviteModal()" style="display: none;">
+            <i class="fas fa-user-plus"></i>
+            Invitar Usuario
+        </button>
+    </div>
+</div>
+
+            <div class="members-table-container">
+                <div class="members-table-header">
+                    <div>Member</div>
+                    <div>Role</div>
+                    <div>Status</div>
+                    <div style="text-align: right;">Actions</div>
+                </div>
+                <div id="members-list">
+                    <div class="loading" style="text-align: center; color: #8892a6; padding: 40px;">
+                        Cargando miembros...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+<!-- Modal Invitar Usuario -->
+<div class="modal-overlay" id="inviteModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Invitar Usuario al Proyecto</h3>
+            <button class="modal-close" onclick="closeInviteModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form id="inviteForm">
+            <div class="form-group">
+                <label class="form-label">Email del Usuario</label>
+                <input type="email" class="form-input" id="userEmail" placeholder="usuario@ejemplo.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Rol</label>
+                <select class="form-select" id="userRole" required>
+                    <option value="member">Miembro</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="closeInviteModal()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" id="inviteSubmitBtn">
+                    Enviar Invitación
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+    </main>
+
+
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/project-session.js"></script>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+
+        let supabaseClient;
+        let currentUser = null;
+        let currentProject = null;
+        let currentUserRole = null;
+        let projectMembers = [];
+        // Variables para tema e idioma
+let currentTheme = localStorage.getItem('theme') || 'dark';
+let currentLanguage = localStorage.getItem('language') || 'es';
+
+// Idiomas soportados
+const supportedLanguages = {
+    'en': { name: 'English', flag: '🇺🇸' },
+    'es': { name: 'Español', flag: '🇪🇸' },
+    'fr': { name: 'Français', flag: '🇫🇷' },
+    'de': { name: 'Deutsch', flag: '🇩🇪' },
+    'it': { name: 'Italiano', flag: '🇮🇹' },
+    'pt': { name: 'Português', flag: '🇵🇹' },
+    'ru': { name: 'Русский', flag: '🇷🇺' },
+    'ja': { name: '日本語', flag: '🇯🇵' },
+    'ko': { name: '한국어', flag: '🇰🇷' },
+    'zh': { name: '中文', flag: '🇨🇳' },
+    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'hi': { name: 'हिंदी', flag: '🇮🇳' },
+    'nl': { name: 'Nederlands', flag: '🇳🇱' }
+};
+
+// Traducciones
+const translations = {
+    es: {
+        'common.themeToggle': 'Cambiar Tema',
+        'common.language': 'Idioma',
+        'common.logout': 'Salir',
+        'members.title': 'Miembros del Equipo'
+    },
+    en: {
+        'common.themeToggle': 'Toggle Theme',
+        'common.language': 'Language',
+        'common.logout': 'Logout',
+        'members.title': 'Team Members'
+    }
+};
+
+// Función para obtener traducción
+function t(key) {
+    return translations[currentLanguage] && translations[currentLanguage][key] 
+        ? translations[currentLanguage][key] 
+        : translations['es'][key] || key;
+}
+
+        function ensureProjectId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let projectId = urlParams.get('project');
+            let code = urlParams.get('code');
+            
+            if (!projectId) {
+                projectId = localStorage.getItem('current_project_id');
+                code = localStorage.getItem('current_project_code');
+                
+                if (projectId) {
+                    const url = new URL(window.location);
+                    url.searchParams.set('project', projectId);
+                    if (code) {
+                        url.searchParams.set('code', code);
+                    }
+                    window.history.replaceState({}, '', url);
+                } else {
+                    window.location.href = 'dashboard.html';
+                    return null;
+                }
+            } else {
+                localStorage.setItem('current_project_id', projectId);
+                if (code) {
+                    localStorage.setItem('current_project_code', code);
+                }
+            }
+            
+            return projectId;
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!ensureProjectId()) {
+                return;
+            }
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            setupEventListeners();
+            checkAuthenticationAndLoadData();
+        });
+
+        function setupEventListeners() {
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            
+            const menuToggle = document.getElementById('menu-toggle');
+            if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        async function checkAuthenticationAndLoadData() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                
+                const userName = currentUser.user_metadata?.full_name || 
+                                currentUser.user_metadata?.name || 
+                                currentUser.email.split('@')[0];
+                
+                document.getElementById('user-name').textContent = userName;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('project');
+
+                if (!projectId) {
+                    redirectToHome('Proyecto no especificado');
+                    return;
+                }
+
+                const hasAccess = await verifyProjectAccess(projectId);
+                if (!hasAccess) {
+                    redirectToHome('No tienes acceso a este proyecto');
+                    return;
+                }
+
+                await Promise.all([
+                    loadProjectData(projectId),
+                    loadProjectMembers(projectId)
+                ]);
+
+            } catch (error) {
+                console.error('Error in checkAuthenticationAndLoadData:', error);
+                redirectToHome('Error cargando el proyecto: ' + error.message);
+            }
+            initializeThemeAndLanguage();
+        }
+
+        async function verifyProjectAccess(projectId) {
+            try {
+                const { data: membership, error } = await supabaseClient
+                    .from('project_members')
+                    .select('id, role, project_id')
+                    .eq('project_id', projectId)
+                    .eq('user_id', currentUser.id)
+                    .maybeSingle();
+
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Error checking project membership:', error);
+                    return false;
+                }
+
+                if (!membership) {
+                    return false;
+                }
+
+                currentUserRole = membership.role;
+                return true;
+
+            } catch (error) {
+                console.error('Error in verifyProjectAccess:', error);
+                return false;
+            }
+        }
+
+        async function loadProjectData(projectId) {
+            try {
+                const { data: projectData, error } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single();
+
+                if (error) throw error;
+
+                currentProject = projectData;
+                document.getElementById('project-name-header').textContent = projectData.name;
+
+            } catch (error) {
+                console.error('Error loading project data:', error);
+                redirectToHome('Error cargando datos del proyecto');
+            }
+        }
+
+        async function loadProjectMembers(projectId) {
+            try {
+                const { data: members, error } = await supabaseClient
+                    .from('project_members')
+                    .select('*')
+                    .eq('project_id', projectId)
+                    .order('joined_at', { ascending: true });
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                projectMembers = members || [];
+
+                const membersList = document.getElementById('members-list');
+                if (!membersList) return;
+
+                if (projectMembers.length === 0) {
+                    membersList.innerHTML = '<p style="color: #8892a6; text-align: center; padding: 40px;">No hay miembros</p>';
+                    return;
+                }
+
+                membersList.innerHTML = '';
+                projectMembers.forEach((member, index) => {
+                    const memberElement = createMemberRow(member, index);
+                    membersList.appendChild(memberElement);
+                });
+                // Agregar esta línea en loadProjectMembers después de cargar los miembros:
+const inviteBtn = document.getElementById('invite-btn');
+if (inviteBtn && (currentUserRole === 'owner' || currentUserRole === 'admin')) {
+    inviteBtn.style.display = 'flex';
+}
+
+            } catch (error) {
+                console.error('Error loading project members:', error);
+                const membersList = document.getElementById('members-list');
+                if (membersList) {
+                    membersList.innerHTML = 
+                        '<p style="color: #ef4444; text-align: center; padding: 40px;">Error cargando miembros</p>';
+                }
+            }
+        }
+
+        function createMemberRow(member, index) {
+    const div = document.createElement('div');
+    div.className = 'member-row';
+
+    const initial = member.user_name ? member.user_name.charAt(0).toUpperCase() : '?';
+    const isCurrentUser = member.user_id === currentUser.id;
+    const canManage = (currentUserRole === 'owner' || currentUserRole === 'admin') && !isCurrentUser;
+    const colorClass = `avatar-color-${(index % 6) + 1}`;
+    
+    // Status real desde la base de datos
+    const isActive = member.status === 'active' || member.status === null;
+
+    div.innerHTML = `
+        <div class="member-info">
+            <div class="member-avatar ${colorClass}">${initial}</div>
+            <div class="member-details">
+                <div class="member-name">${member.user_name || 'Usuario'}</div>
+                <div class="member-email">${member.user_email || ''}</div>
+            </div>
+        </div>
+        
+        <div>
+            <span class="member-role-badge ${member.role}">${getRoleName(member.role)}</span>
+        </div>
+        
+        <div class="status-container">
+            <div class="status-toggle ${isActive ? 'active' : ''} ${!canManage ? 'disabled' : ''}" 
+                 onclick="${canManage ? `toggleMemberStatus('${member.id}', ${!isActive})` : ''}">
+                <div class="status-toggle-slider"></div>
+            </div>
+            <span class="status-badge ${isActive ? 'active' : 'disabled'}">
+                ${isActive ? 'Active' : 'Disabled'}
+            </span>
+        </div>
+        
+        <div class="member-actions">
+            ${canManage ? `
+                <div class="dropdown">
+                    <button class="action-btn" onclick="toggleDropdown(event, '${member.id}')">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-${member.id}">
+                        ${currentUserRole === 'owner' && member.role !== 'owner' ? `
+                            <div class="dropdown-item" onclick="changeUserRole('${member.id}', '${member.role === 'admin' ? 'member' : 'admin'}')">
+                                <i class="fas fa-user-shield"></i>
+                                ${member.role === 'admin' ? 'Quitar Admin' : 'Hacer Admin'}
+                            </div>
+                        ` : ''}
+                        ${member.role !== 'owner' ? `
+                            <div class="dropdown-item danger" onclick="removeMember('${member.id}')">
+                                <i class="fas fa-user-times"></i>
+                                Eliminar Miembro
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `;
+
+    return div;
+}
+    
+        function getRoleName(role) {
+            const roleNames = {
+                'owner': 'Owner',
+                'member': 'Member',
+                'admin': 'Admin'
+            };
+            return roleNames[role] || role;
+        }
+
+        function toggleDropdown(event, memberId) {
+            event.stopPropagation();
+            const dropdown = document.getElementById(`dropdown-${memberId}`);
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu !== dropdown) {
+                    menu.classList.remove('show');
+                }
+            });
+            
+            dropdown.classList.toggle('show');
+        }
+
+  
+
+        async function changeUserRole(memberId, newRole) {
+            try {
+                const { error } = await supabaseClient
+                    .from('project_members')
+                    .update({ role: newRole })
+                    .eq('id', memberId);
+
+                if (error) throw error;
+
+                showToast('Rol actualizado correctamente');
+                await loadProjectMembers(currentProject.id);
+
+            } catch (error) {
+                console.error('Error updating role:', error);
+                showToast('Error actualizando rol', 'error');
+            }
+        }
+
+        async function removeMember(memberId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este miembro del proyecto?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('project_members')
+                    .delete()
+                    .eq('id', memberId);
+
+                if (error) throw error;
+
+                showToast('Miembro eliminado correctamente');
+                await loadProjectMembers(currentProject.id);
+
+            } catch (error) {
+                console.error('Error removing member:', error);
+                showToast('Error eliminando miembro', 'error');
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showToast('Error al cerrar sesión', 'error');
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            if (sidebar && mainContent) {
+                sidebar.classList.toggle('hidden');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        function redirectToHome(reason) {
+            console.log('Redirecting to home:', reason);
+            showToast(reason, 'error');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        // Funciones de tema e idioma
+function initializeThemeAndLanguage() {
+    document.body.setAttribute('data-theme', currentTheme);
+    updateThemeIcon();
+    updateLanguageContent();
+    generateLanguageDropdown();
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const themeIcon = document.querySelector('.control-btn i.fa-moon, .control-btn i.fa-sun');
+    if (themeIcon) {
+        themeIcon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+    }
+}
+
+function generateLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.innerHTML = Object.entries(supportedLanguages).map(([code, lang]) => 
+            `<div class="language-option ${currentLanguage === code ? 'active' : ''}" 
+                  onclick="changeLanguage('${code}')">
+                ${lang.flag} ${lang.name}
+             </div>`
+        ).join('');
+    }
+}
+
+function changeLanguage(lang) {
+    if (supportedLanguages[lang]) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
+        updateLanguageContent();
+        generateLanguageDropdown();
+        
+        const dropdown = document.getElementById('languageDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+}
+
+function updateLanguageContent() {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = t(key);
+        if (translation && translation !== key) {
+            element.textContent = translation;
+        }
+    });
+}
+
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    const button = dropdown.parentElement.querySelector('.control-btn');
+    
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+        if (dropdown.classList.contains('show')) {
+            const rect = button.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+        }
+    }
+}
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector');
+    const dropdown = document.getElementById('languageDropdown');
+    
+    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+
+
+// Función para cambiar status de miembro (AGREGA ESTA)
+async function toggleMemberStatus(memberId, newStatus) {
+    try {
+        const { error } = await supabaseClient
+            .from('project_members')
+            .update({ 
+                status: newStatus ? 'active' : 'disabled'
+            })
+            .eq('id', memberId);
+
+        if (error) throw error;
+
+        showToast(newStatus ? 'Miembro activado' : 'Miembro desactivado');
+        await loadProjectMembers(currentProject.id);
+        
+    } catch (error) {
+        console.error('Error toggling member status:', error);
+        showToast('Error actualizando estado', 'error');
+    }
+}
+
+// Función para cambiar rol de usuario
+async function changeUserRole(memberId, newRole) {
+    if (!confirm(`¿Cambiar rol a ${newRole === 'admin' ? 'Administrador' : 'Miembro'}?`)) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from('project_members')
+            .update({ role: newRole })
+            .eq('id', memberId);
+
+        if (error) throw error;
+
+        showToast('Rol actualizado correctamente');
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+        await loadProjectMembers(currentProject.id);
+
+    } catch (error) {
+        console.error('Error updating role:', error);
+        showToast('Error actualizando rol', 'error');
+    }
+}
+
+// Función para eliminar miembro
+async function removeMember(memberId) {
+    if (!confirm('¿Eliminar este miembro del proyecto? No se puede deshacer.')) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from('project_members')
+            .delete()
+            .eq('id', memberId);
+
+        if (error) throw error;
+
+        showToast('Miembro eliminado correctamente');
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+        await loadProjectMembers(currentProject.id);
+
+    } catch (error) {
+        console.error('Error removing member:', error);
+        showToast('Error eliminando miembro', 'error');
+    }
+}
+
+// Función para toggle dropdown
+function toggleDropdown(event, memberId) {
+    event.stopPropagation();
+    const dropdown = document.getElementById(`dropdown-${memberId}`);
+    const isOpen = dropdown.classList.contains('show');
+    
+    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+    
+    if (!isOpen) {
+        dropdown.classList.add('show');
+    }
+}
+// Funciones del modal
+function openInviteModal() {
+    document.getElementById('inviteModal').classList.add('show');
+    document.getElementById('userEmail').focus();
+}
+
+function closeInviteModal() {
+    document.getElementById('inviteModal').classList.remove('show');
+    document.getElementById('inviteForm').reset();
+}
+
+// Manejar envío de invitación
+
+// Manejar envío de invitación
+document.getElementById('inviteForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('userEmail').value.trim();
+    const role = document.getElementById('userRole').value;
+    const submitBtn = document.getElementById('inviteSubmitBtn');
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+    
+    try {
+        // Verificar si ya es miembro
+        const { data: existingMember } = await supabaseClient
+            .from('project_members')
+            .select('id')
+            .eq('project_id', currentProject.id)
+            .eq('user_email', email)
+            .single();
+        
+        if (existingMember) {
+            throw new Error('Este usuario ya es miembro del proyecto');
+        }
+        
+        // Crear invitación pendiente
+        const { error: insertError } = await supabaseClient
+            .from('project_invitations')
+            .insert({
+                project_id: currentProject.id,
+                invited_email: email,
+                invited_by: currentUser.id,
+                invited_by_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+                role: role,
+                status: 'pending',
+                created_at: new Date().toISOString(),
+                project_name: currentProject.name
+            });
+        
+        if (insertError) throw insertError;
+        
+        showToast('Invitación enviada correctamente');
+        closeInviteModal();
+        
+    } catch (error) {
+        console.error('Error inviting user:', error);
+        showToast('Error: ' + error.message, 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Invitación';
+    }
+});
+
+// Cargar notificaciones
+async function loadNotifications() {
+    try {
+        const userEmail = currentUser.email;
+        
+        const { data: invitations, error } = await supabaseClient
+            .from('project_invitations')
+            .select('*')
+            .eq('invited_email', userEmail)
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const notificationsList = document.getElementById('notificationsList');
+        const notificationCount = document.getElementById('notificationCount');
+        
+        if (invitations.length === 0) {
+            notificationsList.innerHTML = '<div class="notification-item">No hay notificaciones</div>';
+            notificationCount.style.display = 'none';
+        } else {
+            notificationCount.textContent = invitations.length;
+            notificationCount.style.display = 'flex';
+            
+            notificationsList.innerHTML = invitations.map(invitation => `
+                <div class="notification-item">
+                    <div class="notification-title">Invitación a proyecto</div>
+                    <div class="notification-message">
+                        ${invitation.invited_by_name} te invitó a unirte a "${invitation.project_name}" como ${invitation.role === 'admin' ? 'Administrador' : 'Miembro'}
+                    </div>
+                    <div class="notification-actions">
+                        <button class="notification-btn accept" onclick="acceptInvitation('${invitation.id}')">
+                            Aceptar
+                        </button>
+                        <button class="notification-btn reject" onclick="rejectInvitation('${invitation.id}')">
+                            Rechazar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+    }
+}
+
+// Toggle notificaciones
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationsDropdown');
+    dropdown.classList.toggle('show');
+    if (dropdown.classList.contains('show')) {
+        loadNotifications();
+    }
+}
+
+// Aceptar invitación
+async function acceptInvitation(invitationId) {
+    try {
+        // Obtener datos de la invitación
+        const { data: invitation, error: getError } = await supabaseClient
+            .from('project_invitations')
+            .select('*')
+            .eq('id', invitationId)
+            .single();
+        
+        if (getError) throw getError;
+        
+        // Agregar a project_members
+        const { error: insertError } = await supabaseClient
+            .from('project_members')
+            .insert({
+                project_id: invitation.project_id,
+                user_id: currentUser.id,
+                user_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+                user_email: currentUser.email,
+                role: invitation.role,
+                status: 'active',
+                joined_at: new Date().toISOString()
+            });
+        
+        if (insertError) throw insertError;
+        
+        // Marcar invitación como aceptada
+        const { error: updateError } = await supabaseClient
+            .from('project_invitations')
+            .update({ 
+                status: 'accepted',
+                accepted_at: new Date().toISOString()
+            })
+            .eq('id', invitationId);
+        
+        if (updateError) throw updateError;
+        
+        showToast('Invitación aceptada correctamente');
+        loadNotifications();
+        
+    } catch (error) {
+        console.error('Error accepting invitation:', error);
+        showToast('Error aceptando invitación', 'error');
+    }
+}
+
+// Rechazar invitación
+async function rejectInvitation(invitationId) {
+    try {
+        const { error } = await supabaseClient
+            .from('project_invitations')
+            .update({ status: 'rejected' })
+            .eq('id', invitationId);
+        
+        if (error) throw error;
+        
+        showToast('Invitación rechazada');
+        loadNotifications();
+        
+    } catch (error) {
+        console.error('Error rejecting invitation:', error);
+        showToast('Error rechazando invitación', 'error');
+    }
+}
+
+// Exponer funciones
+window.toggleNotifications = toggleNotifications;
+window.acceptInvitation = acceptInvitation;
+window.rejectInvitation = rejectInvitation;
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    setInterval(loadNotifications, 30000);
+});
+window.toggleMemberStatus = toggleMemberStatus;
+window.changeUserRole = changeUserRole;
+window.removeMember = removeMember;
+window.toggleDropdown = toggleDropdown;
+window.openInviteModal = openInviteModal;
+window.closeInviteModal = closeInviteModal;
+window.toggleTheme = toggleTheme;
+window.toggleLanguageDropdown = toggleLanguageDropdown;
+window.changeLanguage = changeLanguage;
+    </script>
+</body>
+</html>

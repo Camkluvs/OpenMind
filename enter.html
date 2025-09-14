@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenMind AI - Digital Collaboration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a9eff;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-text {
+            color: #8892a6;
+            font-size: 14px;
+        }
+
+        .user-name {
+            color: #4a9eff;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 40px 120px;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a9c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #8892a6;
+            max-width: 600px;
+            margin: 0 auto 50px;
+        }
+
+        /* Collaboration Section */
+        .collaboration-section {
+            padding: 80px 40px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 80px;
+        }
+
+        .collaboration-content {
+            flex: 1;
+        }
+
+        .collaboration-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a9c0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .collaboration-description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #8892a6;
+            margin-bottom: 40px;
+        }
+
+        .collaboration-cards {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 500px;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            border-color: rgba(74, 158, 255, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(74, 158, 255, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            color: #4a9eff;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-description {
+            color: #8892a6;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: #8892a6;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+        }
+
+        .form-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .create-btn {
+            background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+            color: white;
+        }
+
+        .join-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .create-btn:hover {
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+        }
+
+        .join-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading spinner */
+        .loading {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Message styles */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 40px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #8892a6;
+            margin-bottom: 80px;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #4a9eff 0%, #00d4ff 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(74, 158, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .step:hover .step-icon {
+            box-shadow: 0 12px 48px rgba(74, 158, 255, 0.5);
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .step-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #8892a6;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* Background Effects */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(74, 158, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-dot:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: -0.5s;
+        }
+
+        .floating-dot:nth-child(2) {
+            top: 60%;
+            left: 85%;
+            animation-delay: -2s;
+        }
+
+        .floating-dot:nth-child(3) {
+            top: 40%;
+            left: 75%;
+            animation-delay: -3.5s;
+        }
+
+        .floating-dot:nth-child(4) {
+            top: 80%;
+            left: 20%;
+            animation-delay: -1s;
+        }
+
+        .floating-dot:nth-child(5) {
+            top: 25%;
+            left: 60%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+        }
+
+        /* Content positioning */
+        .content {
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .hero {
+                padding: 60px 20px 80px;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .collaboration-section {
+                flex-direction: column;
+                padding: 60px 20px;
+                gap: 40px;
+            }
+
+            .collaboration-title {
+                font-size: 36px;
+            }
+
+            .how-it-works {
+                padding: 60px 20px;
+            }
+
+            .steps-container {
+                gap: 40px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+        }
+        /* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8892a6;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.control-btn:hover {
+    background: rgba(74, 158, 255, 0.1);
+    border-color: #4a9eff;
+    color: #4a9eff;
+}
+
+/* Language Selector */
+.language-selector {
+    position: relative;
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.language-dropdown.show {
+    display: block;
+}
+
+.language-option {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #8892a6;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-option:hover {
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+}
+
+.language-option.active {
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+}
+
+/* Light theme */
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    color: #1e293b;
+}
+
+[data-theme="light"] .bg-pattern {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+}
+
+[data-theme="light"] .header {
+    background: rgba(248, 250, 252, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .logo {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .welcome-text {
+    color: #64748b;
+}
+
+[data-theme="light"] .user-name {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .logout-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .logout-btn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+[data-theme="light"] .hero-title,
+[data-theme="light"] .collaboration-title,
+[data-theme="light"] .section-title {
+    background: linear-gradient(135deg, #1e293b 0%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="light"] .hero-description,
+[data-theme="light"] .collaboration-description,
+[data-theme="light"] .section-subtitle {
+    color: #64748b;
+}
+
+[data-theme="light"] .team-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .card-title {
+    color: #1e293b;
+}
+
+[data-theme="light"] .card-description {
+    color: #64748b;
+}
+
+[data-theme="light"] .form-label {
+    color: #1e293b;
+}
+
+[data-theme="light"] .form-input {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+}
+
+[data-theme="light"] .form-input::placeholder {
+    color: #64748b;
+}
+
+[data-theme="light"] .create-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+[data-theme="light"] .join-btn-secondary {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #64748b;
+}
+
+[data-theme="light"] .control-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .language-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .language-option {
+    color: #64748b;
+}
+
+[data-theme="light"] .floating-dot {
+    background: rgba(59, 130, 246, 0.6);
+}
+
+[data-theme="light"] .step-title {
+    color: #1e293b;
+}
+
+[data-theme="light"] .step-description {
+    color: #64748b;
+}
+
+[data-theme="light"] .collaboration-section,
+[data-theme="light"] .how-it-works {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-controls {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .control-btn span {
+        display: none;
+    }
+}
+.notifications-container {
+    position: relative;
+}
+
+.notifications-btn {
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.notifications-dropdown {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 350px;
+    max-height: 400px;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 12px;
+    display: none;
+    z-index: 99999;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.notifications-dropdown.show {
+    display: block;
+}
+
+.notifications-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notifications-header h4 {
+    color: #ffffff;
+    font-size: 16px;
+    margin: 0;
+}
+
+.notifications-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-item:hover {
+    background: rgba(74, 158, 255, 0.1);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-title {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.notification-message {
+    color: #8892a6;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.notification-btn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notification-btn.accept {
+    background: #10b981;
+    color: white;
+}
+
+.notification-btn.reject {
+    background: rgba(255, 255, 255, 0.1);
+    color: #8892a6;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(34, 197, 94, 0.9);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 1000;
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast.error {
+    background: rgba(239, 68, 68, 0.9);
+}
+    </style>
+</head>
+<body>
+    <!-- Background Pattern -->
+    <div class="bg-pattern">
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Header -->
+      <header class="header">
+    <div class="logo">
+        <div class="logo-icon">
+            <i class="fas fa-brain"></i>
+        </div>
+        OpenMind AI
+    </div>
+    
+    <div class="header-controls">
+        <button class="control-btn" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+            <span data-i18n="common.themeToggle">Cambiar Tema</span>
+        </button>
+        
+        <div class="language-selector">
+            <button class="control-btn" onclick="toggleLanguageDropdown()">
+                <i class="fas fa-globe"></i>
+                <span data-i18n="common.language">Idioma</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+        <div class="notifications-container">
+    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+    </button>
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notifications-header">
+            <h4>Notificaciones</h4>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <div class="notification-item loading">
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <div class="user-info">
+            <div class="welcome-text">
+                <span data-i18n="common.welcome">Bienvenido</span>, <span class="user-name" id="user-name">Cargando...</span>
+            </div>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> 
+                <span data-i18n="common.logout">Cerrar Sesión</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">Start Collaborating</h1>
+            <p class="hero-description">
+                Create a new project team or join an existing one to begin sharing ideas.
+            </p>
+        </section>
+
+        <!-- Collaboration Section -->
+        <section class="collaboration-section">
+            <div class="collaboration-content">
+                <h2 class="collaboration-title">Start Collaborating</h2>
+                <p class="collaboration-description">
+                    Create a new project team or join an existing one to begin sharing ideas.
+                </p>
+            </div>
+            
+            <div class="collaboration-cards">
+                <!-- Create Team Card -->
+                <div class="team-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-plus"></i></div>
+                        <h3 class="card-title">Create a New Team</h3>
+                    </div>
+                    <p class="card-description">Start a new project and invite your collaborators.</p>
+                    
+                    <div class="message error-message" id="create-error"></div>
+                    <div class="message success-message" id="create-success"></div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Project Name</label>
+                        <input type="text" class="form-input" id="project-name" placeholder="e.g., 'Q2 Marketing Campaign'">
+                    </div>
+                    
+                    <button class="form-btn create-btn" id="create-btn">
+                        <span id="create-btn-text">Create Project</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Join Team Card -->
+                <div class="team-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fas fa-users"></i></div>
+                        <h3 class="card-title">Join an Existing Team</h3>
+                    </div>
+                    <p class="card-description">Enter an invite code to join a project.</p>
+                    
+                    <div class="message error-message" id="join-error"></div>
+                    <div class="message success-message" id="join-success"></div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Invite Code</label>
+                        <input type="text" class="form-input" id="invite-code" placeholder="e.g., 'PROJ-ABC123'">
+                    </div>
+                    
+                    <button class="form-btn join-btn-secondary" id="join-btn">
+                        <span id="join-btn-text">Join Project</span>
+                        <i class="fas fa-sign-in-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Three simple steps to start collaborating</p>
+            
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-rocket"></i></div>
+                    <h3 class="step-title">Create Your Team</h3>
+                    <p class="step-description">
+                        Set up your workspace and define project goals with your team.
+                    </p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                    <h3 class="step-title">Invite Collaborators</h3>
+                    <p class="step-description">
+                        Share invitation codes with professionals who add value to your project.
+                    </p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-icon"><i class="fas fa-handshake"></i></div>
+                    <h3 class="step-title">Collaborate in Real Time</h3>
+                    <p class="step-description">
+                        Work together with your team, share resources and achieve your goals faster.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+  <script>
+    // Configuración de Supabase
+const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+
+// Variables globales
+let supabaseClient;
+let currentUser = null;
+// Variables para tema e idioma
+let currentTheme = localStorage.getItem('theme') || 'dark';
+let currentLanguage = localStorage.getItem('language') || 'es';
+
+// Idiomas soportados
+const supportedLanguages = {
+    'en': { name: 'English', flag: '🇺🇸' },
+    'es': { name: 'Español', flag: '🇪🇸' },
+    'fr': { name: 'Français', flag: '🇫🇷' },
+    'de': { name: 'Deutsch', flag: '🇩🇪' },
+    'it': { name: 'Italiano', flag: '🇮🇹' },
+    'pt': { name: 'Português', flag: '🇵🇹' },
+    'ru': { name: 'Русский', flag: '🇷🇺' },
+    'ja': { name: '日本語', flag: '🇯🇵' },
+    'ko': { name: '한국어', flag: '🇰🇷' },
+    'zh': { name: '中文', flag: '🇨🇳' },
+    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'hi': { name: 'हिंदी', flag: '🇮🇳' },
+    'nl': { name: 'Nederlands', flag: '🇳🇱' }
+};
+
+// Traducciones
+const translations = {
+    es: {
+        'common.themeToggle': 'Cambiar Tema',
+        'common.language': 'Idioma',
+        'common.welcome': 'Bienvenido',
+        'common.logout': 'Cerrar Sesión'
+    },
+    en: {
+        'common.themeToggle': 'Toggle Theme',
+        'common.language': 'Language',
+        'common.welcome': 'Welcome',
+        'common.logout': 'Logout'
+    }
+};
+
+// Función para obtener traducción
+function t(key) {
+    return translations[currentLanguage] && translations[currentLanguage][key] 
+        ? translations[currentLanguage][key] 
+        : translations['es'][key] || key;
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si Supabase está disponible
+    if (typeof supabase === 'undefined') {
+        console.error('Supabase no está cargado');
+        showMessage('create-error', 'Error: No se pudo cargar el sistema. Por favor recarga la página.');
+        return;
+    }
+
+    // Inicializar cliente de Supabase
+    try {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Cliente de Supabase inicializado correctamente');
+        
+        // Configurar listener para cambios de autenticación
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT' || !session) {
+                window.location.href = 'login.html';
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error inicializando Supabase:', error);
+        showMessage('create-error', 'Error inicializando el sistema. Por favor recarga la página.');
+        return;
+    }
+
+    // Verificar autenticación
+    checkAuthentication();
+
+    // Configurar event listeners
+    setupEventListeners();
+});
+
+// Verificar autenticación
+async function checkAuthentication() {
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (error) {
+            console.error('Error getting session:', error);
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (!session) {
+            console.log('No session found, redirecting to login');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        currentUser = session.user;
+        
+        // Mostrar nombre del usuario
+        const userName = currentUser.user_metadata?.full_name || 
+                        currentUser.user_metadata?.name || 
+                        currentUser.email.split('@')[0];
+        
+        const userNameElement = document.getElementById('user-name');
+        if (userNameElement) {
+            userNameElement.textContent = userName;
+        }
+
+        console.log('Usuario autenticado:', userName);
+        initializeThemeAndLanguage();
+
+    } catch (error) {
+        console.error('Error checking authentication:', error);
+        window.location.href = 'login.html';
+    }
+}
+
+// Configurar event listeners
+function setupEventListeners() {
+    // Botón de crear proyecto
+    const createBtn = document.getElementById('create-btn');
+    if (createBtn) {
+        createBtn.addEventListener('click', handleCreateProject);
+    }
+
+    // Botón de unirse a proyecto
+    const joinBtn = document.getElementById('join-btn');
+    if (joinBtn) {
+        joinBtn.addEventListener('click', handleJoinProject);
+    }
+
+    // Botón de logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // Enter key en inputs
+    const projectNameInput = document.getElementById('project-name');
+    if (projectNameInput) {
+        projectNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleCreateProject();
+            }
+        });
+    }
+
+    const inviteCodeInput = document.getElementById('invite-code');
+    if (inviteCodeInput) {
+        inviteCodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleJoinProject();
+            }
+        });
+    }
+}
+
+// Manejar creación de proyecto
+async function handleCreateProject() {
+    const projectNameInput = document.getElementById('project-name');
+    const projectName = projectNameInput ? projectNameInput.value.trim() : '';
+    
+    // Validaciones básicas
+    if (!projectName) {
+        showMessage('create-error', 'Por favor ingresa un nombre para el proyecto');
+        return;
+    }
+
+    if (projectName.length < 3) {
+        showMessage('create-error', 'El nombre del proyecto debe tener al menos 3 caracteres');
+        return;
+    }
+
+    if (projectName.length > 50) {
+        showMessage('create-error', 'El nombre del proyecto no puede tener más de 50 caracteres');
+        return;
+    }
+
+    if (!currentUser) {
+        showMessage('create-error', 'No se pudo verificar tu identidad. Por favor recarga la página.');
+        return;
+    }
+
+    setButtonLoading('create-btn', true);
+    hideMessages('create');
+
+    try {
+        console.log('Iniciando creación de proyecto:', projectName);
+
+        // Verificar si el proyecto ya existe (por nombre)
+        const { data: existingProject, error: checkError } = await supabaseClient
+            .from('projects')
+            .select('id, name')
+            .eq('name', projectName)
+            .maybeSingle();
+
+        if (checkError) {
+            console.error('Error checking existing project:', checkError);
+            throw new Error('Error verificando proyectos existentes: ' + checkError.message);
+        }
+
+        if (existingProject) {
+            showMessage('create-error', `Ya existe un proyecto con el nombre "${projectName}". Por favor elige otro nombre.`);
+            setButtonLoading('create-btn', false);
+            return;
+        }
+
+        // Generar código de invitación único
+        let inviteCode;
+        let isCodeUnique = false;
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        while (!isCodeUnique && attempts < maxAttempts) {
+            inviteCode = generateInviteCode();
+            
+            // Verificar que el código sea único
+            const { data: existingCode, error: codeCheckError } = await supabaseClient
+                .from('projects')
+                .select('id')
+                .eq('invite_code', inviteCode)
+                .maybeSingle();
+
+            if (codeCheckError) {
+                console.error('Error checking invite code:', codeCheckError);
+                throw new Error('Error verificando código de invitación');
+            }
+
+            if (!existingCode) {
+                isCodeUnique = true;
+            }
+            attempts++;
+        }
+
+        if (!isCodeUnique) {
+            throw new Error('No se pudo generar un código único. Inténtalo de nuevo.');
+        }
+
+        console.log('Código de invitación generado:', inviteCode);
+
+        // Obtener información del usuario
+        const userName = currentUser.user_metadata?.full_name || 
+                        currentUser.user_metadata?.name || 
+                        currentUser.email.split('@')[0];
+
+        // Crear el proyecto
+        const { data: newProject, error: createError } = await supabaseClient
+            .from('projects')
+            .insert([
+                {
+                    name: projectName,
+                    invite_code: inviteCode,
+                    owner_id: currentUser.id,
+                    owner_name: userName,
+                    owner_email: currentUser.email,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }
+            ])
+            .select()
+            .single();
+
+        if (createError) {
+            console.error('Error creating project:', createError);
+            throw new Error('Error al crear el proyecto: ' + createError.message);
+        }
+
+        console.log('Proyecto creado:', newProject);
+
+        // Agregar al usuario como miembro del proyecto
+        const { error: memberError } = await supabaseClient
+            .from('project_members')
+            .insert([
+                {
+                    project_id: newProject.id,
+                    user_id: currentUser.id,
+                    user_name: userName,
+                    user_email: currentUser.email,
+                    role: 'owner',
+                    joined_at: new Date().toISOString()
+                }
+            ]);
+
+        if (memberError) {
+            console.error('Error adding member:', memberError);
+            // Intentar eliminar el proyecto creado si falla agregar el miembro
+            await supabaseClient.from('projects').delete().eq('id', newProject.id);
+            throw new Error('Error configurando el proyecto: ' + memberError.message);
+        }
+
+        console.log('Usuario agregado como owner del proyecto');
+
+        showMessage('create-success', `¡Proyecto "${projectName}" creado exitosamente! Código: ${inviteCode}. Redirigiendo...`);
+        
+        // Limpiar el campo
+        if (projectNameInput) {
+            projectNameInput.value = '';
+        }
+
+        // Redirigir al dashboard del proyecto después de 3 segundos
+        setTimeout(() => {
+            window.location.href = `dashboard.html?project=${newProject.id}&code=${inviteCode}`;
+        }, 3000);
+
+    } catch (error) {
+        console.error('Error in handleCreateProject:', error);
+        showMessage('create-error', error.message || 'Error inesperado al crear el proyecto');
+    } finally {
+        setButtonLoading('create-btn', false);
+    }
+}
+
+// Manejar unirse a proyecto (CORREGIDO CON VERIFICACIÓN DE INVITACIÓN)
+async function handleJoinProject() {
+    const inviteCodeInput = document.getElementById('invite-code');
+    const inviteCode = inviteCodeInput ? inviteCodeInput.value.trim().toUpperCase() : '';
+    
+    if (!inviteCode) {
+        showMessage('join-error', 'Por favor ingresa el código de invitación');
+        return;
+    }
+
+    if (!inviteCode.startsWith('PROJ-')) {
+        showMessage('join-error', 'El código debe comenzar con PROJ-');
+        return;
+    }
+
+    if (inviteCode.length !== 11) {
+        showMessage('join-error', 'El código debe tener el formato PROJ-XXXXXX');
+        return;
+    }
+
+    const codepart = inviteCode.substring(5);
+    if (!/^[A-Z0-9]{6}$/.test(codepart)) {
+        showMessage('join-error', 'El código solo puede contener letras y números');
+        return;
+    }
+
+    if (!currentUser) {
+        showMessage('join-error', 'No se pudo verificar tu identidad. Por favor recarga la página.');
+        return;
+    }
+
+    setButtonLoading('join-btn', true);
+    hideMessages('join');
+
+    try {
+        console.log('Intentando unirse al proyecto con código:', inviteCode);
+
+        // Buscar el proyecto por código de invitación
+        const { data: project, error: findError } = await supabaseClient
+            .from('projects')
+            .select('*')
+            .eq('invite_code', inviteCode)
+            .maybeSingle();
+
+        if (findError) {
+            console.error('Error finding project:', findError);
+            throw new Error('Error buscando el proyecto: ' + findError.message);
+        }
+
+        if (!project) {
+            showMessage('join-error', 'Código de invitación no válido o proyecto no encontrado');
+            setButtonLoading('join-btn', false);
+            return;
+        }
+
+        console.log('Proyecto encontrado:', project.name);
+
+        // VERIFICAR SI YA ES MIEMBRO
+        const { data: existingMember, error: memberCheckError } = await supabaseClient
+            .from('project_members')
+            .select('*')
+            .eq('project_id', project.id)
+            .eq('user_id', currentUser.id)
+            .maybeSingle();
+
+        if (memberCheckError) {
+            console.error('Error checking membership:', memberCheckError);
+            throw new Error('Error verificando membresía: ' + memberCheckError.message);
+        }
+
+        if (existingMember) {
+            showMessage('join-success', `Ya eres miembro del proyecto "${project.name}". Redirigiendo...`);
+            setTimeout(() => {
+                window.location.href = `dashboard.html?project=${project.id}&code=${inviteCode}`;
+            }, 2000);
+            return;
+        }
+
+        // VERIFICAR SI TIENE INVITACIÓN PENDIENTE O ACEPTADA
+        const { data: invitation, error: invitationError } = await supabaseClient
+            .from('project_invitations')
+            .select('*')
+            .eq('project_id', project.id)
+            .eq('invited_email', currentUser.email)
+            .in('status', ['pending', 'accepted'])
+            .maybeSingle();
+
+        if (invitationError && invitationError.code !== 'PGRST116') {
+            console.error('Error checking invitation:', invitationError);
+            throw new Error('Error verificando invitaciones');
+        }
+
+        // Si NO tiene invitación, no puede unirse
+        if (!invitation) {
+            showMessage('join-error', `Para unirte al proyecto "${project.name}" necesitas una invitación del administrador. El código de invitación público ha sido deshabilitado por seguridad.`);
+            setButtonLoading('join-btn', false);
+            return;
+        }
+
+        // Si tiene invitación pendiente, sugerir aceptarla
+        if (invitation.status === 'pending') {
+            showMessage('join-error', `Tienes una invitación pendiente para este proyecto. Por favor revisa tus notificaciones y acepta la invitación.`);
+            setButtonLoading('join-btn', false);
+            return;
+        }
+
+        // Si llegó aquí, tiene invitación aceptada pero no es miembro aún (caso edge)
+        // Proceder a agregar como miembro
+        const userName = currentUser.user_metadata?.full_name || 
+                        currentUser.user_metadata?.name || 
+                        currentUser.email.split('@')[0];
+
+        const { error: addMemberError } = await supabaseClient
+            .from('project_members')
+            .insert([
+                {
+                    project_id: project.id,
+                    user_id: currentUser.id,
+                    user_name: userName,
+                    user_email: currentUser.email,
+                    role: invitation.role || 'member',
+                    status: 'active',
+                    joined_at: new Date().toISOString()
+                }
+            ]);
+
+        if (addMemberError) {
+            console.error('Error adding member:', addMemberError);
+            throw new Error('Error uniéndose al proyecto: ' + addMemberError.message);
+        }
+
+        console.log('Usuario agregado como miembro del proyecto');
+
+        showMessage('join-success', `¡Te has unido exitosamente al proyecto "${project.name}"! Redirigiendo...`);
+        
+        // Limpiar el campo
+        if (inviteCodeInput) {
+            inviteCodeInput.value = '';
+        }
+
+        // Redirigir al dashboard del proyecto después de 3 segundos
+        setTimeout(() => {
+            window.location.href = `dashboard.html?project=${project.id}&code=${inviteCode}`;
+        }, 3000);
+
+    } catch (error) {
+        console.error('Error in handleJoinProject:', error);
+        showMessage('join-error', error.message || 'Error inesperado al unirse al proyecto');
+    } finally {
+        setButtonLoading('join-btn', false);
+    }
+}
+
+// Manejar logout
+async function handleLogout() {
+    try {
+        console.log('Cerrando sesión...');
+        
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+            console.error('Error logging out:', error);
+            throw error;
+        }
+        
+        console.log('Sesión cerrada correctamente');
+        window.location.href = 'login.html';
+        
+    } catch (error) {
+        console.error('Error in handleLogout:', error);
+        alert('Error al cerrar sesión. Inténtalo de nuevo.');
+    }
+}
+
+// Generar código de invitación único
+function generateInviteCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = 'PROJ-';
+    for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// Utilidades para mensajes
+function showMessage(elementId, message) {
+    const messageElement = document.getElementById(elementId);
+    if (messageElement) {
+        messageElement.textContent = message;
+        messageElement.classList.add('show');
+        
+        // Auto-hide después de 5 segundos para mensajes de error
+        if (elementId.includes('error')) {
+            setTimeout(() => {
+                messageElement.classList.remove('show');
+            }, 5000);
+        }
+    }
+}
+
+function hideMessages(prefix) {
+    const errorElement = document.getElementById(prefix + '-error');
+    const successElement = document.getElementById(prefix + '-success');
+    
+    if (errorElement) {
+        errorElement.classList.remove('show');
+    }
+    if (successElement) {
+        successElement.classList.remove('show');
+    }
+}
+
+// Utilidades para botones de carga
+function setButtonLoading(buttonId, isLoading) {
+    const button = document.getElementById(buttonId);
+    const buttonText = document.getElementById(buttonId + '-text');
+    
+    if (!button) return;
+    
+    if (isLoading) {
+        button.disabled = true;
+        if (buttonText) {
+            buttonText.innerHTML = '<div class="loading"></div>';
+        }
+    } else {
+        button.disabled = false;
+        if (buttonText) {
+            if (buttonId === 'create-btn') {
+                buttonText.textContent = 'Create Project';
+            } else if (buttonId === 'join-btn') {
+                buttonText.textContent = 'Join Project';
+            }
+        }
+    }
+}
+
+// Inicializar tema e idioma
+function initializeThemeAndLanguage() {
+    document.body.setAttribute('data-theme', currentTheme);
+    updateThemeIcon();
+    updateLanguageContent();
+    generateLanguageDropdown();
+}
+
+// Cambiar tema
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const themeIcon = document.querySelector('.control-btn i.fa-moon, .control-btn i.fa-sun');
+    if (themeIcon) {
+        themeIcon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+    }
+}
+
+// Generar dropdown de idiomas
+function generateLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.innerHTML = Object.entries(supportedLanguages).map(([code, lang]) => 
+            `<div class="language-option ${currentLanguage === code ? 'active' : ''}" 
+                  onclick="changeLanguage('${code}')">
+                ${lang.flag} ${lang.name}
+             </div>`
+        ).join('');
+    }
+}
+
+// Cambiar idioma
+function changeLanguage(lang) {
+    if (supportedLanguages[lang]) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
+        updateLanguageContent();
+        generateLanguageDropdown();
+        
+        const dropdown = document.getElementById('languageDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+}
+
+// Actualizar contenido del idioma
+function updateLanguageContent() {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = t(key);
+        if (translation && translation !== key) {
+            element.textContent = translation;
+        }
+    });
+}
+
+// Toggle dropdown
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector');
+    const dropdown = document.getElementById('languageDropdown');
+    
+    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// FUNCIONES DE NOTIFICACIONES CORREGIDAS
+
+// Cargar SOLO el contador (sin contenido)
+async function loadNotificationCount() {
+    try {
+        if (!currentUser) return;
+        
+        const userEmail = currentUser.email;
+        
+        const { data: invitations, error } = await supabaseClient
+            .from('project_invitations')
+            .select('id')
+            .eq('invited_email', userEmail)
+            .eq('status', 'pending');
+        
+        if (error) throw error;
+        
+        const notificationCount = document.getElementById('notificationCount');
+        
+        if (invitations.length === 0) {
+            notificationCount.style.display = 'none';
+        } else {
+            notificationCount.textContent = invitations.length;
+            notificationCount.style.display = 'flex';
+        }
+        
+    } catch (error) {
+        console.error('Error loading notification count:', error);
+    }
+}
+
+// Cargar notificaciones completas
+async function loadNotifications() {
+    try {
+        const userEmail = currentUser.email;
+        
+        const { data: invitations, error } = await supabaseClient
+            .from('project_invitations')
+            .select('*')
+            .eq('invited_email', userEmail)
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const notificationsList = document.getElementById('notificationsList');
+        
+        if (invitations.length === 0) {
+            notificationsList.innerHTML = '<div class="notification-item">No hay notificaciones</div>';
+        } else {
+            notificationsList.innerHTML = invitations.map(invitation => `
+                <div class="notification-item">
+                    <div class="notification-title">Invitación a proyecto</div>
+                    <div class="notification-message">
+                        ${invitation.invited_by_name} te invitó a unirte a "${invitation.project_name}" como ${invitation.role === 'admin' ? 'Administrador' : 'Miembro'}
+                    </div>
+                    <div class="notification-actions">
+                        <button class="notification-btn accept" onclick="acceptInvitation('${invitation.id}')">
+                            Aceptar
+                        </button>
+                        <button class="notification-btn reject" onclick="rejectInvitation('${invitation.id}')">
+                            Rechazar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+    }
+}
+
+// Toggle notificaciones
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationsDropdown');
+    dropdown.classList.toggle('show');
+    if (dropdown.classList.contains('show')) {
+        loadNotifications();
+    }
+}
+
+// Toast helper
+function showToast(message, type = 'success') {
+    let toast = document.getElementById('toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+    }
+    
+    toast.textContent = message;
+    toast.className = `toast ${type} show`;
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Aceptar invitación (CORREGIDO)
+async function acceptInvitation(invitationId) {
+    try {
+        const { data: invitation, error: getError } = await supabaseClient
+            .from('project_invitations')
+            .select('*')
+            .eq('id', invitationId)
+            .single();
+        
+        if (getError) throw getError;
+        
+        const { data: existingMember } = await supabaseClient
+            .from('project_members')
+            .select('id')
+            .eq('project_id', invitation.project_id)
+            .eq('user_id', currentUser.id)
+            .single();
+        
+        if (!existingMember) {
+            const { error: insertError } = await supabaseClient
+                .from('project_members')
+                .insert({
+                    project_id: invitation.project_id,
+                    user_id: currentUser.id,
+                    user_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+                    user_email: currentUser.email,
+                    role: invitation.role,
+                    status: 'active',
+                    joined_at: new Date().toISOString()
+                });
+            
+            if (insertError) throw insertError;
+        }
+        
+        // Marcar invitación como aceptada
+        const { error: updateError } = await supabaseClient
+            .from('project_invitations')
+            .update({ 
+                status: 'accepted',
+                accepted_at: new Date().toISOString()
+            })
+            .eq('id', invitationId);
+        
+        if (updateError) throw updateError;
+        
+        showToast('Invitación aceptada correctamente');
+        
+        // Esperar antes de recargar
+        setTimeout(() => {
+            loadNotifications();
+            loadNotificationCount();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error accepting invitation:', error);
+        showToast('Error aceptando invitación: ' + error.message, 'error');
+    }
+}
+
+// Rechazar invitación (CORREGIDO)
+async function rejectInvitation(invitationId) {
+    try {
+        const { error } = await supabaseClient
+            .from('project_invitations')
+            .update({ status: 'rejected' })
+            .eq('id', invitationId);
+        
+        if (error) throw error;
+        
+        showToast('Invitación rechazada');
+        
+        // Esperar antes de recargar
+        setTimeout(() => {
+            loadNotifications();
+            loadNotificationCount();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error rejecting invitation:', error);
+        showToast('Error rechazando invitación', 'error');
+    }
+}
+
+// Auto-cargar contador cada 15 segundos
+setInterval(() => {
+    if (currentUser) {
+        loadNotificationCount();
+    }
+}, 15000);
+
+// Cargar contador al inicializar
+const checkUser = setInterval(() => {
+    if (currentUser) {
+        loadNotificationCount();
+        clearInterval(checkUser);
+    }
+}, 100);
+
+// Exponer funciones globales
+window.toggleNotifications = toggleNotifications;
+window.acceptInvitation = acceptInvitation;
+window.rejectInvitation = rejectInvitation;
+window.loadNotificationCount = loadNotificationCount;
+window.debugInfo = function() {
+    console.log('=== DEBUG INFO ===');
+    console.log('Current User:', currentUser);
+    console.log('Supabase Client:', supabaseClient);
+    console.log('URL:', window.location.href);
+};
+
+// Efecto parallax para las partículas flotantes
+window.addEventListener('scroll', function() {
+    const scrolled = window.pageYOffset;
+    const dots = document.querySelectorAll('.floating-dot');
+    
+    dots.forEach((dot, index) => {
+        const speed = 0.5 + (index * 0.1);
+        dot.style.transform = `translateY(${scrolled * speed}px)`;
+    });
+});
+
+// Verificar que Supabase se cargó correctamente al final
+window.addEventListener('load', function() {
+    if (typeof supabase === 'undefined') {
+        console.error('Supabase no se cargó correctamente');
+        alert('Error cargando el sistema. Por favor recarga la página.');
+    } else {
+        console.log('Sistema inicializado correctamente');
+    }
+});
+
+// Manejar errores globales
+window.addEventListener('error', function(event) {
+    console.error('Error global:', event.error);
+    if (event.error && event.error.message && event.error.message.includes('supabase')) {
+        showMessage('create-error', 'Error de conexión. Por favor verifica tu internet y recarga la página.');
+    }
+});
+  </script>
+
+            
+</body>
+</html>
+       
+   

@@ -1,0 +1,106 @@
+{
+  "common": {
+    "welcome": "Bienvenue",
+    "logout": "Se déconnecter",
+    "themeToggle": "Changer le thème",
+    "language": "Langue",
+    "access": "Accéder",
+    "getStarted": "Commencer",
+    "mostPopular": "Plus populaire"
+  },
+  "hero": {
+    "title": "Débloquez l'Intelligence Collective",
+    "description": "OpenMind est une plateforme web complète qui permet aux équipes de développement de collaborer en temps réel, combinant outils de programmation, communication et gestion de projet en un seul espace.",
+    "joinBtn": "Rejoindre gratuitement"
+  },
+  "features": {
+    "title": "Fonctionnalités principales",
+    "subtitle": "Tout ce dont vous avez besoin pour collaborer efficacement",
+    "codeEditor": {
+      "title": "Éditeur de code collaboratif",
+      "description": "Modifiez le code en temps réel avec votre équipe, avec coloration syntaxique et autocomplétion intelligente."
+    },
+    "ai": {
+      "title": "IA intégrée",
+      "description": "Assistant IA qui aide avec le codage, le débogage et l'optimisation des flux de travail."
+    },
+    "communication": {
+      "title": "Chat et visioconférences",
+      "description": "Communication fluide avec chat intégré et appels vidéo de haute qualité."
+    },
+    "projectManagement": {
+      "title": "Gestion de projet",
+      "description": "Tableaux Kanban, suivi des problèmes et gestion des sprints en un seul endroit."
+    },
+    "versionControl": {
+      "title": "Contrôle de version",
+      "description": "Git intégré avec interface visuelle pour la gestion des branches et fusions."
+    },
+    "deployment": {
+      "title": "Déploiement automatique",
+      "description": "CI/CD intégré avec déploiement automatique vers plusieurs plateformes cloud."
+    }
+  },
+  "howItWorks": {
+    "title": "Comment ça marche",
+    "subtitle": "Un flux de travail simple et puissant pour donner vie aux idées",
+    "step1": {
+      "title": "1. Créer ou rejoindre un projet",
+      "description": "Démarrez un nouvel espace collaboratif ou utilisez un code d'invitation pour rejoindre un existant."
+    },
+    "step2": {
+      "title": "2. Soumettez vos idées",
+      "description": "Publiez des propositions, tâches ou points de discussion pour que l'équipe les examine et vote."
+    },
+    "step3": {
+      "title": "3. Collaborez et décidez",
+      "description": "Utilisez l'analyse alimentée par l'IA et les fils de discussion pour atteindre un consensus et progresser."
+    }
+  },
+  "pricing": {
+    "title": "Plans et tarifs",
+    "subtitle": "Choisissez le plan parfait pour votre équipe",
+    "free": {
+      "name": "Mind Free",
+      "period": "par mois",
+      "button": "Commencer gratuitement",
+      "features": {
+        "projects": "Jusqu'à 3 projets",
+        "members": "5 membres par projet",
+        "storage": "1GB de stockage",
+        "chat": "Chat basique",
+        "support": "Support par email"
+      }
+    },
+    "pro": {
+      "name": "Mind Pro",
+      "period": "par mois",
+      "button": "Choisir Pro",
+      "features": {
+        "projects": "Projets illimités",
+        "members": "Jusqu'à 25 membres",
+        "storage": "100GB de stockage",
+        "ai": "Assistant IA avancé",
+        "video": "Visioconférences",
+        "git": "Intégrations Git",
+        "support": "Support prioritaire"
+      }
+    },
+    "ultra": {
+      "name": "Mind Ultra",
+      "period": "par mois",
+      "button": "Choisir Ultra",
+      "features": {
+        "everything": "Tout de Mind Pro",
+        "members": "Membres illimités",
+        "storage": "1TB de stockage",
+        "customAi": "IA personnalisée",
+        "deployment": "Déploiement automatique",
+        "analytics": "Analytics avancés",
+        "support247": "Support 24/7",
+        "onboarding": "Onboarding dédié"
+      }
+    }
+  }
+}
+

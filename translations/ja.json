@@ -1,0 +1,105 @@
+{
+  "common": {
+    "welcome": "ようこそ",
+    "logout": "ログアウト",
+    "themeToggle": "テーマ切替",
+    "language": "言語",
+    "access": "アクセス",
+    "getStarted": "開始",
+    "mostPopular": "最も人気"
+  },
+  "hero": {
+    "title": "集合知を解き放つ",
+    "description": "OpenMindは、プログラミングツール、コミュニケーション、プロジェクト管理を一つの空間に統合し、開発チームがリアルタイムで協力できる包括的なWebプラットフォームです。",
+    "joinBtn": "無料で参加"
+  },
+  "features": {
+    "title": "主要機能",
+    "subtitle": "効率的に協力するために必要なすべて",
+    "codeEditor": {
+      "title": "共同コードエディタ",
+      "description": "チームとリアルタイムでコードを編集、構文ハイライトとインテリジェントな自動補完機能付き。"
+    },
+    "ai": {
+      "title": "統合AI",
+      "description": "コーディング、デバッグ、ワークフロー最適化を支援するAIアシスタント。"
+    },
+    "communication": {
+      "title": "チャット＆ビデオ会議",
+      "description": "統合チャットと高品質ビデオ通話でシームレスなコミュニケーション。"
+    },
+    "projectManagement": {
+      "title": "プロジェクト管理",
+      "description": "カンバンボード、問題追跡、スプリント管理を一箇所で。"
+    },
+    "versionControl": {
+      "title": "バージョン管理",
+      "description": "ブランチとマージ管理のためのビジュアルインターフェース付き統合Git。"
+    },
+    "deployment": {
+      "title": "自動デプロイ",
+      "description": "複数のクラウドプラットフォームへの自動デプロイ機能付き統合CI/CD。"
+    }
+  },
+  "howItWorks": {
+    "title": "仕組み",
+    "subtitle": "アイデアを実現するシンプルで強力なワークフロー",
+    "step1": {
+      "title": "1. プロジェクトを作成または参加",
+      "description": "新しい共同作業スペースを開始するか、招待コードを使用して既存のものに参加します。"
+    },
+    "step2": {
+      "title": "2. アイデアを提出",
+      "description": "チームが検討し投票するための提案、タスク、または議論ポイントを投稿します。"
+    },
+    "step3": {
+      "title": "3. 協力と決定",
+      "description": "AI駆動の分析と議論スレッドを使用してコンセンサスを達成し、進歩を推進します。"
+    }
+  },
+  "pricing": {
+    "title": "プランと価格",
+    "subtitle": "チームに最適なプランを選択",
+    "free": {
+      "name": "Mind Free",
+      "period": "月額",
+      "button": "無料で開始",
+      "features": {
+        "projects": "最大3プロジェクト",
+        "members": "プロジェクトあたり5メンバー",
+        "storage": "1GBストレージ",
+        "chat": "ベーシックチャット",
+        "support": "メールサポート"
+      }
+    },
+    "pro": {
+      "name": "Mind Pro",
+      "period": "月額",
+      "button": "Proを選択",
+      "features": {
+        "projects": "無制限プロジェクト",
+        "members": "最大25メンバー",
+        "storage": "100GBストレージ",
+        "ai": "高度なAIアシスタント",
+        "video": "ビデオ会議",
+        "git": "Git統合",
+        "support": "優先サポート"
+      }
+    },
+    "ultra": {
+      "name": "Mind Ultra",
+      "period": "月額",
+      "button": "Ultraを選択",
+      "features": {
+        "everything": "Mind Proのすべて",
+        "members": "無制限メンバー",
+        "storage": "1TBストレージ",
+        "customAi": "カスタムAI",
+        "deployment": "自動デプロイ",
+        "analytics": "高度な分析",
+        "support247": "24/7サポート",
+        "onboarding": "専用オンボーディング"
+      }
+    }
+  }
+}

@@ -1,0 +1,106 @@
+
+{
+  "common": {
+    "welcome": "Welcome",
+    "logout": "Logout",
+    "themeToggle": "Toggle Theme",
+    "language": "Language",
+    "access": "Access",
+    "getStarted": "Get Started",
+    "mostPopular": "Most Popular"
+  },
+  "hero": {
+    "title": "Unlock Collective Intelligence",
+    "description": "OpenMind is a comprehensive web platform that enables development teams to collaborate in real-time, combining programming tools, communication, and project management in a single space.",
+    "joinBtn": "Join for Free"
+  },
+  "features": {
+    "title": "Key Features",
+    "subtitle": "Everything you need to collaborate efficiently",
+    "codeEditor": {
+      "title": "Collaborative Code Editor",
+      "description": "Edit code in real-time with your team, featuring syntax highlighting and intelligent autocomplete."
+    },
+    "ai": {
+      "title": "Integrated AI",
+      "description": "AI assistant that helps with coding, debugging, and workflow optimization."
+    },
+    "communication": {
+      "title": "Chat & Video Conferences",
+      "description": "Seamless communication with integrated chat and high-quality video calls."
+    },
+    "projectManagement": {
+      "title": "Project Management",
+      "description": "Kanban boards, issue tracking, and sprint management all in one place."
+    },
+    "versionControl": {
+      "title": "Version Control",
+      "description": "Integrated Git with visual interface for branch and merge management."
+    },
+    "deployment": {
+      "title": "Automatic Deployment",
+      "description": "Integrated CI/CD with automatic deployment to multiple cloud platforms."
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "A simple, powerful workflow to bring ideas to life",
+    "step1": {
+      "title": "1. Create or Join a Project",
+      "description": "Start a new collaborative space or use an invite code to join an existing one."
+    },
+    "step2": {
+      "title": "2. Submit Your Ideas",
+      "description": "Post proposals, tasks, or discussion points for the team to review and vote on."
+    },
+    "step3": {
+      "title": "3. Collaborate & Decide",
+      "description": "Use AI-powered analysis and discussion threads to reach consensus and drive progress."
+    }
+  },
+  "pricing": {
+    "title": "Plans & Pricing",
+    "subtitle": "Choose the perfect plan for your team",
+    "free": {
+      "name": "Mind Free",
+      "period": "per month",
+      "button": "Start Free",
+      "features": {
+        "projects": "Up to 3 projects",
+        "members": "5 members per project",
+        "storage": "1GB storage",
+        "chat": "Basic chat",
+        "support": "Email support"
+      }
+    },
+    "pro": {
+      "name": "Mind Pro",
+      "period": "per month",
+      "button": "Choose Pro",
+      "features": {
+        "projects": "Unlimited projects",
+        "members": "Up to 25 members",
+        "storage": "100GB storage",
+        "ai": "Advanced AI Assistant",
+        "video": "Video conferences",
+        "git": "Git integrations",
+        "support": "Priority support"
+      }
+    },
+    "ultra": {
+      "name": "Mind Ultra",
+      "period": "per month",
+      "button": "Choose Ultra",
+      "features": {
+        "everything": "Everything in Mind Pro",
+        "members": "Unlimited members",
+        "storage": "1TB storage",
+        "customAi": "Custom AI",
+        "deployment": "Auto deployment",
+        "analytics": "Advanced analytics",
+        "support247": "24/7 support",
+        "onboarding": "Dedicated onboarding"
+      }
+    }
+  }
+}

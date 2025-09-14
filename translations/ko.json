@@ -1,0 +1,105 @@
+{
+  "common": {
+    "welcome": "환영합니다",
+    "logout": "로그아웃",
+    "themeToggle": "테마 전환",
+    "language": "언어",
+    "access": "접속",
+    "getStarted": "시작하기",
+    "mostPopular": "가장 인기"
+  },
+  "hero": {
+    "title": "집단 지성을 해방하세요",
+    "description": "OpenMind는 프로그래밍 도구, 커뮤니케이션, 프로젝트 관리를 하나의 공간에 결합하여 개발팀이 실시간으로 협업할 수 있게 하는 포괄적인 웹 플랫폼입니다.",
+    "joinBtn": "무료로 참여"
+  },
+  "features": {
+    "title": "주요 기능",
+    "subtitle": "효율적인 협업에 필요한 모든 것",
+    "codeEditor": {
+      "title": "협업 코드 에디터",
+      "description": "구문 강조와 지능형 자동완성 기능으로 팀과 실시간으로 코드를 편집하세요."
+    },
+    "ai": {
+      "title": "통합 AI",
+      "description": "코딩, 디버깅, 워크플로우 최적화를 도와주는 AI 어시스턴트."
+    },
+    "communication": {
+      "title": "채팅 및 화상회의",
+      "description": "통합 채팅과 고품질 화상통화로 원활한 커뮤니케이션."
+    },
+    "projectManagement": {
+      "title": "프로젝트 관리",
+      "description": "칸반 보드, 이슈 추적, 스프린트 관리를 한 곳에서."
+    },
+    "versionControl": {
+      "title": "버전 관리",
+      "description": "브랜치와 머지 관리를 위한 시각적 인터페이스가 있는 통합 Git."
+    },
+    "deployment": {
+      "title": "자동 배포",
+      "description": "여러 클라우드 플랫폼으로의 자동 배포 기능이 있는 통합 CI/CD."
+    }
+  },
+  "howItWorks": {
+    "title": "작동 방식",
+    "subtitle": "아이디어를 실현하는 간단하고 강력한 워크플로우",
+    "step1": {
+      "title": "1. 프로젝트 생성 또는 참여",
+      "description": "새로운 협업 공간을 시작하거나 초대 코드를 사용해 기존 프로젝트에 참여하세요."
+    },
+    "step2": {
+      "title": "2. 아이디어 제출",
+      "description": "팀이 검토하고 투표할 제안, 작업 또는 토론 포인트를 게시하세요."
+    },
+    "step3": {
+      "title": "3. 협업 및 결정",
+      "description": "AI 기반 분석과 토론 스레드를 사용해 합의에 도달하고 진전을 이루세요."
+    }
+  },
+  "pricing": {
+    "title": "요금제 및 가격",
+    "subtitle": "팀에 완벽한 요금제를 선택하세요",
+    "free": {
+      "name": "Mind Free",
+      "period": "월",
+      "button": "무료 시작",
+      "features": {
+        "projects": "최대 3개 프로젝트",
+        "members": "프로젝트당 5명",
+        "storage": "1GB 저장소",
+        "chat": "기본 채팅",
+        "support": "이메일 지원"
+      }
+    },
+    "pro": {
+      "name": "Mind Pro",
+      "period": "월",
+      "button": "Pro 선택",
+      "features": {
+        "projects": "무제한 프로젝트",
+        "members": "최대 25명",
+        "storage": "100GB 저장소",
+        "ai": "고급 AI 어시스턴트",
+        "video": "화상회의",
+        "git": "Git 통합",
+        "support": "우선 지원"
+      }
+    },
+    "ultra": {
+      "name": "Mind Ultra",
+      "period": "월",
+      "button": "Ultra 선택",
+      "features": {
+        "everything": "Mind Pro의 모든 기능",
+        "members": "무제한 멤버",
+        "storage": "1TB 저장소",
+        "customAi": "맞춤형 AI",
+        "deployment": "자동 배포",
+        "analytics": "고급 분석",
+        "support247": "24/7 지원",
+        "onboarding": "전담 온보딩"
+      }
+    }
+  }
+}

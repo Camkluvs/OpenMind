@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Voice Chat Clone</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.38.5/umd/supabase.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Taurus, sans-serif;
+            background: #36393f;
+            color: #dcddde;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar izquierda */
+        .sidebar {
+            width: 240px;
+            background: #2f3136;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #202225;
+        }
+
+        .server-info {
+            background: #36393f;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #40444b;
+        }
+
+        .server-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .voice-channels {
+            flex: 1;
+        }
+
+        .channel-category {
+            color: #b9bbbe;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin: 16px 0 8px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .voice-channel {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #8e9297;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            transition: all 0.15s ease;
+        }
+
+        .voice-channel:hover {
+            background: #40444b;
+            color: #dcddde;
+        }
+
+        .voice-channel.active {
+            background: #5865f2;
+            color: #ffffff;
+        }
+
+        .voice-channel::before {
+            content: "🔊";
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .create-channel-btn {
+            padding: 10px;
+            background: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 12px;
+            transition: background 0.15s ease;
+        }
+
+        .create-channel-btn:hover {
+            background: #4752c4;
+        }
+
+        /* Panel principal */
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #36393f;
+            padding: 12px 16px;
+            border-bottom: 1px solid #40444b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .channel-info h2 {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .channel-info p {
+            color: #b9bbbe;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .voice-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mute-btn {
+            background: #ed4245;
+            color: white;
+        }
+
+        .mute-btn:not(.muted) {
+            background: #3ba55d;
+        }
+
+        .leave-btn {
+            background: #ed4245;
+            color: white;
+        }
+
+        /* Panel de participantes */
+        .participants-panel {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .participant-card {
+            background: #40444b;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .participant-card.speaking {
+            border-color: #3ba55d;
+            box-shadow: 0 0 20px rgba(59, 165, 93, 0.3);
+        }
+
+        .participant-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #5865f2, #57f287);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .participant-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #dcddde;
+            margin-bottom: 4px;
+        }
+
+        .participant-status {
+            font-size: 12px;
+            color: #b9bbbe;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #72767d;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Modal para crear canal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #36393f;
+            border-radius: 8px;
+            padding: 24px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal h3 {
+            color: #ffffff;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #b9bbbe;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #40444b;
+            border: 1px solid #40444b;
+            border-radius: 4px;
+            color: #dcddde;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #5865f2;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #b9bbbe;
+        }
+
+        .btn-cancel:hover {
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            background: #5865f2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4752c4;
+        }
+
+        .btn-primary:disabled {
+            background: #4f545c;
+            cursor: not-allowed;
+        }
+
+        /* Toast de notificaciones */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #36393f;
+            border: 1px solid #40444b;
+            border-radius: 8px;
+            padding: 16px;
+            color: #dcddde;
+            font-size: 14px;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 12px;
+            background: #40444b;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #b9bbbe;
+        }
+
+        .connection-status.connected {
+            background: #3ba55d;
+            color: white;
+        }
+
+        .connection-status.connecting {
+            background: #faa61a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="server-info">
+            <div class="server-name">Mi Servidor</div>
+            <div style="font-size: 12px; color: #b9bbbe;">Llamadas de voz</div>
+        </div>
+        
+        <div class="voice-channels">
+            <div class="channel-category">Canales de voz</div>
+            <div id="channels-list">
+                <!-- Canales se cargarán aquí -->
+            </div>
+            <button class="create-channel-btn" onclick="openCreateChannelModal()">
+                + Crear Canal
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel principal -->
+    <div class="main-panel">
+        <div class="header">
+            <div class="channel-info">
+                <h2 id="current-channel-name">Selecciona un canal</h2>
+                <p id="current-channel-description">Únete a un canal de voz para comenzar</p>
+            </div>
+            <div class="voice-controls" id="voice-controls" style="display: none;">
+                <button class="control-btn mute-btn" id="mute-btn" onclick="toggleMute()" title="Silenciar micrófono">
+                    🎤
+                </button>
+                <button class="control-btn leave-btn" id="leave-btn" onclick="leaveChannel()" title="Salir del canal">
+                    📞
+                </button>
+            </div>
+        </div>
+
+        <div class="participants-panel">
+            <div id="participants-container">
+                <div class="empty-state">
+                    <h3>No hay canal activo</h3>
+                    <p>Selecciona un canal de voz de la barra lateral para comenzar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear canal -->
+    <div class="modal" id="create-channel-modal">
+        <div class="modal-content">
+            <h3>Crear Canal de Voz</h3>
+            <div class="input-group">
+                <label for="channel-name">Nombre del canal</label>
+                <input type="text" id="channel-name" placeholder="canal-general" maxlength="50">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeCreateChannelModal()">Cancelar</button>
+                <button class="btn btn-primary" id="create-btn" onclick="createChannel()">Crear Canal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status de conexión -->
+    <div class="connection-status" id="connection-status">Desconectado</div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Variables globales
+        let currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+        let currentUserName = 'Usuario_' + Math.random().toString(36).substr(2, 4);
+        let currentChannelId = null;
+        let localStream = null;
+        let peerConnections = {};
+        let isConnected = false;
+        let isMuted = false;
+        let roomChannel = null;
+
+        // Configuración WebRTC
+        const rtcConfiguration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
+
+        // Inicialización
+       // Inicialización
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializeApp();
+});
+
+        async function initializeApp() {
+            updateConnectionStatus('connecting', 'Conectando...');
+            
+            try {
+                await loadChannels();
+                updateConnectionStatus('connected', 'Conectado');
+                isConnected = true;
+            } catch (error) {
+                console.error('Error al inicializar:', error);
+                updateConnectionStatus('disconnected', 'Error de conexión');
+                showToast('Error al conectar con el servidor', 'error');
+            }
+        }
+
+        async function loadChannels() {
+            // Simulamos algunos canales por defecto
+            const defaultChannels = [
+                { id: 'general', name: 'General', description: 'Canal principal' },
+                { id: 'gaming', name: 'Gaming', description: 'Para hablar de juegos' },
+                { id: 'music', name: 'Música', description: 'Compartir música' }
+            ];
+
+            renderChannels(defaultChannels);
+        }
+
+        function renderChannels(channels) {
+            const channelsList = document.getElementById('channels-list');
+            channelsList.innerHTML = '';
+
+            channels.forEach(channel => {
+                const channelElement = document.createElement('div');
+                channelElement.className = 'voice-channel';
+                channelElement.textContent = channel.name;
+                channelElement.onclick = () => joinVoiceChannel(channel.id, channel.name);
+                channelsList.appendChild(channelElement);
+            });
+        }
+
+        async function joinVoiceChannel(channelId, channelName) {
+            if (currentChannelId === channelId) return;
+
+            // Salir del canal actual si existe
+            if (currentChannelId) {
+                await leaveChannel();
+            }
+
+            try {
+                // Actualizar UI
+                document.getElementById('current-channel-name').textContent = channelName;
+                document.getElementById('current-channel-description').textContent = 'Conectando...';
+                document.getElementById('voice-controls').style.display = 'flex';
+
+                // Marcar canal como activo
+                document.querySelectorAll('.voice-channel').forEach(ch => ch.classList.remove('active'));
+                event.target.classList.add('active');
+
+                currentChannelId = channelId;
+
+                // Obtener acceso al micrófono
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    } 
+                });
+
+                // Unirse al canal en tiempo real
+                await joinRealtimeChannel(channelId);
+                
+                // Actualizar UI
+                document.getElementById('current-channel-description').textContent = 'Conectado • 1 participante';
+                showParticipants([{
+                    id: currentUserId,
+                    name: currentUserName,
+                    isSpeaking: false,
+                    isCurrentUser: true
+                }]);
+
+                showToast(`Te uniste a ${channelName}`, 'success');
+
+            } catch (error) {
+                console.error('Error al unirse al canal:', error);
+                showToast('Error al acceder al micrófono', 'error');
+                
+                // Limpiar estado en caso de error
+                currentChannelId = null;
+                document.getElementById('voice-controls').style.display = 'none';
+                document.getElementById('current-channel-name').textContent = 'Selecciona un canal';
+                document.getElementById('current-channel-description').textContent = 'Únete a un canal de voz para comenzar';
+            }
+        }
+
+        async function joinRealtimeChannel(channelId) {
+            // Unirse al canal de Supabase Realtime
+            roomChannel = supabase.channel(`voice_room_${channelId}`, {
+                config: {
+                    presence: {
+                        key: currentUserId,
+                    },
+                },
+            });
+
+            // Escuchar cuando otros usuarios se unen/salen
+            roomChannel
+                .on('presence', { event: 'sync' }, () => {
+                    const newState = roomChannel.presenceState();
+                    handlePresenceSync(newState);
+                })
+                .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                    handleUserJoined(key, newPresences[0]);
+                })
+                .on('presence', { event: 'leave' }, ({ key }) => {
+                    handleUserLeft(key);
+                })
+                .on('broadcast', { event: 'webrtc_offer' }, async (payload) => {
+                    await handleWebRTCOffer(payload);
+                })
+                .on('broadcast', { event: 'webrtc_answer' }, async (payload) => {
+                    await handleWebRTCAnswer(payload);
+                })
+                .on('broadcast', { event: 'webrtc_ice' }, async (payload) => {
+                    await handleWebRTCIce(payload);
+                });
+
+            // Subscribirse y anunciar presencia
+            await roomChannel.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await roomChannel.track({
+                        userId: currentUserId,
+                        userName: currentUserName,
+                        joinedAt: new Date().toISOString(),
+                    });
+                }
+            });
+        }
+
+        function handlePresenceSync(presenceState) {
+            const participants = [];
+            
+            for (const userId in presenceState) {
+                const presence = presenceState[userId][0];
+                participants.push({
+                    id: userId,
+                    name: presence.userName,
+                    joinedAt: presence.joinedAt,
+                    isSpeaking: false,
+                    isCurrentUser: userId === currentUserId
+                });
+            }
+
+            showParticipants(participants);
+            document.getElementById('current-channel-description').textContent = 
+                `Conectado • ${participants.length} participante${participants.length !== 1 ? 's' : ''}`;
+        }
+
+        async function handleUserJoined(userId, presence) {
+            if (userId === currentUserId) return;
+
+            console.log(`Usuario ${presence.userName} se unió`);
+            showToast(`${presence.userName} se unió al canal`, 'info');
+
+            // Iniciar conexión WebRTC como "caller"
+            await createWebRTCConnection(userId, true);
+        }
+
+        async function handleUserLeft(userId) {
+            if (userId === currentUserId) return;
+
+            console.log(`Usuario ${userId} se fue`);
+            
+            // Cerrar conexión WebRTC
+            if (peerConnections[userId]) {
+                peerConnections[userId].close();
+                delete peerConnections[userId];
+            }
+
+            // Remover el audio del usuario
+            const audioElement = document.getElementById(`audio_${userId}`);
+            if (audioElement) {
+                audioElement.remove();
+            }
+        }
+
+        async function createWebRTCConnection(remoteUserId, isInitiator = false) {
+            const peerConnection = new RTCPeerConnection(rtcConfiguration);
+            peerConnections[remoteUserId] = peerConnection;
+
+            // Agregar nuestro stream de audio
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+            }
+
+            // Manejar stream remoto
+            peerConnection.ontrack = (event) => {
+                const remoteStream = event.streams[0];
+                playRemoteAudio(remoteUserId, remoteStream);
+            };
+
+            // Manejar ICE candidates
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    roomChannel.send({
+                        type: 'broadcast',
+                        event: 'webrtc_ice',
+                        payload: {
+                            to: remoteUserId,
+                            from: currentUserId,
+                            candidate: event.candidate
+                        }
+                    });
+                }
+            };
+
+            // Si somos el iniciador, crear oferta
+            if (isInitiator) {
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+
+                roomChannel.send({
+                    type: 'broadcast',
+                    event: 'webrtc_offer',
+                    payload: {
+                        to: remoteUserId,
+                        from: currentUserId,
+                        offer: offer
+                    }
+                });
+            }
+
+            return peerConnection;
+        }
+
+        async function handleWebRTCOffer(payload) {
+            if (payload.payload.to !== currentUserId) return;
+
+            const remoteUserId = payload.payload.from;
+            const offer = payload.payload.offer;
+
+            // Crear conexión como "receiver"
+            const peerConnection = await createWebRTCConnection(remoteUserId, false);
+            
+            await peerConnection.setRemoteDescription(offer);
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+
+            roomChannel.send({
+                type: 'broadcast',
+                event: 'webrtc_answer',
+                payload: {
+                    to: remoteUserId,
+                    from: currentUserId,
+                    answer: answer
+                }
+            });
+        }
+
+        async function handleWebRTCAnswer(payload) {
+            if (payload.payload.to !== currentUserId) return;
+
+            const remoteUserId = payload.payload.from;
+            const answer = payload.payload.answer;
+
+            const peerConnection = peerConnections[remoteUserId];
+            if (peerConnection) {
+                await peerConnection.setRemoteDescription(answer);
+            }
+        }
+
+        async function handleWebRTCIce(payload) {
+            if (payload.payload.to !== currentUserId) return;
+
+            const remoteUserId = payload.payload.from;
+            const candidate = payload.payload.candidate;
+
+            const peerConnection = peerConnections[remoteUserId];
+            if (peerConnection) {
+                await peerConnection.addIceCandidate(candidate);
+            }
+        }
+
+        function playRemoteAudio(userId, stream) {
+            // Remover audio anterior si existe
+            const existingAudio = document.getElementById(`audio_${userId}`);
+            if (existingAudio) {
+                existingAudio.remove();
+            }
+
+            // Crear nuevo elemento de audio
+            const audio = document.createElement('audio');
+            audio.id = `audio_${userId}`;
+            audio.autoplay = true;
+            audio.srcObject = stream;
+            audio.style.display = 'none';
+            document.body.appendChild(audio);
+
+            // Detección de actividad de voz
+            detectVoiceActivity(stream, userId);
+        }
+
+        function detectVoiceActivity(stream, userId) {
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+            
+            analyser.fftSize = 256;
+            source.connect(analyser);
+            
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            
+            function checkAudioLevel() {
+                analyser.getByteFrequencyData(dataArray);
+                const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                
+                // Actualizar UI si el usuario está hablando
+                const participantCard = document.querySelector(`[data-user-id="${userId}"]`);
+                if (participantCard) {
+                    if (average > 20) { // Umbral de detección de voz
+                        participantCard.classList.add('speaking');
+                    } else {
+                        participantCard.classList.remove('speaking');
+                    }
+                }
+                
+                requestAnimationFrame(checkAudioLevel);
+            }
+            
+            checkAudioLevel();
+        }
+
+        function showParticipants(participants) {
+            const container = document.getElementById('participants-container');
+            
+            if (participants.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No hay participantes</h3>
+                        <p>Esperando que alguien se una...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const grid = document.createElement('div');
+            grid.className = 'participants-grid';
+
+            participants.forEach(participant => {
+                const card = document.createElement('div');
+                card.className = 'participant-card';
+                card.setAttribute('data-user-id', participant.id);
+
+                const avatar = document.createElement('div');
+                avatar.className = 'participant-avatar';
+                avatar.textContent = participant.name.charAt(0).toUpperCase();
+
+                const name = document.createElement('div');
+                name.className = 'participant-name';
+                name.textContent = participant.name;
+
+                const status = document.createElement('div');
+                status.className = 'participant-status';
+                status.textContent = participant.isCurrentUser ? 'Tú' : 'Conectado';
+
+                card.appendChild(avatar);
+                card.appendChild(name);
+                card.appendChild(status);
+                grid.appendChild(card);
+            });
+
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        async function leaveChannel() {
+            if (!currentChannelId) return;
+
+            try {
+                // Cerrar todas las conexiones WebRTC
+                Object.values(peerConnections).forEach(pc => pc.close());
+                peerConnections = {};
+
+                // Detener el stream local
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                    localStream = null;
+                }
+
+                // Salir del canal de Realtime
+                if (roomChannel) {
+                    await roomChannel.untrack();
+                    await roomChannel.unsubscribe();
+                    roomChannel = null;
+                }
+
+                // Limpiar UI
+                currentChannelId = null;
+                document.getElementById('voice-controls').style.display = 'none';
+                document.getElementById('current-channel-name').textContent = 'Selecciona un canal';
+                document.getElementById('current-channel-description').textContent = 'Únete a un canal de voz para comenzar';
+                document.querySelectorAll('.voice-channel').forEach(ch => ch.classList.remove('active'));
+
+                // Remover todos los elementos de audio
+                document.querySelectorAll('audio[id^="audio_"]').forEach(audio => audio.remove());
+
+                showParticipants([]);
+                showToast('Has salido del canal', 'info');
+
+            } catch (error) {
+                console.error('Error al salir del canal:', error);
+                showToast('Error al salir del canal', 'error');
+            }
+        }
+
+        function toggleMute() {
+            if (!localStream) return;
+
+            const audioTrack = localStream.getAudioTracks()[0];
+            if (audioTrack) {
+                isMuted = !isMuted;
+                audioTrack.enabled = !isMuted;
+
+                const muteBtn = document.getElementById('mute-btn');
+                if (isMuted) {
+                    muteBtn.classList.add('muted');
+                    muteBtn.textContent = '🔇';
+                    muteBtn.title = 'Activar micrófono';
+                } else {
+                    muteBtn.classList.remove('muted');
+                    muteBtn.textContent = '🎤';
+                    muteBtn.title = 'Silenciar micrófono';
+                }
+
+                showToast(isMuted ? 'Micrófono silenciado' : 'Micrófono activado', 'info');
+            }
+        }
+
+        // Funciones para el modal de crear canal
+        function openCreateChannelModal() {
+            document.getElementById('create-channel-modal').style.display = 'flex';
+            document.getElementById('channel-name').focus();
+        }
+
+        function closeCreateChannelModal() {
+            document.getElementById('create-channel-modal').style.display = 'none';
+            document.getElementById('channel-name').value = '';
+        }
+
+        function createChannel() {
+            const channelName = document.getElementById('channel-name').value.trim();
+            
+            if (!channelName) {
+                showToast('Ingresa un nombre para el canal', 'error');
+                return;
+            }
+
+            // Crear nuevo canal (simulado - en producción guardarías en Supabase)
+            const newChannel = {
+                id: channelName.toLowerCase().replace(/\s+/g, '-'),
+                name: channelName,
+                description: `Canal creado por ${currentUserName}`
+            };
+
+            // Agregar a la lista
+            const channelElement = document.createElement('div');
+            channelElement.className = 'voice-channel';
+            channelElement.textContent = newChannel.name;
+            channelElement.onclick = () => joinVoiceChannel(newChannel.id, newChannel.name);
+            
+            document.getElementById('channels-list').appendChild(channelElement);
+            
+            closeCreateChannelModal();
+            showToast(`Canal "${channelName}" creado exitosamente`, 'success');
+        }
+
+        // Funciones de utilidad
+        function updateConnectionStatus(status, message) {
+            const statusElement = document.getElementById('connection-status');
+            statusElement.textContent = message;
+            statusElement.className = `connection-status ${status}`;
+        }
+
+        function showToast(message, type = 'info') {
+            // Remover toast anterior si existe
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+
+            // Colores según tipo
+            if (type === 'error') {
+                toast.style.borderLeft = '4px solid #ed4245';
+            } else if (type === 'success') {
+                toast.style.borderLeft = '4px solid #3ba55d';
+            } else if (type === 'info') {
+                toast.style.borderLeft = '4px solid #5865f2';
+            }
+
+            document.body.appendChild(toast);
+
+            // Mostrar toast
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Ocultar después de 3 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            // Escape para cerrar modales
+            if (e.key === 'Escape') {
+                closeCreateChannelModal();
+            }
+
+            // Enter en el modal de crear canal
+            if (e.key === 'Enter' && document.getElementById('create-channel-modal').style.display === 'flex') {
+                createChannel();
+            }
+
+            // Ctrl + M para mutear/desmutear
+            if (e.ctrlKey && e.key === 'm' && currentChannelId) {
+                e.preventDefault();
+                toggleMute();
+            }
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('create-channel-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeCreateChannelModal();
+            }
+        });
+
+        // Limpieza al cerrar la página
+        window.addEventListener('beforeunload', async () => {
+            await leaveChannel();
+        });
+
+        // Manejo de errores globales
+        window.addEventListener('error', (e) => {
+            console.error('Error global:', e.error);
+            showToast('Ha ocurrido un error inesperado', 'error');
+        });
+
+        // Detectar pérdida de conexión
+        window.addEventListener('offline', () => {
+            updateConnectionStatus('disconnected', 'Sin conexión a internet');
+            showToast('Se perdió la conexión a internet', 'error');
+        });
+
+        window.addEventListener('online', () => {
+            updateConnectionStatus('connected', 'Conectado');
+            showToast('Conexión restaurada', 'success');
+        });
+    </script>
+</body>
+</html>

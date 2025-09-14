@@ -1,0 +1,107 @@
+
+{
+  "common": {
+    "welcome": "Welkom",
+    "logout": "Uitloggen",
+    "themeToggle": "Thema wisselen",
+    "language": "Taal",
+    "access": "Toegang",
+    "getStarted": "Begin",
+    "mostPopular": "Populairst"
+  },
+  "hero": {
+    "title": "Ontgrendel Collectieve Intelligentie",
+    "description": "OpenMind is een uitgebreid webplatform dat ontwikkelteams in staat stelt om in realtime samen te werken, waarbij programmeertools, communicatie en projectbeheer in één ruimte worden gecombineerd.",
+    "joinBtn": "Gratis meedoen"
+  },
+  "features": {
+    "title": "Hoofdkenmerken",
+    "subtitle": "Alles wat je nodig hebt om efficiënt samen te werken",
+    "codeEditor": {
+      "title": "Collaboratieve Code Editor",
+      "description": "Bewerk code in realtime met je team, met syntaxismarkering en intelligente automatische aanvulling."
+    },
+    "ai": {
+      "title": "Geïntegreerde AI",
+      "description": "AI-assistent die helpt met coderen, debuggen en workflowoptimalisatie."
+    },
+    "communication": {
+      "title": "Chat & Videoconferenties",
+      "description": "Naadloze communicatie met geïntegreerde chat en hoogwaardige videogesprekken."
+    },
+    "projectManagement": {
+      "title": "Projectbeheer",
+      "description": "Kanban-borden, issue tracking en sprint management op één plek."
+    },
+    "versionControl": {
+      "title": "Versiebeheer",
+      "description": "Geïntegreerde Git met visuele interface voor branch- en merge-beheer."
+    },
+    "deployment": {
+      "title": "Automatische Implementatie",
+      "description": "Geïntegreerde CI/CD met automatische implementatie naar meerdere cloudplatforms."
+    }
+  },
+  "howItWorks": {
+    "title": "Hoe Het Werkt",
+    "subtitle": "Een eenvoudige, krachtige workflow om ideeën tot leven te brengen",
+    "step1": {
+      "title": "1. Maak of Sluit aan bij een Project",
+      "description": "Start een nieuwe samenwerkingsruimte of gebruik een uitnodigingscode om deel te nemen aan een bestaande."
+    },
+    "step2": {
+      "title": "2. Dien Je Ideeën In",
+      "description": "Plaats voorstellen, taken of discussiepunten voor het team om te beoordelen en te stemmen."
+    },
+    "step3": {
+      "title": "3. Werk Samen & Beslis",
+      "description": "Gebruik AI-aangedreven analyse en discussiedraden om consensus te bereiken en vooruitgang te boeken."
+    }
+  },
+  "pricing": {
+    "title": "Plannen & Prijzen",
+    "subtitle": "Kies het perfecte plan voor je team",
+    "free": {
+      "name": "Mind Free",
+      "period": "per maand",
+      "button": "Gratis Starten",
+      "features": {
+        "projects": "Tot 3 projecten",
+        "members": "5 leden per project",
+        "storage": "1GB opslag",
+        "chat": "Basis chat",
+        "support": "E-mail ondersteuning"
+      }
+    },
+    "pro": {
+      "name": "Mind Pro",
+      "period": "per maand",
+      "button": "Kies Pro",
+      "features": {
+        "projects": "Onbeperkte projecten",
+        "members": "Tot 25 leden",
+        "storage": "100GB opslag",
+        "ai": "Geavanceerde AI Assistent",
+        "video": "Videoconferenties",
+        "git": "Git integraties",
+        "support": "Prioriteitsondersteuning"
+      }
+    },
+    "ultra": {
+      "name": "Mind Ultra",
+      "period": "per maand",
+      "button": "Kies Ultra",
+      "features": {
+        "everything": "Alles van Mind Pro",
+        "members": "Onbeperkte leden",
+        "storage": "1TB opslag",
+        "customAi": "Aangepaste AI",
+        "deployment": "Auto implementatie",
+        "analytics": "Geavanceerde analytics",
+        "support247": "24/7 ondersteuning",
+        "onboarding": "Toegewijde onboarding"
+      }
+    }
+  }
+}
+    

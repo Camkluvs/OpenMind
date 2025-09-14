@@ -1,0 +1,2531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Chat - Agora</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdn.agora.io/sdk/release/AgoraRTC_N-4.20.2.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="css/noti.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* SIDEBAR CON EL DISEÑO QUE USAS */
+        .sidebar {
+            width: 260px;
+            background-color: rgba(15, 20, 25, 0.95);;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .sidebar-header {
+            padding: 17px 20px;
+            border-bottom: 1px solid #334155;
+            background: rgba(15, 20, 25, 0.95);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #4a9eff;
+            text-decoration: none;
+            font-size: 19px;
+        }
+
+        .logo i {
+            width: 29px;
+            height: 29px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 17px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 32px;
+        }
+
+        .nav-section-title {
+            padding: 0 20px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border-radius: 10px;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .channels-section {
+            margin-top: 8px;
+        }
+
+        .channels-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 12px;
+        }
+
+        .channels-header h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .create-channel-btn-sidebar {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .create-channel-btn-sidebar:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .channels-list-sidebar {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .channel-item-sidebar {
+            display: flex;
+            align-items: center;
+            padding: 8px 20px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .channel-item-sidebar:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .channel-item-sidebar.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border-right: 3px solid #3b82f6;
+        }
+
+        .channel-item-sidebar i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .channel-item-sidebar.active i {
+            color: #3b82f6;
+        }
+
+        .channel-name-sidebar {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+        }
+
+        .participants-count-sidebar {
+            font-size: 11px;
+            color: #64748b;
+            background: rgba(100, 116, 139, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .no-channels-sidebar {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #334155;
+            background: rgba(15, 20, 25, 0.95);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-details {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* MAIN PANEL */
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f172a;
+        }
+
+        .call-header {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .call-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .call-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .call-stats {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* PARTICIPANTES ESTILO ZOOM */
+        .participants-view {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #0f172a;
+        }
+
+        .participants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            max-width: 1400px;
+            width: 100%;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .participant-video {
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .participant-video.speaking {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            transform: scale(1.02);
+        }
+
+        .participant-video.current-user {
+            border-color: #3b82f6;
+        }
+
+        .participant-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .participant-info {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .participant-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .participant-status {
+            display: flex;
+            gap: 4px;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .mic-on { 
+            background: #10b981; 
+            color: white;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+        .mic-off { 
+            background: #ef4444; 
+            color: white;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* CONTROLES DE LLAMADA ESTILO ZOOM */
+        .call-controls {
+            background: #1e293b;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #334155;
+        }
+
+        .control-button {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .mute-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .mute-btn.muted {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .leave-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            width: 70px;
+            height: 70px;
+            font-size: 24px;
+            border-radius: 50%;
+        }
+
+        .settings-btn {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .participants-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            position: relative;
+        }
+
+        .participants-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            max-width: 400px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            padding: 8px 16px;
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 20px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.connected {
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .connection-status.connecting {
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .connection-status.disconnected {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: rgba(30, 41, 59, 0.95);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.4s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid #334155;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid #334155;
+        }
+
+        .modal-header {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 18px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(100, 116, 139, 0.2);
+            color: #ffffff;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #64748b;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-secondary {
+            background: rgba(100, 116, 139, 0.2);
+            color: #cbd5e1;
+            border: 1px solid #334155;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(100, 116, 139, 0.3);
+            color: #ffffff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .participants-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .call-controls {
+                padding: 16px;
+            }
+
+            .control-button {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+
+            .leave-btn {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Sidebar controls */
+/* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #cbd5e1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+/* Language Selector */
+.language-selector {
+    position: relative;
+    z-index: 200;
+}
+
+.language-dropdown {
+    position: fixed;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+}
+
+.language-dropdown.show {
+    display: block;
+}
+
+.language-option {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-option:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.language-option.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+/* Light theme */
+[data-theme="light"] body {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+[data-theme="light"] .sidebar {
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .sidebar-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .logo {
+    color: #1e293b;
+}
+
+[data-theme="light"] .logo i {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+[data-theme="light"] .nav-section-title {
+    color: #64748b;
+}
+
+[data-theme="light"] .nav-item {
+    color: #64748b;
+}
+
+[data-theme="light"] .nav-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .nav-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    border-right: 3px solid #3b82f6;
+}
+
+[data-theme="light"] .create-channel-btn-sidebar {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .channel-item-sidebar {
+    color: #64748b;
+}
+
+[data-theme="light"] .channel-item-sidebar:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .channel-item-sidebar.active {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    border-right: 3px solid #3b82f6;
+}
+
+[data-theme="light"] .sidebar-footer {
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .user-info {
+    color: #64748b;
+}
+
+[data-theme="light"] .user-name {
+    color: #1e293b;
+}
+
+[data-theme="light"] .main-panel {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .call-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .call-title {
+    color: #1e293b;
+}
+
+[data-theme="light"] .call-stats {
+    color: #64748b;
+}
+
+[data-theme="light"] .participants-view {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .participant-video {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .participant-video.speaking {
+    border-color: #10b981;
+}
+
+[data-theme="light"] .participant-video.current-user {
+    border-color: #3b82f6;
+}
+
+[data-theme="light"] .participant-info {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .participant-name {
+    color: #1e293b;
+}
+
+[data-theme="light"] .call-controls {
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .empty-state h3 {
+    color: #1e293b;
+}
+
+[data-theme="light"] .empty-state {
+    color: #64748b;
+}
+
+[data-theme="light"] .control-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .control-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+[data-theme="light"] .language-dropdown {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .language-option {
+    color: #64748b;
+}
+
+[data-theme="light"] .language-option:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .language-option.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+[data-theme="light"] .connection-status {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .connection-status.connected {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="light"] .connection-status.connecting {
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="light"] .connection-status.disconnected {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="light"] .toast {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .modal {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .modal-header {
+    background: rgba(59, 130, 246, 0.05);
+    border-bottom: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .modal-header h3 {
+    color: #1e293b;
+}
+
+[data-theme="light"] .modal-close {
+    color: #64748b;
+}
+
+[data-theme="light"] .modal-close:hover {
+    background: rgba(100, 116, 139, 0.1);
+    color: #1e293b;
+}
+
+[data-theme="light"] .form-group label {
+    color: #374151;
+}
+
+[data-theme="light"] .form-group input {
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #1e293b;
+}
+
+[data-theme="light"] .form-group input:focus {
+    border-color: #3b82f6;
+}
+
+[data-theme="light"] .form-group input::placeholder {
+    color: #9ca3af;
+}
+
+[data-theme="light"] .btn-secondary {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+    border: 1px solid #d1d5db;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: rgba(100, 116, 139, 0.2);
+    color: #1e293b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-controls {
+        gap: 8px;
+    }
+    
+    .control-btn span {
+        display: none;
+    }
+    
+    .control-btn {
+        padding: 6px 8px;
+    }
+}
+/* User info in header */
+.user-info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 8px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.welcome-text {
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.user-name {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.logout-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #cbd5e1;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Light theme para user info */
+[data-theme="light"] .user-info-header {
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .welcome-text {
+    color: #64748b;
+}
+
+[data-theme="light"] .user-name {
+    color: #3b82f6;
+}
+
+[data-theme="light"] .logout-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #64748b;
+}
+
+[data-theme="light"] .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .user-info-header {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 8px;
+    }
+    
+    [data-theme="light"] .user-info-header {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="sidebar fade-in">
+        <div class="sidebar-header">
+    <a href="#" class="logo">
+        <i class="fas fa-brain"></i>
+        <span>OpenMind AI</span>
+    </a>
+</div>
+       
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="discussions.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Foros</span>
+                </a>
+                <a href="code-editor.html" class="nav-item">
+                    <i class="fas fa-code"></i>
+                    <span>Editor de Código</span>
+                </a>
+                <a href="members.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Miembros</span>
+                </a>
+                <a href="voice-calls.html" class="nav-item active">
+                    <i class="fas fa-phone"></i>
+                    <span>Llamadas</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </div>
+            
+            <div class="nav-section channels-section">
+                <div class="channels-header">
+                    <h4>Canales de Voz</h4>
+                    <button class="create-channel-btn-sidebar" onclick="showCreateChannelModal()" title="Crear Canal">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div id="channels-list-sidebar" class="channels-list-sidebar">
+                    <!-- Los canales se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="user-name">Usuario</div>
+                    <div class="user-status">En línea</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-panel fade-in">
+   <div class="call-header">
+    <div class="call-info">
+        <div class="call-title" id="current-channel-name">Selecciona un Canal de Voz</div>
+    </div>
+    
+    <div class="header-controls">
+        <button class="control-btn" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+            <span data-i18n="common.themeToggle">Cambiar Tema</span>
+        </button>
+        
+        <div class="language-selector">
+            <button class="control-btn" onclick="toggleLanguageDropdown()">
+                <i class="fas fa-globe"></i>
+                <span data-i18n="common.language">Idioma</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                <!-- Se genera dinámicamente -->
+            </div>
+        </div>
+        <div class="notifications-container">
+    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+    </button>
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notifications-header">
+            <h4>Notificaciones</h4>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <div class="notification-item loading">
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+        
+        <div class="user-info-header">
+            <div class="welcome-text">
+                <span class="user-name" id="user-name-header">Usuario</span>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> 
+                <span data-i18n="common.logout">Salir</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="call-stats" id="call-stats" style="display: none;">
+        <div class="stat-item">
+            <i class="fas fa-users"></i>
+            <span id="participants-count">0</span>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-clock"></i>
+            <span id="call-duration">00:00</span>
+        </div>
+    </div>
+</div>
+
+        <div class="participants-view">
+            <div id="participants-container">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <h3>Cargando canales...</h3>
+                    <p>Preparando los canales de voz del proyecto</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="call-controls" id="call-controls" style="display: none;">
+            <button class="control-button mute-btn" id="mute-btn" onclick="toggleMute()" title="Silenciar/Activar micrófono">
+                <i class="fas fa-microphone"></i>
+                <div class="loading-spinner"></div>
+            </button>
+            
+            <button class="control-button settings-btn" onclick="openSettings()" title="Configuración">
+                <i class="fas fa-cog"></i>
+            </button>
+            
+            <button class="control-button participants-btn" onclick="toggleParticipants()" title="Participantes">
+                <i class="fas fa-users"></i>
+                <span class="participants-count" id="participants-badge">0</span>
+            </button>
+            
+            <button class="control-button leave-btn" id="leave-btn" onclick="leaveChannel()" title="Salir de la llamada">
+                <i class="fas fa-phone"></i>
+                <div class="loading-spinner"></div>
+            </button>
+        </div>
+    </div>
+
+    <div class="connection-status" id="connection-status">
+        <i class="fas fa-circle"></i>
+        <span>Conectando...</span>
+    </div>
+
+    <script src="js/project-session.js"></script>
+    <script src="js/noti.js"></script>
+    <script>
+        // Configuración
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+        const AGORA_APP_ID = 'c74bac3459c14a88ab92f0c4c78401cc'; 
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Variables globales
+        let currentUser = null;
+        let currentUserId = null;
+        let currentUserName = null;
+        let currentProjectId = null;
+        let currentChannelId = null;
+        let currentChannelName = null;
+        let agoraClient = null;
+        let localAudioTrack = null;
+        let remoteUsers = {};
+        let isMuted = false;
+        let callStartTime = null;
+        let callDurationInterval = null;
+        let roomChannel = null;
+        let isInChannel = false;
+        // Variables para tema e idioma
+let currentTheme = localStorage.getItem('theme') || 'dark';
+let currentLanguage = localStorage.getItem('language') || 'es';
+
+// Idiomas soportados
+const supportedLanguages = {
+    'en': { name: 'English', flag: '🇺🇸' },
+    'es': { name: 'Español', flag: '🇪🇸' },
+    'fr': { name: 'Français', flag: '🇫🇷' },
+    'de': { name: 'Deutsch', flag: '🇩🇪' },
+    'it': { name: 'Italiano', flag: '🇮🇹' },
+    'pt': { name: 'Português', flag: '🇵🇹' },
+    'ru': { name: 'Русский', flag: '🇷🇺' },
+    'ja': { name: '日本語', flag: '🇯🇵' },
+    'ko': { name: '한국어', flag: '🇰🇷' },
+    'zh': { name: '中文', flag: '🇨🇳' },
+    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'hi': { name: 'हिंदी', flag: '🇮🇳' },
+    'nl': { name: 'Nederlands', flag: '🇳🇱' }
+};
+
+// Traducciones
+const translations = {
+    es: {
+        'common.themeToggle': 'Cambiar Tema',
+        'common.language': 'Idioma'
+    },
+    en: {
+        'common.themeToggle': 'Toggle Theme',
+        'common.language': 'Language'
+    }
+};
+
+// Función para obtener traducción
+function t(key) {
+    return translations[currentLanguage] && translations[currentLanguage][key] 
+        ? translations[currentLanguage][key] 
+        : translations['es'][key] || key;
+}
+
+        // Inicializar Agora
+        AgoraRTC.setLogLevel(1);
+
+        async function initializeApp() {
+            updateConnectionStatus('connecting', 'Conectando...');
+            
+            try {
+                // Verificar que tenemos las credenciales necesarias
+                if (!AGORA_APP_ID) {
+                    throw new Error('Falta configuración de Agora App ID');
+                }
+                
+                // Crear cliente de Agora
+                agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+                
+                // Configurar event listeners de Agora
+                agoraClient.on('user-published', handleUserPublished);
+                agoraClient.on('user-unpublished', handleUserUnpublished);
+                agoraClient.on('user-joined', handleUserJoined);
+                agoraClient.on('user-left', handleUserLeft);
+                agoraClient.on('connection-state-change', handleConnectionStateChange);
+                agoraClient.on('network-quality', handleNetworkQuality);
+                
+                // Token listeners
+                agoraClient.on('token-privilege-will-expire', async () => {
+                    console.log('Token por expirar, renovando...');
+                    try {
+                        const { token } = await getAgoraToken();
+                        await agoraClient.renewToken(token);
+                        showToast('Sesión renovada', 'info');
+                    } catch (error) {
+                        console.error('Error renovando token:', error);
+                        showToast('Error al renovar sesión', 'error');
+                    }
+                });
+                
+                agoraClient.on('token-privilege-did-expire', async () => {
+                    console.error('Token expirado');
+                    showToast('Sesión expirada, reconectando...', 'warning');
+                    await leaveChannel();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                });
+                
+                await loadProjectInfo();
+                await loadAndShowChannels(); // CORREGIDO: Nueva función que carga y muestra
+                
+                updateConnectionStatus('connected', 'Conectado');
+                
+            } catch (error) {
+                console.error('Error al inicializar:', error);
+                updateConnectionStatus('disconnected', 'Error de conexión');
+                
+                let errorMessage = 'Error al conectar con el servidor';
+                if (error.message?.includes('token')) {
+                    errorMessage = 'Error de autenticación. Verifica la configuración del servidor.';
+                } else if (error.message?.includes('network')) {
+                    errorMessage = 'Error de red. Verifica tu conexión a internet.';
+                } else if (error.message?.includes('Agora')) {
+                    errorMessage = 'Error de configuración. Contacta al administrador.';
+                }
+                
+                showToast(errorMessage, 'error');
+            }
+        }
+
+        async function loadProjectInfo() {
+            try {
+                const { data: project, error } = await supabase
+                    .from('projects')
+                    .select('name')
+                    .eq('id', currentProjectId)
+                    .single();
+
+                if (error) throw error;
+                
+                // Actualizar info del proyecto en sidebar si es necesario
+            } catch (error) {
+                console.error('Error cargando info del proyecto:', error);
+            }
+        }
+
+        // FUNCIÓN CORREGIDA PARA CARGAR Y MOSTRAR CANALES
+        async function loadAndShowChannels() {
+            try {
+                const channels = await loadVoiceChannels();
+                showChannelsInSidebar(channels);
+                
+                // Actualizar estado vacío si no hay canales
+                if (channels.length === 0) {
+                    showEmptyChannelState();
+                } else {
+                    showChannelSelectionState();
+                }
+            } catch (error) {
+                console.error('Error cargando canales:', error);
+                showToast('Error al cargar los canales', 'error');
+            }
+        }
+
+        async function createVoiceChannel(channelName, description = '') {
+            try {
+                const { data, error } = await supabase
+                    .from('voice_channels')
+                    .insert([
+                        {
+                            project_id: currentProjectId,
+                            name: channelName, // CORREGIDO: usar 'name' consistentemente
+                            description: description,
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }
+                    ])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+                
+                showToast(`Canal "${channelName}" creado exitosamente`, 'success');
+                
+                // CORREGIDO: Recargar la lista de canales después de crear uno
+                await loadAndShowChannels();
+                
+                return data;
+            } catch (error) {
+                console.error('Error creando canal:', error);
+                showToast('Error al crear el canal de voz', 'error');
+                throw error;
+            }
+        }
+
+        async function loadVoiceChannels() {
+            try {
+                const { data: channels, error } = await supabase
+                    .from('voice_channels')
+                    .select('*')
+                    .eq('project_id', currentProjectId)
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+                
+                return channels || [];
+            } catch (error) {
+                console.error('Error cargando canales:', error);
+                return [];
+            }
+        }
+
+        // FUNCIÓN CORREGIDA PARA MOSTRAR CANALES EN SIDEBAR
+        function showChannelsInSidebar(channels) {
+            const sidebarList = document.getElementById('channels-list-sidebar');
+            
+            if (!channels || channels.length === 0) {
+                sidebarList.innerHTML = '<div class="no-channels-sidebar">No hay canales disponibles</div>';
+                return;
+            }
+            
+            sidebarList.innerHTML = channels.map(channel => `
+                <div class="channel-item-sidebar" onclick="joinSpecificChannel('${channel.id}', '${channel.name}')" data-channel-id="${channel.id}">
+                    <i class="fas fa-volume-up"></i>
+                    <span class="channel-name-sidebar" title="${channel.name}">${channel.name}</span>
+                    <span class="participants-count-sidebar">0</span>
+                </div>
+            `).join('');
+        }
+
+        function showEmptyChannelState() {
+            const container = document.getElementById('participants-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3>No hay canales de voz</h3>
+                    <p>Crea el primer canal de voz para comenzar a colaborar con tu equipo</p>
+                </div>
+            `;
+        }
+
+        function showChannelSelectionState() {
+            const container = document.getElementById('participants-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <h3>Selecciona un canal de voz</h3>
+                    <p>Elige un canal del sidebar para unirte y comenzar a colaborar</p>
+                </div>
+            `;
+        }
+
+        function showCreateChannelModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3>Crear Canal de Voz</h3>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="channel-name-input">Nombre del canal *</label>
+                            <input type="text" id="channel-name-input" placeholder="Ej: Reunión diaria" maxlength="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="channel-description-input">Descripción (opcional)</label>
+                            <input type="text" id="channel-description-input" placeholder="Ej: Canal para reuniones diarias del equipo" maxlength="200">
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">
+                                Cancelar
+                            </button>
+                            <button class="btn-primary" onclick="handleCreateChannel()">
+                                Crear Canal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.getElementById('channel-name-input').focus();
+            
+            // Permitir crear con Enter
+            document.getElementById('channel-name-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleCreateChannel();
+                }
+            });
+        }
+
+        async function handleCreateChannel() {
+            const nameInput = document.getElementById('channel-name-input');
+            const descriptionInput = document.getElementById('channel-description-input');
+            const channelName = nameInput.value.trim();
+            const channelDescription = descriptionInput.value.trim();
+            
+            if (!channelName) {
+                showToast('Por favor ingresa un nombre para el canal', 'warning');
+                nameInput.focus();
+                return;
+            }
+            
+            try {
+                // Verificar si ya existe un canal con ese nombre
+                const { data: existingChannel } = await supabase
+                    .from('voice_channels')
+                    .select('id')
+                    .eq('project_id', currentProjectId)
+                    .eq('name', channelName)
+                    .single();
+                    
+                if (existingChannel) {
+                    showToast('Ya existe un canal con ese nombre', 'warning');
+                    nameInput.focus();
+                    return;
+                }
+                
+                const channel = await createVoiceChannel(channelName, channelDescription);
+                document.querySelector('.modal-overlay').remove();
+                
+                // CORREGIDO: Unirse automáticamente al canal creado
+                await joinSpecificChannel(channel.id, channel.name);
+            } catch (error) {
+                console.error('Error al crear canal:', error);
+            }
+        }
+
+        async function joinSpecificChannel(channelId, channelName) {
+            try {
+                // Si ya estamos en un canal, salir primero
+                if (isInChannel && currentChannelId !== channelId) {
+                    await leaveChannelInternal();
+                }
+                
+                currentChannelId = channelId;
+                currentChannelName = channelName;
+                
+                // Actualizar UI
+                document.getElementById('current-channel-name').textContent = channelName;
+                
+                // Marcar canal activo en sidebar
+                document.querySelectorAll('.channel-item-sidebar').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-channel-id="${channelId}"]`)?.classList.add('active');
+                
+                document.getElementById('call-stats').style.display = 'flex';
+                document.getElementById('call-controls').style.display = 'flex';
+                
+                // Mostrar estado de carga
+                const container = document.getElementById('participants-container');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                        </div>
+                        <h3>Conectando...</h3>
+                        <p>Uniéndote al canal "${channelName}"</p>
+                    </div>
+                `;
+                
+                updateConnectionStatus('connecting', 'Conectando al canal...');
+                
+                await joinVoiceChannel();
+                
+            } catch (error) {
+                console.error('Error al unirse al canal:', error);
+                showToast('Error al unirse al canal', 'error');
+                await resetToChannelSelection();
+            }
+        }
+
+        async function joinVoiceChannel() {
+            try {
+                // Obtener token y UID desde el backend
+                const { token, uid } = await getAgoraToken();
+                
+                // Unirse al canal de Agora usando el channelId como nombre del canal
+                await agoraClient.join(AGORA_APP_ID, currentChannelId, token, uid);
+                
+                // Guardar el UID numérico para uso posterior
+                window.currentUserNumericUid = uid;
+                
+                // Crear y publicar track de audio local
+                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({
+                    encoderConfig: 'high_quality',
+                    AEC: true,
+                    ANS: true,
+                    AGC: true
+                });
+                
+                await agoraClient.publish([localAudioTrack]);
+                
+                isInChannel = true;
+                callStartTime = new Date();
+                startCallDurationTimer();
+                
+                // Unirse al canal de Supabase para presencia
+                await joinRealtimeChannel();
+                
+                showToast(`Te uniste al canal "${currentChannelName}"`, 'success');
+                updateConnectionStatus('connected', 'Conectado al canal');
+                
+            } catch (error) {
+                console.error('Error al unirse al canal:', error);
+                
+                let errorMessage = 'Error al conectar con el servidor de voz';
+                
+                if (error.message?.includes('token')) {
+                    errorMessage = 'Error de autenticación con el servidor de voz';
+                } else if (error.message?.includes('network')) {
+                    errorMessage = 'Error de red. Verifica tu conexión a internet';
+                } else if (error.code === 'PERMISSION_DENIED') {
+                    errorMessage = 'Permisos de micrófono denegados';
+                } else if (error.code === 'DEVICE_NOT_FOUND') {
+                    errorMessage = 'No se encontró ningún micrófono';
+                }
+                
+                showToast(errorMessage, 'error');
+                updateConnectionStatus('disconnected', 'Error de conexión');
+                throw error;
+            }
+        }
+
+        async function getAgoraToken() {
+            try {
+                const BACKEND_URL = 'https://backend-voice-agora.vercel.app';
+                
+                const response = await fetch(`${BACKEND_URL}/api/agora/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        channelName: currentChannelId,
+                        userId: currentUserId
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('Error del servidor:', error);
+                    throw new Error(error.error || 'Error al obtener token');
+                }
+
+                const data = await response.json();
+                console.log('Token recibido, UID:', data.uid);
+                
+                return {
+                    token: data.token,
+                    uid: data.uid
+                };
+                
+            } catch (error) {
+                console.error('Error obteniendo token:', error);
+                throw error;
+            }
+        }
+
+        async function joinRealtimeChannel() {
+            const realtimeChannelName = `voice_presence_${currentChannelId}`;
+            
+            roomChannel = supabase.channel(realtimeChannelName, {
+                config: {
+                    presence: {
+                        key: currentUserId,
+                    },
+                },
+            });
+
+            roomChannel
+                .on('presence', { event: 'sync' }, () => {
+                    const newState = roomChannel.presenceState();
+                    updateParticipantsList(newState);
+                })
+                .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                    console.log(`${newPresences[0].userName} se unió`);
+                })
+                .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                    console.log(`Usuario ${key} salió`);
+                });
+
+            await roomChannel.subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await roomChannel.track({
+                        userId: currentUserId,
+                        userName: currentUserName,
+                        channelId: currentChannelId,
+                        isMuted: isMuted,
+                        joinedAt: new Date().toISOString()
+                    });
+                }
+            });
+        }
+
+        function updateParticipantsList(presenceState) {
+            const participants = [];
+            
+            for (const userId in presenceState) {
+                const presence = presenceState[userId][0];
+                participants.push({
+                    id: userId,
+                    name: presence.userName,
+                    isMuted: presence.isMuted || false,
+                    isCurrentUser: userId === currentUserId
+                });
+            }
+            
+            showParticipants(participants);
+            updateParticipantsCount(participants.length);
+        }
+
+        async function handleUserPublished(user, mediaType) {
+            if (mediaType === 'audio') {
+                await agoraClient.subscribe(user, mediaType);
+                user.audioTrack.play();
+                remoteUsers[user.uid] = user;
+                
+                // Detectar actividad de voz
+                detectVoiceActivity(user);
+            }
+        }
+
+        function handleUserUnpublished(user, mediaType) {
+            if (mediaType === 'audio') {
+                delete remoteUsers[user.uid];
+            }
+        }
+
+        function handleUserJoined(user) {
+            console.log('Usuario se unió con UID:', user.uid);
+            remoteUsers[user.uid] = user;
+            
+            const participantsCount = Object.keys(remoteUsers).length + 1;
+            updateParticipantsCount(participantsCount);
+        }
+
+        function handleUserLeft(user) {
+            console.log('Usuario salió con UID:', user.uid);
+            delete remoteUsers[user.uid];
+            
+            const participantElement = document.querySelector(`[data-user-id="${user.uid}"]`);
+            if (participantElement) {
+                participantElement.remove();
+            }
+            
+            const participantsCount = Object.keys(remoteUsers).length + 1;
+            updateParticipantsCount(participantsCount);
+        }
+
+        function handleConnectionStateChange(curState, prevState) {
+            console.log(`Estado de conexión: ${prevState} -> ${curState}`);
+            
+            if (curState === 'CONNECTED') {
+                updateConnectionStatus('connected', 'Conectado al canal');
+            } else if (curState === 'CONNECTING') {
+                updateConnectionStatus('connecting', 'Conectando...');
+            } else if (curState === 'DISCONNECTED') {
+                updateConnectionStatus('disconnected', 'Desconectado');
+            }
+        }
+
+        function handleNetworkQuality(stats) {
+            const quality = stats.uplinkNetworkQuality;
+            let qualityText = 'Desconocida';
+            
+            switch(quality) {
+                case 1: qualityText = 'Excelente'; break;
+                case 2: qualityText = 'Buena'; break;
+                case 3: qualityText = 'Regular'; break;
+                case 4: qualityText = 'Mala'; break;
+                case 5: qualityText = 'Muy mala'; break;
+            }
+            
+            const qualityElement = document.getElementById('connection-quality');
+            if (qualityElement) {
+                qualityElement.textContent = qualityText;
+            }
+        }
+
+        function detectVoiceActivity(user) {
+            if (!user.audioTrack) return;
+            
+            const checkInterval = setInterval(() => {
+                if (!remoteUsers[user.uid]) {
+                    clearInterval(checkInterval);
+                    return;
+                }
+                
+                const level = user.audioTrack.getVolumeLevel();
+                const participantElement = document.querySelector(`[data-user-id="${user.uid}"]`);
+                
+                if (participantElement) {
+                    if (level > 0.01) {
+                        participantElement.classList.add('speaking');
+                    } else {
+                        participantElement.classList.remove('speaking');
+                    }
+                }
+            }, 100);
+        }
+
+        async function toggleMute() {
+            if (!localAudioTrack) return;
+
+            const muteBtn = document.getElementById('mute-btn');
+            showLoadingSpinner(muteBtn);
+
+            try {
+                isMuted = !isMuted;
+                await localAudioTrack.setEnabled(!isMuted);
+
+                const muteIcon = muteBtn.querySelector('i');
+                
+                if (isMuted) {
+                    muteBtn.classList.add('muted');
+                    muteIcon.className = 'fas fa-microphone-slash';
+                } else {
+                    muteBtn.classList.remove('muted');
+                    muteIcon.className = 'fas fa-microphone';
+                }
+
+                // Actualizar estado en presencia
+                if (roomChannel) {
+                    await roomChannel.track({
+                        userId: currentUserId,
+                        userName: currentUserName,
+                        channelId: currentChannelId,
+                        isMuted: isMuted,
+                        joinedAt: new Date().toISOString()
+                    });
+                }
+
+                showToast(isMuted ? 'Micrófono silenciado' : 'Micrófono activado', 'info');
+                
+            } catch (error) {
+                console.error('Error al cambiar estado del micrófono:', error);
+                showToast('Error al cambiar estado del micrófono', 'error');
+            } finally {
+                hideLoadingSpinner(muteBtn);
+            }
+        }
+
+        // FUNCIÓN INTERNA PARA LIMPIAR SIN MOSTRAR LOADING
+        async function leaveChannelInternal() {
+            try {
+                // Salir del canal de Agora
+                if (localAudioTrack) {
+                    localAudioTrack.stop();
+                    localAudioTrack.close();
+                    localAudioTrack = null;
+                }
+                
+                if (agoraClient && isInChannel) {
+                    await agoraClient.leave();
+                }
+
+                // Salir del canal de presencia
+                if (roomChannel) {
+                    await roomChannel.untrack();
+                    await roomChannel.unsubscribe();
+                    roomChannel = null;
+                }
+
+                isInChannel = false;
+                remoteUsers = {};
+                stopCallDurationTimer();
+                
+            } catch (error) {
+                console.error('Error al salir del canal internamente:', error);
+            }
+        }
+
+        // FUNCIÓN PÚBLICA PARA SALIR DEL CANAL
+        async function leaveChannel() {
+            const leaveBtn = document.getElementById('leave-btn');
+            leaveBtn.classList.add('leaving');
+            showLoadingSpinner(leaveBtn);
+
+            try {
+                await leaveChannelInternal();
+                
+                showToast('Has salido del canal', 'info');
+                
+                // CORREGIDO: Volver al estado de selección de canal
+                await resetToChannelSelection();
+                
+            } catch (error) {
+                console.error('Error al salir del canal:', error);
+                showToast('Error al salir del canal', 'error');
+            } finally {
+                leaveBtn.classList.remove('leaving');
+                hideLoadingSpinner(leaveBtn);
+            }
+        }
+
+        // FUNCIÓN CORREGIDA PARA RESETEAR AL ESTADO DE SELECCIÓN
+        async function resetToChannelSelection() {
+            // Limpiar variables de canal actual
+            currentChannelId = null;
+            currentChannelName = null;
+            
+            // Quitar marca activa del sidebar
+            document.querySelectorAll('.channel-item-sidebar').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Actualizar UI
+            document.getElementById('current-channel-name').textContent = 'Selecciona un Canal de Voz';
+            document.getElementById('call-stats').style.display = 'none';
+            document.getElementById('call-controls').style.display = 'none';
+            
+            // Mostrar estado de selección
+            showChannelSelectionState();
+            
+            updateConnectionStatus('connected', 'Conectado');
+        }
+
+        function showParticipants(participants) {
+            const container = document.getElementById('participants-container');
+            
+            if (participants.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-microphone-slash"></i>
+                        </div>
+                        <h3>Solo tú en el canal</h3>
+                        <p>Esperando que otros se unan a "${currentChannelName}"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let grid = container.querySelector('.participants-grid');
+            if (!grid) {
+                grid = document.createElement('div');
+                grid.className = 'participants-grid';
+                container.innerHTML = '';
+                container.appendChild(grid);
+            }
+
+            // Limpiar participantes existentes
+            grid.innerHTML = '';
+
+            participants.forEach(participant => {
+                const video = document.createElement('div');
+                video.className = 'participant-video fade-in';
+                video.setAttribute('data-user-id', participant.id);
+                
+                if (participant.isCurrentUser) {
+                    video.classList.add('current-user');
+                }
+
+                const avatarLetter = participant.name.charAt(0).toUpperCase();
+                const avatarColor = `hsl(${(participant.id.charCodeAt(0) * 137.508) % 360}, 70%, 60%)`;
+
+                video.innerHTML = `
+                    <div class="participant-avatar" style="background: ${avatarColor}">
+                        ${avatarLetter}
+                    </div>
+                    <div class="participant-info">
+                        <div class="participant-name">
+                            ${participant.name}${participant.isCurrentUser ? ' (Tú)' : ''}
+                        </div>
+                        <div class="participant-status">
+                            <div class="status-icon ${participant.isMuted ? 'mic-off' : 'mic-on'}">
+                                <i class="fas fa-${participant.isMuted ? 'microphone-slash' : 'microphone'}"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                grid.appendChild(video);
+            });
+        }
+
+        function updateParticipantsCount(count) {
+            document.getElementById('participants-count').textContent = count;
+            document.getElementById('participants-badge').textContent = count;
+        }
+
+        function hideLoadingSpinner(elementSelector) {
+    const element = typeof elementSelector === 'string' ? 
+        document.querySelector(elementSelector) : elementSelector;
+    if (element) {
+        const spinner = element.querySelector('.loading-spinner');
+        const text = element.querySelector('span');
+        const icon = element.querySelector('i');
+        
+        if (spinner) spinner.style.display = 'none';
+        if (text) text.style.opacity = '1';
+        if (icon) icon.style.opacity = '1';
+        element.disabled = false;
+    }
+}
+        function startCallDurationTimer() {
+            callDurationInterval = setInterval(() => {
+                if (callStartTime) {
+                    const duration = Math.floor((new Date() - callStartTime) / 1000);
+                    const hours = Math.floor(duration / 3600);
+                    const minutes = Math.floor((duration % 3600) / 60);
+                    const seconds = duration % 60;
+                    
+                    let timeString = '';
+                    if (hours > 0) {
+                        timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    } else {
+                        timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                    
+                    document.getElementById('call-duration').textContent = timeString;
+                }
+            }, 1000);
+        }
+
+        function stopCallDurationTimer() {
+            if (callDurationInterval) {
+                clearInterval(callDurationInterval);
+                callDurationInterval = null;
+            }
+            callStartTime = null;
+            document.getElementById('call-duration').textContent = '00:00';
+        }
+
+        function openSettings() {
+            showToast('Configuración de audio próximamente', 'info');
+        }
+
+        function toggleParticipants() {
+            const count = Object.keys(remoteUsers).length + 1;
+            showToast(`Participantes conectados: ${count}`, 'info');
+        }
+
+        function updateConnectionStatus(status, message) {
+            const statusElement = document.getElementById('connection-status');
+            const statusText = statusElement.querySelector('span');
+            const statusIcon = statusElement.querySelector('i');
+            
+            statusText.textContent = message;
+            statusElement.className = `connection-status ${status}`;
+            
+            if (status === 'connected') {
+                statusIcon.className = 'fas fa-circle';
+            } else if (status === 'connecting') {
+                statusIcon.className = 'fas fa-circle-notch fa-spin';
+            } else {
+                statusIcon.className = 'fas fa-exclamation-circle';
+            }
+        }
+
+        function showToast(message, type = 'info', duration = 4000) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.classList.remove('show');
+                setTimeout(() => existingToast.remove(), 400);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-${getToastIcon(type)}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 400);
+                }
+            }, duration);
+
+            toast.addEventListener('click', () => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            });
+        }
+
+        function getToastIcon(type) {
+            switch (type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'exclamation-circle';
+                case 'warning': return 'exclamation-triangle';
+                case 'info': 
+                default: return 'info-circle';
+            }
+        }
+
+      function showLoadingSpinner(elementSelector) {
+    const element = typeof elementSelector === 'string' ? 
+        document.querySelector(elementSelector) : elementSelector;
+    if (element) {
+        const spinner = element.querySelector('.loading-spinner');
+        const text = element.querySelector('span');
+        const icon = element.querySelector('i');
+        
+        if (spinner) spinner.style.display = 'block'; 
+        if (text) text.style.opacity = '0.5'; 
+        if (icon) icon.style.opacity = '0.5'; 
+        element.disabled = true; 
+    }
+}
+
+
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            // Mute/unmute con Ctrl+M
+            if (e.ctrlKey && e.key === 'm' && isInChannel) {
+                e.preventDefault();
+                toggleMute();
+            }
+            
+            // Salir del canal con Ctrl+L
+            if (e.ctrlKey && e.key === 'l' && isInChannel) {
+                e.preventDefault();
+                leaveChannel();
+            }
+        });
+
+        // Manejar visibilidad de la página
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && localAudioTrack) {
+                console.log('Página oculta');
+            } else if (!document.hidden && localAudioTrack) {
+                console.log('Página visible');
+            }
+        });
+
+        // Manejar cierre de ventana/pestaña
+        window.addEventListener('beforeunload', async (e) => {
+            if (isInChannel) {
+                if (roomChannel) {
+                    await roomChannel.untrack();
+                }
+                
+                if (localAudioTrack) {
+                    localAudioTrack.stop();
+                    localAudioTrack.close();
+                }
+                
+                if (agoraClient) {
+                    await agoraClient.leave();
+                }
+            }
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                updateConnectionStatus('connecting', 'Conectando...');
+                
+                // Verificar soporte del navegador (método más confiable)
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Tu navegador no es compatible con las llamadas de voz');
+                }
+                
+                // Verificación opcional de Agora (puede dar falsos negativos)
+                try {
+                    const agoraSupport = AgoraRTC.checkSystemRequirements();
+                    console.log('Agora compatibility check:', agoraSupport);
+                } catch (e) {
+                    console.warn('Agora compatibility check failed, pero continuando:', e);
+                }
+                
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error || !session) {
+                    console.log('No hay sesión, redirigiendo al login');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                currentUserId = currentUser.id;
+                currentUserName = currentUser.user_metadata?.full_name || 
+                                currentUser.user_metadata?.name || 
+                                currentUser.email?.split('@')[0] || 
+                                'Usuario';
+
+                console.log('Usuario autenticado:', currentUserName, currentUserId);
+                initializeThemeAndLanguage();
+
+
+                // Actualizar info del usuario en el sidebar
+                document.getElementById('user-name').textContent = currentUserName;
+                document.getElementById('user-avatar').textContent = currentUserName.charAt(0).toUpperCase();
+
+                const urlParams = new URLSearchParams(window.location.search);
+                currentProjectId = urlParams.get('project');
+
+                if (!currentProjectId) {
+                    console.error('No se proporcionó project ID');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                // Verificar membresía del proyecto
+                const { data: membership } = await supabase
+                    .from('project_members')
+                    .select('id, role')
+                    .eq('project_id', currentProjectId)
+                    .eq('user_id', currentUserId)
+                    .maybeSingle();
+
+                if (!membership) {
+                    showToast('No tienes acceso a este proyecto', 'error');
+                    setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                    return;
+                }
+
+                // Solicitar permisos de micrófono antes de inicializar
+                try {
+                    await navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            // Detener el stream temporal
+                            stream.getTracks().forEach(track => track.stop());
+                        });
+                } catch (err) {
+                    showToast('Se requieren permisos de micrófono para usar el chat de voz', 'error');
+                    updateConnectionStatus('disconnected', 'Sin permisos');
+                    return;
+                }
+
+                await initializeApp();
+
+            } catch (error) {
+                console.error('Error en inicialización:', error);
+                let errorMessage = 'Error al inicializar la aplicación';
+                
+                if (error.message.includes('compatible')) {
+                    errorMessage = 'Tu navegador no es compatible. Usa Chrome, Firefox, Safari o Edge actualizados.';
+                }
+                
+                showToast(errorMessage, 'error');
+                updateConnectionStatus('disconnected', 'Error de conexión');
+            }
+        });
+        // Funciones de tema e idioma
+function initializeThemeAndLanguage() {
+    document.body.setAttribute('data-theme', currentTheme);
+    updateThemeIcon();
+    generateLanguageDropdown();
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const themeIcon = document.querySelector('.control-btn-small i.fa-moon, .control-btn-small i.fa-sun');
+    if (themeIcon) {
+        themeIcon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+    }
+}
+
+function generateLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.innerHTML = Object.entries(supportedLanguages).map(([code, lang]) => 
+            `<div class="language-option ${currentLanguage === code ? 'active' : ''}" 
+                  onclick="changeLanguage('${code}')">
+                ${lang.flag} ${lang.name}
+             </div>`
+        ).join('');
+    }
+}
+
+function changeLanguage(lang) {
+    if (supportedLanguages[lang]) {
+        currentLanguage = lang;
+        localStorage.setItem('language', lang);
+        generateLanguageDropdown();
+        
+        const dropdown = document.getElementById('languageDropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    }
+}
+
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    const button = dropdown.parentElement.querySelector('.control-btn-small');
+    
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+        if (dropdown.classList.contains('show')) {
+            const rect = button.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+        }
+    }
+}
+async function handleLogout() {
+    try {
+        // Salir del canal si estamos en uno
+        if (isInChannel) {
+            await leaveChannelInternal();
+        }
+        
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        
+        showToast('Sesión cerrada', 'info');
+        window.location.href = 'login.html';
+    } catch (error) {
+        console.error('Error cerrando sesión:', error);
+        showToast('Error al cerrar sesión', 'error');
+    }
+}
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector');
+    const dropdown = document.getElementById('languageDropdown');
+    document.getElementById('user-name-header').textContent = currentUserName;
+    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Exponer funciones globales
+window.handleLogout = handleLogout;
+window.toggleTheme = toggleTheme;
+window.toggleLanguageDropdown = toggleLanguageDropdown;
+window.changeLanguage = changeLanguage;
+
+        // Función para debug
+        window.debugVoiceChat = function() {
+            console.log('=== DEBUG VOICE CHAT ===');
+            console.log('Usuario actual:', currentUserId, currentUserName);
+            console.log('UID numérico:', window.currentUserNumericUid);
+            console.log('Proyecto actual:', currentProjectId);
+            console.log('Canal actual:', currentChannelId, currentChannelName);
+            console.log('Estado Agora:', agoraClient?.connectionState);
+            console.log('Usuarios remotos:', Object.keys(remoteUsers));
+            console.log('Audio local:', localAudioTrack?.enabled);
+            console.log('Muted:', isMuted);
+            console.log('En canal:', isInChannel);
+            console.log('Backend URL:', 'https://backend-voice-agora.vercel.app');
+            console.log('========================');
+        };
+    </script>
+</body>
+</html> 

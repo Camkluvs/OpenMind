@@ -1,0 +1,105 @@
+{
+  "common": {
+    "welcome": "欢迎",
+    "logout": "退出登录",
+    "themeToggle": "切换主题",
+    "language": "语言",
+    "access": "访问",
+    "getStarted": "开始",
+    "mostPopular": "最受欢迎"
+  },
+  "hero": {
+    "title": "释放集体智慧",
+    "description": "OpenMind是一个综合性网络平台，使开发团队能够实时协作，将编程工具、通信和项目管理结合在一个空间中。",
+    "joinBtn": "免费加入"
+  },
+  "features": {
+    "title": "主要功能",
+    "subtitle": "高效协作所需的一切",
+    "codeEditor": {
+      "title": "协作代码编辑器",
+      "description": "与团队实时编辑代码，具有语法高亮和智能自动完成功能。"
+    },
+    "ai": {
+      "title": "集成AI",
+      "description": "帮助编码、调试和工作流程优化的AI助手。"
+    },
+    "communication": {
+      "title": "聊天和视频会议",
+      "description": "集成聊天和高质量视频通话的无缝通信。"
+    },
+    "projectManagement": {
+      "title": "项目管理",
+      "description": "看板、问题跟踪和敏捷冲刺管理集于一处。"
+    },
+    "versionControl": {
+      "title": "版本控制",
+      "description": "集成Git，具有分支和合并管理的可视化界面。"
+    },
+    "deployment": {
+      "title": "自动部署",
+      "description": "集成CI/CD，自动部署到多个云平台。"
+    }
+  },
+  "howItWorks": {
+    "title": "工作原理",
+    "subtitle": "将想法变为现实的简单而强大的工作流程",
+    "step1": {
+      "title": "1. 创建或加入项目",
+      "description": "开始一个新的协作空间或使用邀请码加入现有项目。"
+    },
+    "step2": {
+      "title": "2. 提交您的想法",
+      "description": "发布提案、任务或讨论要点供团队审核和投票。"
+    },
+    "step3": {
+      "title": "3. 协作和决策",
+      "description": "使用AI驱动的分析和讨论线程达成共识并推动进展。"
+    }
+  },
+  "pricing": {
+    "title": "计划和定价",
+    "subtitle": "为您的团队选择完美的计划",
+    "free": {
+      "name": "Mind Free",
+      "period": "每月",
+      "button": "免费开始",
+      "features": {
+        "projects": "最多3个项目",
+        "members": "每个项目5名成员",
+        "storage": "1GB存储",
+        "chat": "基础聊天",
+        "support": "邮件支持"
+      }
+    },
+    "pro": {
+      "name": "Mind Pro",
+      "period": "每月",
+      "button": "选择Pro",
+      "features": {
+        "projects": "无限项目",
+        "members": "最多25名成员",
+        "storage": "100GB存储",
+        "ai": "高级AI助手",
+        "video": "视频会议",
+        "git": "Git集成",
+        "support": "优先支持"
+      }
+    },
+    "ultra": {
+      "name": "Mind Ultra",
+      "period": "每月",
+      "button": "选择Ultra",
+      "features": {
+        "everything": "Mind Pro的所有功能",
+        "members": "无限成员",
+        "storage": "1TB存储",
+        "customAi": "定制AI",
+        "deployment": "自动部署",
+        "analytics": "高级分析",
+        "support247": "24/7支持",
+        "onboarding": "专属入门指导"
+      }
+    }
+  }
+}
