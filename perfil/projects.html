@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Proyectos - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--secondary-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(74, 158, 255, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn.edit {
+            background: rgba(74, 158, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        .action-btn.delete {
+            background: rgba(255, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        .action-btn.view {
+            background: rgba(0, 212, 170, 0.1);
+            color: var(--success-color);
+        }
+
+        /* Modal de eliminación */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* Loading state */
+        .deleting {
+            position: relative;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .delete-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ef4444;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    OpenMind AI
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="profile.html" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="projects.html" class="nav-item active">
+                        <i class="fas fa-folder"></i>
+                        <span>Proyectos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Colaboración</div>
+                    <a href="collaborative-projects.html" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Proyectos Colaborativos</span>
+                    </a>
+                    <a href="discussions.html" class="nav-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Discusiones</span>
+                    </a>
+                    <a href="activity.html" class="nav-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Actividad Reciente</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Configuración</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                    <a href="help.html" class="nav-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Ayuda</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Mis Proyectos</h1>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span>Tema</span>
+                    </button>
+                    
+                    <a href="create-project.html" class="control-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Nuevo Proyecto</span>
+                    </a>
+                    
+                    <div class="user-menu">
+                        <div class="user-menu-toggle" onclick="toggleUserMenu()">
+                            <img class="user-avatar-small" id="headerAvatarImg" src="" alt="Avatar">
+                            <span id="headerUserName">Cargando...</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="profile.html" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                            <a href="settings.html" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+                            <div class="user-dropdown-item logout" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Search and Filters -->
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Buscar proyectos..." id="searchInput">
+                    <button class="filter-btn" onclick="filterProjects('all')">
+                        <i class="fas fa-filter"></i> Todos
+                    </button>
+                    <button class="filter-btn" onclick="filterProjects('recent')">
+                        <i class="fas fa-clock"></i> Recientes
+                    </button>
+                    <button class="filter-btn" onclick="filterProjects('active')">
+                        <i class="fas fa-check-circle"></i> Activos
+                    </button>
+                </div>
+
+                <!-- Projects Grid -->
+                <div class="projects-grid" id="projectsGrid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Cargando proyectos...</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmar Eliminación</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div id="deleteModalBody">
+                <p>¿Estás seguro de que deseas eliminar este proyecto? Esta acción eliminará:</p>
+                <ul style="color: var(--text-secondary); margin: 15px 0; padding-left: 20px;">
+                    <li>Todos los archivos del proyecto</li>
+                    <li>Todas las discusiones y comentarios</li>
+                    <li>Todas las reacciones y likes</li>
+                    <li>Canales de voz asociados</li>
+                    <li>Membresías de usuarios</li>
+                    <li>Invitaciones pendientes</li>
+                </ul>
+                <p style="color: var(--error-color); font-weight: 600;">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmDelete()" id="confirmDeleteBtn">
+                    <span id="deleteButtonText">Eliminar Proyecto</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+       
+        let supabaseClient;
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let allProjects = [];
+        let projectToDelete = null;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            await checkAuth();
+            applyTheme();
+            loadProjects();
+            setupSearch();
+        }
+
+        async function checkAuth() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (!session || !session.user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                updateUserHeader();
+                
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function updateUserHeader() {
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+
+            const userName = profile?.full_name || currentUser.email.split('@')[0];
+            document.getElementById('headerUserName').textContent = userName;
+            
+            if (profile?.avatar_url) {
+                document.getElementById('headerAvatarImg').src = profile.avatar_url;
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('projects')
+                    .select(`
+                        *,
+                        project_files(count),
+                        project_members(count)
+                    `)
+                    .eq('owner_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                allProjects = data || [];
+                renderProjects(allProjects);
+                
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                document.getElementById('projectsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <p>Error al cargar los proyectos</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderProjects(projects) {
+            const container = document.getElementById('projectsGrid');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-folder-plus"></i>
+                        </div>
+                        <p>No tienes proyectos aún</p>
+                        <a href="create-project.html" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-plus"></i>
+                            Crear tu primer proyecto
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-card" id="project-${project.id}">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-name">${escapeHtml(project.name)}</div>
+                            <div style="color: var(--text-secondary); font-size: 13px; margin-top: 5px;">
+                                Código: ${project.invite_code || 'N/A'}
+                            </div>
+                        </div>
+                        <span class="project-role role-owner">Propietario</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>
+                            <i class="fas fa-file"></i>
+                            ${project.project_files?.[0]?.count || 0} archivos
+                        </span>
+                        <span>
+                            <i class="fas fa-users"></i>
+                            ${project.project_members?.[0]?.count || 0} miembros
+                        </span>
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            ${formatDate(project.created_at)}
+                        </span>
+                    </div>
+                    <div class="project-actions">
+                        <button class="action-btn view" onclick="viewProject('${project.id}', '${project.invite_code}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        <button class="action-btn edit" onclick="editProject('${project.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="action-btn delete" onclick="deleteProject('${project.id}', '${escapeHtml(project.name)}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filtered = allProjects.filter(project => 
+                    project.name.toLowerCase().includes(searchTerm) ||
+                    (project.invite_code && project.invite_code.toLowerCase().includes(searchTerm))
+                );
+                renderProjects(filtered);
+            });
+        }
+
+        function filterProjects(filter) {
+            let filtered = [...allProjects];
+            
+            if (filter === 'recent') {
+                // Últimos 7 días
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                filtered = filtered.filter(p => new Date(p.created_at) > sevenDaysAgo);
+            } else if (filter === 'active') {
+                // Proyectos con actividad reciente (simplificado)
+                filtered = filtered.filter(p => p.project_files?.[0]?.count > 0);
+            }
+            
+            renderProjects(filtered);
+        }
+
+        // FUNCIÓN CORREGIDA: viewProject ahora redirige correctamente
+        function viewProject(projectId, inviteCode) {
+            // Redirigir al dashboard con el proyecto y código correcto
+            window.location.href = `../dashboard.html?project=${projectId}&code=${inviteCode}`;
+        }
+
+        function editProject(projectId) {
+            window.location.href = `../settings.html?id=${projectId}`;
+        }
+
+        function deleteProject(projectId, projectName) {
+            projectToDelete = { id: projectId, name: projectName };
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    
+    // NO establecer projectToDelete como null aquí
+    // Solo restaura el estado del botón
+    const btn = document.getElementById('confirmDeleteBtn');
+    const btnText = document.getElementById('deleteButtonText');
+    btn.disabled = false;
+    btnText.textContent = 'Eliminar Proyecto';
+}
+
+
+
+async function confirmDelete() {
+    if (!projectToDelete) return;
+    
+    const btn = document.getElementById('confirmDeleteBtn');
+    const btnText = document.getElementById('deleteButtonText');
+    const projectCard = document.getElementById(`project-${projectToDelete.id}`);
+    const projectName = projectToDelete.name; // Guardar el nombre antes de cualquier operación
+    
+    // UI: Mostrar estado de carga
+    btn.disabled = true;
+    btnText.innerHTML = '<div class="spinner" style="width: 16px; height: 16px; margin-right: 8px;"></div>Eliminando...';
+    
+    if (projectCard) {
+        projectCard.classList.add('deleting');
+        projectCard.insertAdjacentHTML('beforeend', '<div class="delete-loading"><div class="spinner"></div></div>');
+    }
+    
+    try {
+        console.log('Iniciando eliminación en cascada del proyecto:', projectName);
+        
+        const projectId = projectToDelete.id;
+        
+        // Obtener IDs de discusiones primero
+        const { data: discussions, error: discussionsError } = await supabaseClient
+            .from('discussions')
+            .select('id')
+            .eq('project_id', projectId);
+        
+        if (discussionsError) throw new Error('Error obteniendo discusiones: ' + discussionsError.message);
+        
+        const discussionIds = discussions.map(d => d.id);
+        
+        // Obtener IDs de archivos primero
+        const { data: files, error: filesError } = await supabaseClient
+            .from('project_files')
+            .select('id')
+            .eq('project_id', projectId);
+        
+        if (filesError) throw new Error('Error obteniendo archivos: ' + filesError.message);
+        
+        const fileIds = files.map(f => f.id);
+        
+        // 1. Eliminar todas las reacciones de replies
+        if (discussionIds.length > 0) {
+            console.log('Eliminando reacciones de replies...');
+            
+            // Obtener IDs de replies
+            const { data: replies, error: repliesError } = await supabaseClient
+                .from('discussion_replies')
+                .select('id')
+                .in('discussion_id', discussionIds);
+            
+            if (repliesError) console.warn('Error obteniendo replies:', repliesError);
+            
+            if (replies && replies.length > 0) {
+                const replyIds = replies.map(r => r.id);
+                
+                const { error: replyReactionsError } = await supabaseClient
+                    .from('reply_reactions')
+                    .delete()
+                    .in('reply_id', replyIds);
+                
+                if (replyReactionsError) console.warn('Error eliminando reacciones de replies:', replyReactionsError);
+            }
+        }
+        
+        // 2. Eliminar todos los likes de replies
+        if (discussionIds.length > 0) {
+            console.log('Eliminando likes de replies...');
+            
+            // Obtener IDs de replies
+            const { data: replies, error: repliesError } = await supabaseClient
+                .from('discussion_replies')
+                .select('id')
+                .in('discussion_id', discussionIds);
+            
+            if (repliesError) console.warn('Error obteniendo replies:', repliesError);
+            
+            if (replies && replies.length > 0) {
+                const replyIds = replies.map(r => r.id);
+                
+                const { error: replyLikesError } = await supabaseClient
+                    .from('reply_likes')
+                    .delete()
+                    .in('reply_id', replyIds);
+                
+                if (replyLikesError) console.warn('Error eliminando likes de replies:', replyLikesError);
+            }
+        }
+        
+        // 3. Eliminar todas las respuestas de discusiones
+        if (discussionIds.length > 0) {
+            console.log('Eliminando respuestas de discusiones...');
+            const { error: repliesError } = await supabaseClient
+                .from('discussion_replies')
+                .delete()
+                .in('discussion_id', discussionIds);
+            
+            if (repliesError) console.warn('Error eliminando respuestas:', repliesError);
+        }
+        
+        // 4. Eliminar reacciones de discusiones
+        if (discussionIds.length > 0) {
+            console.log('Eliminando reacciones de discusiones...');
+            const { error: discussionReactionsError } = await supabaseClient
+                .from('discussion_reactions')
+                .delete()
+                .in('discussion_id', discussionIds);
+            
+            if (discussionReactionsError) console.warn('Error eliminando reacciones de discusiones:', discussionReactionsError);
+        }
+        
+        // 5. Eliminar likes de discusiones
+        if (discussionIds.length > 0) {
+            console.log('Eliminando likes de discusiones...');
+            const { error: discussionLikesError } = await supabaseClient
+                .from('discussion_likes')
+                .delete()
+                .in('discussion_id', discussionIds);
+            
+            if (discussionLikesError) console.warn('Error eliminando likes de discusiones:', discussionLikesError);
+        }
+        
+        // 6. Eliminar estados de escritura
+        if (discussionIds.length > 0) {
+            console.log('Eliminando estados de escritura...');
+            const { error: typingError } = await supabaseClient
+                .from('typing_status')
+                .delete()
+                .in('discussion_id', discussionIds);
+            
+            if (typingError) console.warn('Error eliminando estados de escritura:', typingError);
+        }
+        
+        // 7. Eliminar todas las discusiones
+        console.log('Eliminando discusiones...');
+        const { error: discussionsDeleteError } = await supabaseClient
+            .from('discussions')
+            .delete()
+            .eq('project_id', projectId);
+        
+        if (discussionsDeleteError) console.warn('Error eliminando discusiones:', discussionsDeleteError);
+        
+        // 8. Eliminar editores activos
+        if (fileIds.length > 0) {
+            console.log('Eliminando editores activos...');
+            const { error: editorsError } = await supabaseClient
+                .from('active_editors')
+                .delete()
+                .in('file_id', fileIds);
+            
+            if (editorsError) console.warn('Error eliminando editores activos:', editorsError);
+        }
+        
+        // 9. Eliminar actividad de archivos
+        if (fileIds.length > 0) {
+            console.log('Eliminando actividad de archivos...');
+            const { error: activityError } = await supabaseClient
+                .from('file_activity')
+                .delete()
+                .in('file_id', fileIds);
+            
+            if (activityError) console.warn('Error eliminando actividad de archivos:', activityError);
+        }
+        
+        // 10. Eliminar cambios de archivos
+        if (fileIds.length > 0) {
+            console.log('Eliminando cambios de archivos...');
+            const { error: changesError } = await supabaseClient
+                .from('file_changes')
+                .delete()
+                .in('file_id', fileIds);
+            
+            if (changesError) console.warn('Error eliminando cambios de archivos:', changesError);
+        }
+        
+        // 11. Eliminar operaciones de archivos
+        if (fileIds.length > 0) {
+            console.log('Eliminando operaciones de archivos...');
+            const { error: operationsError } = await supabaseClient
+                .from('file_operations')
+                .delete()
+                .in('file_id', fileIds);
+            
+            if (operationsError) console.warn('Error eliminando operaciones de archivos:', operationsError);
+        }
+        
+        // 12. Eliminar versiones de archivos
+        if (fileIds.length > 0) {
+            console.log('Eliminando versiones de archivos...');
+            const { error: versionsError } = await supabaseClient
+                .from('file_versions')
+                .delete()
+                .in('file_id', fileIds);
+            
+            if (versionsError) console.warn('Error eliminando versiones de archivos:', versionsError);
+        }
+        
+        // 13. Eliminar archivos del proyecto
+        console.log('Eliminando archivos del proyecto...');
+        const { error: filesDeleteError } = await supabaseClient
+            .from('project_files')
+            .delete()
+            .eq('project_id', projectId);
+        
+        if (filesDeleteError) console.warn('Error eliminando archivos:', filesDeleteError);
+        
+        // 14. Eliminar canales de voz
+        console.log('Eliminando canales de voz...');
+        const { error: voiceError } = await supabaseClient
+            .from('voice_channels')
+            .delete()
+            .eq('project_id', projectId);
+        
+        if (voiceError) console.warn('Error eliminando canales de voz:', voiceError);
+        
+        // 15. Eliminar invitaciones
+        console.log('Eliminando invitaciones...');
+        const { error: invitationsError } = await supabaseClient
+            .from('project_invitations')
+            .delete()
+            .eq('project_id', projectId);
+        
+        if (invitationsError) console.warn('Error eliminando invitaciones:', invitationsError);
+        
+        // 16. Eliminar miembros
+        console.log('Eliminando miembros...');
+        const { error: membersError } = await supabaseClient
+            .from('project_members')
+            .delete()
+            .eq('project_id', projectId);
+        
+        if (membersError) console.warn('Error eliminando miembros:', membersError);
+        
+        // 17. Finalmente, eliminar el proyecto
+        console.log('Eliminando proyecto...');
+        const { error: projectError } = await supabaseClient
+            .from('projects')
+            .delete()
+            .eq('id', projectId);
+
+        if (projectError) {
+            console.error('Error eliminando proyecto:', projectError);
+            throw new Error('Error al eliminar el proyecto: ' + projectError.message);
+        }
+
+        console.log('Proyecto y todos sus datos relacionados eliminados exitosamente');
+
+        // Restaurar UI
+        btn.disabled = false;
+        btnText.textContent = 'Eliminar Proyecto';
+        
+        // Cerrar el modal
+        document.getElementById('deleteModal').style.display = 'none';
+        
+        // Remover el proyecto de la UI inmediatamente
+        if (projectCard) {
+            projectCard.style.transition = 'all 0.3s ease';
+            projectCard.style.transform = 'scale(0)';
+            projectCard.style.opacity = '0';
+            
+            setTimeout(() => {
+                projectCard.remove();
+            }, 300);
+        }
+        
+        // Actualizar la lista de proyectos
+        allProjects = allProjects.filter(p => p.id !== projectId);
+        
+        // Si no quedan proyectos, mostrar estado vacío
+        if (allProjects.length === 0) {
+            setTimeout(() => {
+                renderProjects([]);
+            }, 400);
+        }
+        
+        // Mostrar mensaje de éxito - Usar el nombre guardado
+        alert(`Proyecto "${projectName}" y todos sus datos han sido eliminados correctamente.`);
+        
+        // SOLO AHORA podemos establecer projectToDelete como null
+        projectToDelete = null;
+        
+    } catch (error) {
+        console.error('Error in confirmDelete:', error);
+        
+        // Mostrar mensaje de error - usar projectName que guardamos al inicio
+        alert(`Error al eliminar el proyecto "${projectName}": ${error.message}`);
+        
+        // Restaurar UI en caso de error
+        if (projectCard) {
+            projectCard.classList.remove('deleting');
+            const loadingElement = projectCard.querySelector('.delete-loading');
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+        }
+        
+        // Restaurar estado del botón
+        btn.disabled = false;
+        btnText.textContent = 'Eliminar Proyecto';
+        
+       
+    }
+}
+
+// Funciones de UI
+
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            const icon = document.getElementById('themeIcon');
+            icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        }
+
+        // Utilidades
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDropdown && userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+
+            // Cerrar modal si se hace clic fuera de él
+            const modal = document.getElementById('deleteModal');
+            if (modal && event.target === modal) {
+                closeDeleteModal();
+            }
+        });
+
+        // Tecla ESC para cerrar modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('deleteModal');
+                if (modal && modal.style.display === 'flex') {
+                    closeDeleteModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

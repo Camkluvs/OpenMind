@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos Colaborativos - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .invitation-card {
+            background: linear-gradient(135deg, rgba(74, 158, 255, 0.1), rgba(0, 212, 255, 0.1));
+            border: 1px solid var(--accent-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .invitation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .invitation-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .invitation-from {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .invitation-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .member-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .member-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .member-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+         .leave-btn {
+            position: absolute;
+            top: 104px;
+            right: 8px;
+            background: rgba(255, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .leave-btn:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        .project-card {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .project-owner {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    OpenMind AI
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="profile.html" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="projects.html" class="nav-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Proyectos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Colaboración</div>
+                    <a href="collaborative-projects.html" class="nav-item active">
+                        <i class="fas fa-users"></i>
+                        <span>Proyectos Colaborativos</span>
+                    </a>
+                    <a href="discussions.html" class="nav-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Discusiones</span>
+                    </a>
+                    <a href="activity.html" class="nav-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Actividad Reciente</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Configuración</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                    <a href="help.html" class="nav-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Ayuda</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Proyectos Colaborativos</h1>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span>Tema</span>
+                    </button>
+                    
+                    <div class="user-menu">
+                        <div class="user-menu-toggle" onclick="toggleUserMenu()">
+                            <img class="user-avatar-small" id="headerAvatarImg" src="" alt="Avatar">
+                            <span id="headerUserName">Cargando...</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="profile.html" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                            <a href="settings.html" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+                            <div class="user-dropdown-item logout" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Invitaciones Pendientes -->
+                <div class="content-section" id="invitationsSection" style="display: none;">
+                    <h2 class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <span>Invitaciones Pendientes</span>
+                    </h2>
+                    <div id="invitationsList">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Proyectos Colaborativos -->
+                <div class="content-section">
+                    <h2 class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span>Proyectos en los que Colaboro</span>
+                    </h2>
+                    <div class="projects-grid" id="collaborativeProjectsGrid">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <span>Cargando proyectos colaborativos...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+       
+        let supabaseClient;
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                console.log('Inicializando aplicación...');
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                await checkAuth();
+                applyTheme();
+                await loadInvitations();
+                await loadCollaborativeProjects();
+            } catch (error) {
+                console.error('Error en inicialización:', error);
+            }
+        }
+
+        async function checkAuth() {
+            try {
+                console.log('Verificando autenticación...');
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error) {
+                    console.error('Error de sesión:', error);
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                if (!session || !session.user) {
+                    console.log('No hay sesión activa');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                console.log('Usuario autenticado:', currentUser.email);
+                await updateUserHeader();
+                
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function updateUserHeader() {
+            try {
+                console.log('Actualizando header...');
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Error obteniendo perfil:', error);
+                }
+
+                const userName = profile?.full_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+                
+                document.getElementById('headerUserName').textContent = userName;
+                
+                if (profile?.avatar_url) {
+                    document.getElementById('headerAvatarImg').src = profile.avatar_url;
+                } else {
+                    const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('headerAvatarImg').alt = initials;
+                }
+            } catch (error) {
+                console.error('Error updating header:', error);
+            }
+        }
+
+        async function loadInvitations() {
+            try {
+                console.log('Cargando invitaciones...');
+                const { data: invitations, error } = await supabaseClient
+                    .from('project_invitations')
+                    .select('*')
+                    .eq('invited_email', currentUser.email)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error cargando invitaciones:', error);
+                    document.getElementById('invitationsSection').style.display = 'none';
+                    return;
+                }
+
+                console.log('Invitaciones encontradas:', invitations?.length || 0);
+                const invitationsSection = document.getElementById('invitationsSection');
+                const invitationsList = document.getElementById('invitationsList');
+
+                if (!invitations || invitations.length === 0) {
+                    invitationsSection.style.display = 'none';
+                    return;
+                }
+
+                invitationsSection.style.display = 'block';
+                invitationsList.innerHTML = invitations.map(invitation => `
+                    <div class="invitation-card">
+                        <div class="invitation-header">
+                            <div>
+                                <div class="invitation-title">${escapeHtml(invitation.project_name || 'Proyecto sin nombre')}</div>
+                                <div class="invitation-from">Invitado por ${escapeHtml(invitation.invited_by_name || 'Usuario')}</div>
+                            </div>
+                            <div class="invitation-actions">
+                                <button class="btn btn-secondary" onclick="handleInvitation('${invitation.id}', 'rejected')">
+                                    <i class="fas fa-times"></i>
+                                    Rechazar
+                                </button>
+                                <button class="btn btn-primary" onclick="handleInvitation('${invitation.id}', 'accepted')">
+                                    <i class="fas fa-check"></i>
+                                    Aceptar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="project-meta">
+                            <span>
+                                <i class="fas fa-user-tag"></i>
+                                Rol: ${escapeHtml(invitation.role || 'member')}
+                            </span>
+                            <span>
+                                <i class="fas fa-calendar"></i>
+                                ${formatDate(invitation.created_at)}
+                            </span>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading invitations:', error);
+                document.getElementById('invitationsSection').style.display = 'none';
+            }
+        }
+
+        async function loadCollaborativeProjects() {
+            try {
+                console.log('Cargando proyectos colaborativos...');
+                
+                // Primero obtener los proyectos donde es miembro
+                const { data: memberData, error: memberError } = await supabaseClient
+                    .from('project_members')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('status', 'active');
+
+                if (memberError) {
+                    console.error('Error obteniendo membresías:', memberError);
+                    throw memberError;
+                }
+
+                console.log('Membresías encontradas:', memberData?.length || 0);
+
+                if (!memberData || memberData.length === 0) {
+                    renderCollaborativeProjects([]);
+                    return;
+                }
+
+                // Obtener detalles de los proyectos
+                const projectIds = memberData.map(m => m.project_id);
+                const { data: projects, error: projectError } = await supabaseClient
+                    .from('projects')
+                    .select('*')
+                    .in('id', projectIds)
+                    .neq('owner_id', currentUser.id); // Filtrar proyectos donde NO es owner
+
+                if (projectError) {
+                    console.error('Error obteniendo proyectos:', projectError);
+                    throw projectError;
+                }
+
+                console.log('Proyectos colaborativos:', projects?.length || 0);
+
+                // Combinar datos
+                const collaborativeProjects = projects?.map(project => {
+                    const memberInfo = memberData.find(m => m.project_id === project.id);
+                    return {
+                        ...project,
+                        role: memberInfo?.role || 'member',
+                        joined_at: memberInfo?.joined_at
+                    };
+                }) || [];
+
+                // Obtener conteos adicionales para cada proyecto
+                for (let project of collaborativeProjects) {
+                    // Contar archivos
+                    const { count: filesCount } = await supabaseClient
+                        .from('project_files')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('project_id', project.id);
+
+                    // Contar miembros activos
+                    const { count: membersCount } = await supabaseClient
+                        .from('project_members')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('project_id', project.id)
+                        .eq('status', 'active');
+
+                    project.files_count = filesCount || 0;
+                    project.members_count = membersCount || 0;
+                }
+
+                renderCollaborativeProjects(collaborativeProjects);
+
+            } catch (error) {
+                console.error('Error loading collaborative projects:', error);
+                document.getElementById('collaborativeProjectsGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <p>Error al cargar los proyectos colaborativos</p>
+                        <small>Inténtalo de nuevo más tarde</small>
+                    </div>
+                `;
+            }
+        }
+
+        function renderCollaborativeProjects(projects) {
+            console.log('Renderizando proyectos:', projects);
+            const container = document.getElementById('collaborativeProjectsGrid');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <p>No participas en proyectos colaborativos</p>
+                        <small>Acepta invitaciones o solicita unirte a proyectos existentes</small>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-card" onclick="openProject('${project.id}')">
+                    <button class="leave-btn" onclick="event.stopPropagation(); leaveProject('${project.id}', '${escapeHtml(project.name)}')">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Salir
+                    </button>
+                    
+                    <div class="project-header">
+                        <div>
+                            <div class="project-name">${escapeHtml(project.name)}</div>
+                            <div class="project-owner">Por ${escapeHtml(project.owner_name || 'Usuario')}</div>
+                        </div>
+                        <span class="project-role role-${project.role}">${getRoleDisplayName(project.role)}</span>
+                    </div>
+                    
+                    <div class="project-meta">
+                        <span>
+                            <i class="fas fa-file"></i>
+                            ${project.files_count || 0} archivos
+                        </span>
+                        <span>
+                            <i class="fas fa-users"></i>
+                            ${project.members_count || 0} miembros
+                        </span>
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            Unido ${formatDate(project.joined_at)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function handleInvitation(invitationId, status) {
+            try {
+                console.log('Procesando invitación:', invitationId, status);
+                
+                // Obtener datos de la invitación
+                const { data: invitation, error: invitationError } = await supabaseClient
+                    .from('project_invitations')
+                    .select('*')
+                    .eq('id', invitationId)
+                    .single();
+
+                if (invitationError) throw invitationError;
+
+                if (status === 'accepted') {
+                    // Obtener perfil del usuario
+                    const { data: profile } = await supabaseClient
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', currentUser.id)
+                        .single();
+
+                    const userName = profile?.full_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+
+                    // Agregar al usuario como miembro del proyecto
+                    const { error: memberError } = await supabaseClient
+                        .from('project_members')
+                        .insert({
+                            project_id: invitation.project_id,
+                            user_id: currentUser.id,
+                            user_name: userName,
+                            user_email: currentUser.email,
+                            role: invitation.role || 'member',
+                            status: 'active'
+                        });
+
+                    if (memberError) throw memberError;
+                }
+
+                // Actualizar estado de la invitación
+                const { error: updateError } = await supabaseClient
+                    .from('project_invitations')
+                    .update({
+                        status: status,
+                        accepted_at: status === 'accepted' ? new Date().toISOString() : null
+                    })
+                    .eq('id', invitationId);
+
+                if (updateError) throw updateError;
+
+                // Recargar invitaciones y proyectos
+                await loadInvitations();
+                await loadCollaborativeProjects();
+
+                const message = status === 'accepted' ? 'Invitación aceptada correctamente' : 'Invitación rechazada';
+                alert(message);
+
+            } catch (error) {
+                console.error('Error handling invitation:', error);
+                alert('Error al procesar la invitación: ' + error.message);
+            }
+        }
+
+        async function leaveProject(projectId, projectName) {
+            if (!confirm(`¿Estás seguro de que quieres salir del proyecto "${projectName}"?`)) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('project_members')
+                    .update({ status: 'inactive' })
+                    .eq('project_id', projectId)
+                    .eq('user_id', currentUser.id);
+
+                if (error) throw error;
+
+                alert('Has salido del proyecto correctamente');
+                loadCollaborativeProjects();
+
+            } catch (error) {
+                console.error('Error leaving project:', error);
+                alert('Error al salir del proyecto: ' + error.message);
+            }
+        }
+
+        function openProject(projectId) {
+            window.location.href = `project-detail.html?id=${projectId}`;
+        }
+
+        function getRoleDisplayName(role) {
+            const roles = {
+                'owner': 'Propietario',
+                'admin': 'Administrador',
+                'member': 'Miembro',
+                'viewer': 'Observador'
+            };
+            return roles[role] || 'Miembro';
+        }
+
+        function getInitials(name) {
+            if (!name) return '??';
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+        }
+
+        // Funciones de UI
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            const icon = document.getElementById('themeIcon');
+            icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        }
+
+        // Utilidades
+        function formatDate(dateString) {
+            if (!dateString) return 'Fecha no disponible';
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDropdown && userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

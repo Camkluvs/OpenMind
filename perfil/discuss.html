@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discusiones - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .discussion-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .discussion-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 158, 255, 0.1);
+        }
+
+        .discussion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .discussion-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .discussion-project {
+            color: var(--accent-color);
+            font-size: 14px;
+        }
+
+        .discussion-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: rgba(0, 212, 170, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-closed {
+            background: rgba(255, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        .discussion-content {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .discussion-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .discussion-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .discussion-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .discussion-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: rgba(74, 158, 255, 0.1);
+        }
+
+        .create-discussion-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .create-discussion-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(74, 158, 255, 0.4);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    OpenMind AI
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="profile.html" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="projects.html" class="nav-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Proyectos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Colaboración</div>
+                    <a href="collaborative-projects.html" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Proyectos Colaborativos</span>
+                    </a>
+                    <a href="discussions.html" class="nav-item active">
+                        <i class="fas fa-comments"></i>
+                        <span>Discusiones</span>
+                    </a>
+                    <a href="activity.html" class="nav-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Actividad Reciente</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Configuración</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                    <a href="help.html" class="nav-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Ayuda</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Discusiones</h1>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span>Tema</span>
+                    </button>
+                    
+                    <div class="user-menu">
+                        <div class="user-menu-toggle" onclick="toggleUserMenu()">
+                            <img class="user-avatar-small" id="headerAvatarImg" src="" alt="Avatar">
+                            <span id="headerUserName">Cargando...</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="profile.html" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                            <a href="settings.html" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+                            <div class="user-dropdown-item logout" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <div class="filter-tab active" onclick="filterDiscussions('all')">
+                        <i class="fas fa-list"></i> Todas
+                    </div>
+                    <div class="filter-tab" onclick="filterDiscussions('mine')">
+                        <i class="fas fa-user"></i> Mis Discusiones
+                    </div>
+                    <div class="filter-tab" onclick="filterDiscussions('open')">
+                        <i class="fas fa-circle"></i> Abiertas
+                    </div>
+                    <div class="filter-tab" onclick="filterDiscussions('closed')">
+                        <i class="fas fa-check-circle"></i> Cerradas
+                    </div>
+                </div>
+
+                <!-- Discussions List -->
+                <div id="discussionsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Cargando discusiones...</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="create-discussion-btn" onclick="createNewDiscussion()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+       
+        let supabaseClient;
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let allDiscussions = [];
+        let currentFilter = 'all';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            await checkAuth();
+            applyTheme();
+            loadDiscussions();
+        }
+
+        async function checkAuth() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (!session || !session.user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                updateUserHeader();
+                
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function updateUserHeader() {
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+
+            const userName = profile?.full_name || currentUser.email.split('@')[0];
+            document.getElementById('headerUserName').textContent = userName;
+            
+            if (profile?.avatar_url) {
+                document.getElementById('headerAvatarImg').src = profile.avatar_url;
+            }
+        }
+
+        async function loadDiscussions() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('discussions')
+                    .select(`
+                        *,
+                        projects(name),
+                        profiles!discussions_created_by_fkey(full_name, avatar_url),
+                        discussion_replies(count),
+                        discussion_likes(count)
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                allDiscussions = data || [];
+                renderDiscussions(allDiscussions);
+                
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+                document.getElementById('discussionsList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <p>Error al cargar las discusiones</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDiscussions(discussions) {
+            const container = document.getElementById('discussionsList');
+            
+            if (discussions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <p>No hay discusiones ${currentFilter !== 'all' ? 'con este filtro' : 'aún'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = discussions.map(discussion => `
+                <div class="discussion-card" onclick="viewDiscussion('${discussion.id}')">
+                    <div class="discussion-header">
+                        <div>
+                            <div class="discussion-title">${escapeHtml(discussion.title)}</div>
+                            <div class="discussion-project">${discussion.projects?.name || 'Proyecto General'}</div>
+                        </div>
+                        <span class="discussion-status ${discussion.is_closed ? 'status-closed' : 'status-open'}">
+                            ${discussion.is_closed ? 'Cerrada' : 'Abierta'}
+                        </span>
+                    </div>
+                    <div class="discussion-content">
+                        ${escapeHtml(discussion.content?.substring(0, 200) || '')}${discussion.content?.length > 200 ? '...' : ''}
+                    </div>
+                    <div class="discussion-footer">
+                        <div class="discussion-stats">
+                            <div class="discussion-stat">
+                                <i class="fas fa-comment"></i>
+                                ${discussion.discussion_replies?.[0]?.count || 0} respuestas
+                            </div>
+                            <div class="discussion-stat">
+                                <i class="fas fa-heart"></i>
+                                ${discussion.discussion_likes?.[0]?.count || 0} likes
+                            </div>
+                            <div class="discussion-stat">
+                                <i class="fas fa-clock"></i>
+                                ${formatTimeAgo(discussion.created_at)}
+                            </div>
+                        </div>
+                        <div class="discussion-author">
+                            <div class="author-avatar">
+                                ${discussion.profiles?.full_name?.charAt(0).toUpperCase() || 'U'}
+                            </div>
+                            ${escapeHtml(discussion.profiles?.full_name || 'Usuario')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterDiscussions(filter) {
+            currentFilter = filter;
+            
+            // Actualizar tabs activos
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            let filtered = [...allDiscussions];
+            
+            switch(filter) {
+                case 'mine':
+                    filtered = filtered.filter(d => d.created_by === currentUser.id);
+                    break;
+                case 'open':
+                    filtered = filtered.filter(d => !d.is_closed);
+                    break;
+                case 'closed':
+                    filtered = filtered.filter(d => d.is_closed);
+                    break;
+            }
+            
+            renderDiscussions(filtered);
+        }
+
+        function viewDiscussion(discussionId) {
+            window.location.href = `discussion-detail.html?id=${discussionId}`;
+        }
+
+        function createNewDiscussion() {
+            window.location.href = 'create-discussion.html';
+        }
+
+        // Funciones de UI
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            const icon = document.getElementById('themeIcon');
+            icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        }
+
+        // Utilidades
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000); // diferencia en segundos
+            
+            if (diff < 60) return 'hace un momento';
+            if (diff < 3600) return `hace ${Math.floor(diff / 60)} minutos`;
+            if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+            if (diff < 604800) return `hace ${Math.floor(diff / 86400)} días`;
+            
+            return formatDate(dateString);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDropdown && userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

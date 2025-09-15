@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    OpenMind AI
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard no </span>
+                    </a>
+                    <a href="profile.html" class="nav-item active">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="projects.html" class="nav-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Proyectos</span>
+                        <span class="badge" id="projectsBadge">0</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Colaboración</div>
+                    <a href="collaborative-projects.html" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Proyectos Colaborativos</span>
+                    </a>
+                    <a href="discussions.html" class="nav-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Discusiones</span>
+                    </a>
+                    <a href="activity.html" class="nav-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Actividad Reciente</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Configuración</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                    <a href="help.html" class="nav-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Ayuda</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Mi Perfil</h1>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span>Tema</span>
+                    </button>
+                    
+                    <div class="user-menu">
+                        <div class="user-menu-toggle" onclick="toggleUserMenu()">
+                            <img class="user-avatar-small" id="headerAvatarImg" src="" alt="Avatar">
+                            <span id="headerUserName">Cargando...</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="profile.html" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                            <a href="settings.html" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+                            <div class="user-dropdown-item logout" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="avatar-container">
+                        <img class="user-avatar" id="userAvatarImg" src="" alt="Avatar">
+                        <div class="avatar-upload" onclick="openEditModal()">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Cargando...</div>
+                        <div class="user-username" id="userUsername">@cargando</div>
+                        <div class="rank-badge" id="userRank">
+                            <i class="fas fa-medal"></i>
+                            <span id="rankText">Novato</span>
+                        </div>
+                    </div>
+                    <button class="control-btn" onclick="openEditModal()">
+                        <i class="fas fa-edit"></i>
+                        <span>Editar Perfil</span>
+                    </button>
+                </div>
+
+                <!-- Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="stat-number" id="ownedProjects">0</div>
+                        <div class="stat-label">Proyectos Propios</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number" id="collaborativeProjects">0</div>
+                        <div class="stat-label">Proyectos Colaborativos</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-number" id="pendingInvitations">0</div>
+                        <div class="stat-label">Invitaciones</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-number" id="memberSince">2024</div>
+                        <div class="stat-label">Miembro Desde</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div class="stat-number" id="totalFiles">0</div>
+                        <div class="stat-label">Archivos Creados</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="stat-number" id="totalDiscussions">0</div>
+                        <div class="stat-label">Discusiones</div>
+                    </div>
+                </div>
+
+                <!-- My Projects -->
+                
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de edición de perfil -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Perfil</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label class="form-label" for="editFullName">Nombre Completo</label>
+                    <input type="text" id="editFullName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editUsername">Nombre de Usuario</label>
+                    <input type="text" id="editUsername" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editRank">Rango</label>
+                    <select id="editRank" class="form-select">
+                        <option value="novato">Novato</option>
+                        <option value="colaborador">Colaborador</option>
+                        <option value="experto">Experto</option>
+                        <option value="maestro">Maestro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editAvatar">Imagen de Perfil</label>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                        <img id="avatarPreview" src="" alt="Vista previa" style="width: 60px; height: 60px; border-radius: 50%; display: none; object-fit: cover;">
+                        <label for="editAvatar" class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+                            <i class="fas fa-upload"></i> Seleccionar imagen
+                        </label>
+                    </div>
+                    <input type="file" id="editAvatar" accept="image/*" class="form-input" style="display: none;">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+       
+        let supabaseClient;
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            await checkAuthAndLoadProfile();
+            applyTheme();
+        }
+
+        async function checkAuthAndLoadProfile() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (!session || !session.user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                await loadUserProfile();
+                
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadUserProfile() {
+            try {
+                // Obtener info del perfil
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (profileError) throw profileError;
+
+                // Obtener estadísticas
+                const stats = await getUserStats();
+                
+               
+                
+                // Actualizar UI
+                updateUserInfo(profile);
+                updateStats(stats);
+                updateSidebarBadges(stats);
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        async function getUserStats() {
+            try {
+                // Contar proyectos propios
+                const { count: ownedCount } = await supabaseClient
+                    .from('projects')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('owner_id', currentUser.id);
+
+                // Contar proyectos donde es miembro
+                const { count: memberCount } = await supabaseClient
+                    .from('project_members')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', currentUser.id)
+                    .eq('status', 'active');
+
+                // Calcular proyectos colaborativos (donde es miembro pero no owner)
+                const collaborativeCount = (memberCount || 0) - (ownedCount || 0);
+
+                // Contar invitaciones pendientes
+                const { count: invitationsCount } = await supabaseClient
+                    .from('project_invitations')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('invited_email', currentUser.email)
+                    .eq('status', 'pending');
+
+                // Contar archivos creados
+                const { count: filesCount } = await supabaseClient
+                    .from('project_files')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('created_by', currentUser.id);
+
+                // Contar discusiones creadas
+                const { count: discussionsCount } = await supabaseClient
+                    .from('discussions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('created_by', currentUser.id);
+
+                return {
+                    ownedProjects: ownedCount || 0,
+                    collaborativeProjects: Math.max(0, collaborativeCount),
+                    pendingInvitations: invitationsCount || 0,
+                    totalFiles: filesCount || 0,
+                    totalDiscussions: discussionsCount || 0
+                };
+            } catch (error) {
+                console.error('Error getting stats:', error);
+                return { 
+                    ownedProjects: 0, 
+                    collaborativeProjects: 0, 
+                    pendingInvitations: 0,
+                    totalFiles: 0,
+                    totalDiscussions: 0
+                };
+            }
+        }
+
+        function updateUserInfo(profile) {
+    const userName = profile?.full_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+    const username = profile?.username || currentUser.email.split('@')[0];
+    const userRank = profile?.rank || 'novato';
+    
+    // Almacenar la URL actual del avatar para posible eliminación posterior
+    if (profile?.avatar_url) {
+        currentAvatarUrl = profile.avatar_url; // <-- Esta línea es la importante
+        document.getElementById('userAvatarImg').src = profile.avatar_url;
+        document.getElementById('headerAvatarImg').src = profile.avatar_url;
+        document.getElementById('avatarPreview').src = profile.avatar_url;
+        document.getElementById('avatarPreview').style.display = 'block';
+    } else {
+        // Restablecer la variable si no hay avatar
+        currentAvatarUrl = null;
+        // Usar iniciales si no hay imagen
+        const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('userAvatarImg').src = 'data:image/svg+xml;base64,' + btoa(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+                <rect width="100%" height="100%" fill="#${getColorFromName(userName)}"/>
+                <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" fill="white">${initials}</text>
+            </svg>
+        `);
+        document.getElementById('userAvatarImg').alt = initials;
+        document.getElementById('headerAvatarImg').src = 'data:image/svg+xml;base64,' + btoa(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <rect width="100%" height="100%" fill="#${getColorFromName(userName)}"/>
+                <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="white">${initials}</text>
+            </svg>
+        `);
+        document.getElementById('headerAvatarImg').alt = initials;
+        document.getElementById('avatarPreview').style.display = 'none';
+    }
+    
+    // Actualizar nombres
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('headerUserName').textContent = userName;
+    document.getElementById('userUsername').textContent = `@${username}`;
+    
+    // Actualizar rango
+    document.getElementById('rankText').textContent = getRankDisplayName(userRank);
+    document.getElementById('userRank').className = `rank-badge rank-${userRank}`;
+    document.getElementById('editRank').value = userRank;
+    document.getElementById('editFullName').value = userName;
+    document.getElementById('editUsername').value = username;
+    
+    // Año de miembro
+    const memberYear = new Date(profile?.created_at || currentUser.created_at).getFullYear();
+    document.getElementById('memberSince').textContent = memberYear;
+}
+
+// Función auxiliar para generar un color consistente basado en el nombre
+function getColorFromName(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    const colors = [
+        '4A90E2', '50E3C2', 'B8E986', 'F5A623', 
+        'D0021B', 'BD10E0', '9013FE', '417505'
+    ];
+    
+    return colors[Math.abs(hash) % colors.length];
+}
+
+        function getRankDisplayName(rank) {
+            const ranks = {
+                'novato': 'Novato',
+                'colaborador': 'Colaborador',
+                'experto': 'Experto',
+                'maestro': 'Maestro'
+            };
+            return ranks[rank] || 'Novato';
+        }
+
+        function updateStats(stats) {
+            document.getElementById('ownedProjects').textContent = stats.ownedProjects;
+            document.getElementById('collaborativeProjects').textContent = stats.collaborativeProjects;
+            document.getElementById('pendingInvitations').textContent = stats.pendingInvitations;
+            document.getElementById('totalFiles').textContent = stats.totalFiles;
+            document.getElementById('totalDiscussions').textContent = stats.totalDiscussions;
+        }
+
+        function updateSidebarBadges(stats) {
+            document.getElementById('projectsBadge').textContent = stats.ownedProjects + stats.collaborativeProjects;
+            
+            if (stats.ownedProjects + stats.collaborativeProjects === 0) {
+                document.getElementById('projectsBadge').style.display = 'none';
+            }
+        }
+
+        function openEditModal() {
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        let isProcessing = false;
+        let currentAvatarUrl = null;
+
+
+async function handleProfileUpdate(event) {
+    event.preventDefault();
+    
+    // Prevenir múltiples envíos simultáneos
+    if (isProcessing) {
+        console.log('El proceso ya está en ejecución, espera...');
+        return;
+    }
+    
+    isProcessing = true;
+    
+    // Deshabilitar el botón y mostrar indicador de carga
+    const submitButton = document.querySelector('#editProfileForm button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    submitButton.disabled = true;
+    
+    // También deshabilitar los otros botones para evitar acciones concurrentes
+    const cancelButton = document.querySelector('#editProfileForm button[type="button"]');
+    const originalCancelText = cancelButton.textContent;
+    cancelButton.disabled = true;
+    
+    const fullName = document.getElementById('editFullName').value;
+    const username = document.getElementById('editUsername').value;
+    const rank = document.getElementById('editRank').value;
+    const avatarFile = document.getElementById('editAvatar').files[0];
+    
+    try {
+        let avatarUrl = null;
+        let oldAvatarPath = null;
+        
+        // Obtener la ruta del avatar actual si existe
+        if (currentAvatarUrl) {
+            // Extraer la ruta del archivo desde la URL completa
+            const urlParts = currentAvatarUrl.split('/');
+            const fileName = urlParts[urlParts.length - 1];
+            oldAvatarPath = `${currentUser.id}/${fileName}`;
+        }
+        
+        // Subir imagen si se seleccionó una
+        if (avatarFile) {
+            const fileExt = avatarFile.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${currentUser.id}/${fileName}`;
+            
+            console.log('Subiendo nueva imagen...');
+            const { error: uploadError } = await supabaseClient.storage
+                .from('avatars')
+                .upload(filePath, avatarFile);
+            
+            if (uploadError) {
+                // Si ya existe una imagen con el mismo nombre, intentar eliminarla primero
+                if (uploadError.message.includes('already exists')) {
+                    await supabaseClient.storage
+                        .from('avatars')
+                        .remove([filePath]);
+                    
+                    // Reintentar la subida
+                    const { error: retryError } = await supabaseClient.storage
+                        .from('avatars')
+                        .upload(filePath, avatarFile);
+                    
+                    if (retryError) throw retryError;
+                } else {
+                    throw uploadError;
+                }
+            }
+            
+            const { data: { publicUrl } } = supabaseClient.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+            
+            avatarUrl = publicUrl;
+            console.log('Nueva imagen subida correctamente:', avatarUrl);
+            
+            // Eliminar la imagen anterior si existe
+            if (oldAvatarPath) {
+                console.log('Eliminando imagen anterior:', oldAvatarPath);
+                try {
+                    const { error: removeError } = await supabaseClient.storage
+                        .from('avatars')
+                        .remove([oldAvatarPath]);
+                    
+                    if (removeError) {
+                        console.warn('No se pudo eliminar la imagen anterior:', removeError);
+                    } else {
+                        console.log('Imagen anterior eliminada correctamente');
+                    }
+                } catch (removeError) {
+                    console.warn('Error al eliminar la imagen anterior:', removeError);
+                    // No lanzamos el error para no interrumpir el flujo principal
+                }
+            }
+        }
+        
+        // Actualizar perfil
+        const updates = {
+            id: currentUser.id,
+            full_name: fullName,
+            username: username,
+            rank: rank,
+            updated_at: new Date().toISOString()
+        };
+        
+        if (avatarUrl) {
+            updates.avatar_url = avatarUrl;
+            currentAvatarUrl = avatarUrl; // Actualizar la referencia al avatar actual
+        }
+        
+        console.log('Actualizando perfil en la base de datos...');
+        const { error } = await supabaseClient
+            .from('profiles')
+            .upsert(updates);
+        
+        if (error) throw error;
+        
+        // Recargar perfil
+        console.log('Perfil actualizado, recargando datos...');
+        await loadUserProfile();
+        closeEditModal();
+        
+        // Mostrar notificación de éxito
+        showNotification('Perfil actualizado correctamente', 'success');
+        
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        showNotification('Error al actualizar el perfil: ' + error.message, 'error');
+    } finally {
+        // Siempre restablecer el estado, incluso si hay error
+        isProcessing = false;
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+        cancelButton.textContent = originalCancelText;
+        cancelButton.disabled = false;
+        
+        // Limpiar el input de archivo
+        document.getElementById('editAvatar').value = '';
+    }
+}
+
+// Función para eliminar todas las imágenes antiguas de un usuario (opcional, para limpieza)
+async function cleanupOldAvatars(userId) {
+    try {
+        // Listar todos los archivos en la carpeta del usuario
+        const { data: files, error } = await supabaseClient.storage
+            .from('avatars')
+            .list(userId);
+        
+        if (error) throw error;
+        
+        if (files && files.length > 0) {
+            // Crear un array con las rutas completas de los archivos
+            const filePaths = files.map(file => `${userId}/${file.name}`);
+            
+            // Eliminar todos los archivos
+            const { error: removeError } = await supabaseClient.storage
+                .from('avatars')
+                .remove(filePaths);
+            
+            if (removeError) throw removeError;
+            
+            console.log(`${files.length} archivos antiguos eliminados`);
+        }
+    } catch (error) {
+        console.error('Error en cleanupOldAvatars:', error);
+    }
+}
+
+// Función auxiliar para mostrar notificaciones
+function showNotification(message, type = 'info') {
+    // Eliminar notificación previa si existe
+    const existingNotification = document.getElementById('profileNotification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.id = 'profileNotification';
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.padding = '12px 20px';
+    notification.style.borderRadius = '4px';
+    notification.style.color = 'white';
+    notification.style.zIndex = '10000';
+    notification.style.fontWeight = '500';
+    notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    
+    if (type === 'success') {
+        notification.style.background = '#4caf50';
+    } else if (type === 'error') {
+        notification.style.background = '#f44336';
+    } else {
+        notification.style.background = '#2196f3';
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Auto-eliminar después de 4 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 4000);
+}
+
+
+        // Vista previa de imagen
+        document.getElementById('editAvatar').addEventListener('change', function(event) {
+            const input = event.target;
+            const preview = document.getElementById('avatarPreview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        });
+
+        // Formulario de edición
+        document.getElementById('editProfileForm').addEventListener('submit', handleProfileUpdate);
+
+        // Funciones de UI
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            const icon = document.getElementById('themeIcon');
+            icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        }
+
+        // Utilidades
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDropdown && userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

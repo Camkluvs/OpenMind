@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad Reciente - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .activity-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .activity-item {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(74, 158, 255, 0.1);
+        }
+
+        .activity-item::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 2px solid var(--card-bg);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .activity-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .activity-icon.file {
+            background: rgba(74, 158, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        .activity-icon.discussion {
+            background: rgba(0, 212, 170, 0.1);
+            color: var(--success-color);
+        }
+
+        .activity-icon.member {
+            background: rgba(255, 176, 32, 0.1);
+            color: var(--warning-color);
+        }
+
+        .activity-icon.project {
+            background: rgba(160, 32, 240, 0.1);
+            color: #a020f0;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .activity-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .activity-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-chip.active {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .filter-chip:hover:not(.active) {
+            background: rgba(74, 158, 255, 0.1);
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 30px 0 20px;
+            position: relative;
+        }
+
+        .date-separator span {
+            background: var(--primary-bg);
+            padding: 0 15px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .date-separator::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: var(--border-color);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    OpenMind AI
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="profile.html" class="nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="projects.html" class="nav-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Proyectos</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Colaboración</div>
+                    <a href="collaborative-projects.html" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Proyectos Colaborativos</span>
+                    </a>
+                    <a href="discussions.html" class="nav-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Discusiones</span>
+                    </a>
+                    <a href="activity.html" class="nav-item active">
+                        <i class="fas fa-clock"></i>
+                        <span>Actividad Reciente</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Configuración</div>
+                    <a href="settings.html" class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                    <a href="help.html" class="nav-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Ayuda</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="mobile-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Actividad Reciente</h1>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span>Tema</span>
+                    </button>
+                    
+                    <div class="user-menu">
+                        <div class="user-menu-toggle" onclick="toggleUserMenu()">
+                            <img class="user-avatar-small" id="headerAvatarImg" src="" alt="Avatar">
+                            <span id="headerUserName">Cargando...</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="profile.html" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                            <a href="settings.html" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+                            <div class="user-dropdown-item logout" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Activity Filters -->
+                <div class="activity-filters">
+                    <div class="filter-chip active" onclick="filterActivity('all')">
+                        <i class="fas fa-list"></i> Toda la Actividad
+                    </div>
+                    <div class="filter-chip" onclick="filterActivity('files')">
+                        <i class="fas fa-file"></i> Archivos
+                    </div>
+                    <div class="filter-chip" onclick="filterActivity('discussions')">
+                        <i class="fas fa-comments"></i> Discusiones
+                    </div>
+                    <div class="filter-chip" onclick="filterActivity('projects')">
+                        <i class="fas fa-folder"></i> Proyectos
+                    </div>
+                    <div class="filter-chip" onclick="filterActivity('members')">
+                        <i class="fas fa-users"></i> Miembros
+                    </div>
+                </div>
+
+                <!-- Activity Timeline -->
+                <div class="activity-timeline" id="activityTimeline">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Cargando actividad...</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+       
+        let supabaseClient;
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        let allActivities = [];
+        let currentFilter = 'all';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            await checkAuth();
+            applyTheme();
+            loadActivity();
+        }
+
+        async function checkAuth() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (!session || !session.user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+                updateUserHeader();
+                
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function updateUserHeader() {
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+
+            const userName = profile?.full_name || currentUser.email.split('@')[0];
+            document.getElementById('headerUserName').textContent = userName;
+            
+            if (profile?.avatar_url) {
+                document.getElementById('headerAvatarImg').src = profile.avatar_url;
+            }
+        }
+
+        async function loadActivity() {
+            try {
+                // Simular carga de actividad de múltiples fuentes
+                const activities = [
+                    {
+                        type: 'file',
+                        title: 'Archivo creado',
+                        description: 'Se creó el archivo "main.js" en el proyecto "Mi App"',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 30), // hace 30 minutos
+                        icon: 'fas fa-file'
+                    },
+                    {
+                        type: 'discussion',
+                        title: 'Nueva discusión',
+                        description: 'Se inició la discusión "Mejoras en el diseño"',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // hace 2 horas
+                        icon: 'fas fa-comments'
+                    },
+                    {
+                        type: 'member',
+                        title: 'Nuevo miembro',
+                        description: 'Juan García se unió al proyecto "Web App"',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // hace 5 horas
+                        icon: 'fas fa-user-plus'
+                    },
+                    {
+                        type: 'project',
+                        title: 'Proyecto actualizado',
+                        description: 'Se actualizó la descripción del proyecto "API REST"',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // hace 1 día
+                        icon: 'fas fa-folder'
+                    },
+                    {
+                        type: 'file',
+                        title: 'Archivo modificado',
+                        description: 'Se modificó el archivo "styles.css" en el proyecto "Portfolio"',
+                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // hace 2 días
+                        icon: 'fas fa-edit'
+                    }
+                ];
+
+                allActivities = activities;
+                renderActivity(activities);
+                
+            } catch (error) {
+                console.error('Error loading activity:', error);
+                document.getElementById('activityTimeline').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <p>Error al cargar la actividad</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderActivity(activities) {
+            const container = document.getElementById('activityTimeline');
+            
+            if (activities.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <p>No hay actividad reciente</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Agrupar actividades por fecha
+            const groupedActivities = groupActivitiesByDate(activities);
+            let html = '';
+
+            for (const [date, dateActivities] of Object.entries(groupedActivities)) {
+                html += `<div class="date-separator"><span>${date}</span></div>`;
+                
+                html += dateActivities.map(activity => `
+                    <div class="activity-item">
+                        <div class="activity-header">
+                            <div class="activity-type">
+                                <div class="activity-icon ${activity.type}">
+                                    <i class="${activity.icon}"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-title">${escapeHtml(activity.title)}</div>
+                                    <div class="activity-description">${escapeHtml(activity.description)}</div>
+                                </div>
+                            </div>
+                            <div class="activity-time">${formatTime(activity.timestamp)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            container.innerHTML = html;
+        }
+
+        function groupActivitiesByDate(activities) {
+            const groups = {};
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            activities.forEach(activity => {
+                const activityDate = new Date(activity.timestamp);
+                let dateLabel;
+
+                if (isSameDay(activityDate, today)) {
+                    dateLabel = 'Hoy';
+                } else if (isSameDay(activityDate, yesterday)) {
+                    dateLabel = 'Ayer';
+                } else {
+                    dateLabel = formatDate(activity.timestamp);
+                }
+
+                if (!groups[dateLabel]) {
+                    groups[dateLabel] = [];
+                }
+                groups[dateLabel].push(activity);
+            });
+
+            return groups;
+        }
+
+        function isSameDay(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getDate() === date2.getDate();
+        }
+
+        function filterActivity(filter) {
+            currentFilter = filter;
+            
+            // Actualizar chips activos
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            let filtered = [...allActivities];
+            
+            if (filter !== 'all') {
+                filtered = filtered.filter(a => {
+                    if (filter === 'files') return a.type === 'file';
+                    if (filter === 'discussions') return a.type === 'discussion';
+                    if (filter === 'projects') return a.type === 'project';
+                    if (filter === 'members') return a.type === 'member';
+                    return false;
+                });
+            }
+            
+            renderActivity(filtered);
+        }
+
+        // Funciones de UI
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            const icon = document.getElementById('themeIcon');
+            icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        }
+
+        // Utilidades
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const options = { 
+                weekday: 'long',
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('es-ES', options);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDropdown && userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
