@@ -112,6 +112,61 @@
             margin-bottom: 16px;
             opacity: 0.5;
         }
+        .project-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.project-actions .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.project-actions .btn-primary {
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+}
+
+.project-actions .btn-secondary {
+    background: rgba(255, 68, 68, 0.1);
+    color: var(--error-color);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+.project-actions .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.project-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.project-meta i {
+    width: 14px;
+    text-align: center;
+}
     </style>
 </head>
 <body data-theme="dark">
@@ -153,7 +208,7 @@
                         <i class="fas fa-users"></i>
                         <span>Proyectos Colaborativos</span>
                     </a>
-                    <a href="discussions.html" class="nav-item">
+                    <a href="discuss.html" class="nav-item">
                         <i class="fas fa-comments"></i>
                         <span>Discusiones</span>
                     </a>
@@ -398,140 +453,149 @@
             }
         }
 
-        async function loadCollaborativeProjects() {
-            try {
-                console.log('Cargando proyectos colaborativos...');
-                
-                // Primero obtener los proyectos donde es miembro
-                const { data: memberData, error: memberError } = await supabaseClient
-                    .from('project_members')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .eq('status', 'active');
 
-                if (memberError) {
-                    console.error('Error obteniendo membresías:', memberError);
-                    throw memberError;
-                }
+async function loadCollaborativeProjects() {
+    try {
+        console.log('Cargando proyectos colaborativos...');
+        
+        // Primero obtener los proyectos donde es miembro (pero NO es owner)
+        const { data: memberData, error: memberError } = await supabaseClient
+            .from('project_members')
+            .select(`
+                *,
+                projects!inner (id, name, owner_id, created_at, owner_name, owner_email, invite_code)
+            `)
+            .eq('user_id', currentUser.id)
+            .eq('status', 'active')
+            .neq('projects.owner_id', currentUser.id); // Solo proyectos donde NO es owner
 
-                console.log('Membresías encontradas:', memberData?.length || 0);
-
-                if (!memberData || memberData.length === 0) {
-                    renderCollaborativeProjects([]);
-                    return;
-                }
-
-                // Obtener detalles de los proyectos
-                const projectIds = memberData.map(m => m.project_id);
-                const { data: projects, error: projectError } = await supabaseClient
-                    .from('projects')
-                    .select('*')
-                    .in('id', projectIds)
-                    .neq('owner_id', currentUser.id); // Filtrar proyectos donde NO es owner
-
-                if (projectError) {
-                    console.error('Error obteniendo proyectos:', projectError);
-                    throw projectError;
-                }
-
-                console.log('Proyectos colaborativos:', projects?.length || 0);
-
-                // Combinar datos
-                const collaborativeProjects = projects?.map(project => {
-                    const memberInfo = memberData.find(m => m.project_id === project.id);
-                    return {
-                        ...project,
-                        role: memberInfo?.role || 'member',
-                        joined_at: memberInfo?.joined_at
-                    };
-                }) || [];
-
-                // Obtener conteos adicionales para cada proyecto
-                for (let project of collaborativeProjects) {
-                    // Contar archivos
-                    const { count: filesCount } = await supabaseClient
-                        .from('project_files')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('project_id', project.id);
-
-                    // Contar miembros activos
-                    const { count: membersCount } = await supabaseClient
-                        .from('project_members')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('project_id', project.id)
-                        .eq('status', 'active');
-
-                    project.files_count = filesCount || 0;
-                    project.members_count = membersCount || 0;
-                }
-
-                renderCollaborativeProjects(collaborativeProjects);
-
-            } catch (error) {
-                console.error('Error loading collaborative projects:', error);
-                document.getElementById('collaborativeProjectsGrid').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <p>Error al cargar los proyectos colaborativos</p>
-                        <small>Inténtalo de nuevo más tarde</small>
-                    </div>
-                `;
-            }
+        if (memberError) {
+            console.error('Error obteniendo membresías:', memberError);
+            throw memberError;
         }
 
-        function renderCollaborativeProjects(projects) {
-            console.log('Renderizando proyectos:', projects);
-            const container = document.getElementById('collaborativeProjectsGrid');
-            
-            if (projects.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <p>No participas en proyectos colaborativos</p>
-                        <small>Acepta invitaciones o solicita unirte a proyectos existentes</small>
-                    </div>
-                `;
-                return;
-            }
+        console.log('Membresías encontradas:', memberData?.length || 0);
 
-            container.innerHTML = projects.map(project => `
-                <div class="project-card" onclick="openProject('${project.id}')">
-                    <button class="leave-btn" onclick="event.stopPropagation(); leaveProject('${project.id}', '${escapeHtml(project.name)}')">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Salir
-                    </button>
-                    
-                    <div class="project-header">
-                        <div>
-                            <div class="project-name">${escapeHtml(project.name)}</div>
-                            <div class="project-owner">Por ${escapeHtml(project.owner_name || 'Usuario')}</div>
-                        </div>
-                        <span class="project-role role-${project.role}">${getRoleDisplayName(project.role)}</span>
-                    </div>
-                    
-                    <div class="project-meta">
-                        <span>
-                            <i class="fas fa-file"></i>
-                            ${project.files_count || 0} archivos
-                        </span>
-                        <span>
-                            <i class="fas fa-users"></i>
-                            ${project.members_count || 0} miembros
-                        </span>
-                        <span>
-                            <i class="fas fa-calendar"></i>
-                            Unido ${formatDate(project.joined_at)}
-                        </span>
-                    </div>
+        if (!memberData || memberData.length === 0) {
+            renderCollaborativeProjects([]);
+            return;
+        }
+
+        // Extraer y procesar los proyectos
+        const collaborativeProjects = memberData.map(member => {
+            return {
+                id: member.projects.id,
+                name: member.projects.name,
+                owner_id: member.projects.owner_id,
+                owner_name: member.projects.owner_name,
+                owner_email: member.projects.owner_email,
+                created_at: member.projects.created_at,
+                invite_code: member.projects.invite_code, // Añadimos el código de invitación
+                role: member.role,
+                joined_at: member.joined_at
+            };
+        });
+
+        console.log('Proyectos colaborativos:', collaborativeProjects.length);
+
+        // Obtener conteos adicionales para cada proyecto
+        for (let project of collaborativeProjects) {
+            // Contar archivos
+            const { count: filesCount } = await supabaseClient
+                .from('project_files')
+                .select('*', { count: 'exact', head: true })
+                .eq('project_id', project.id);
+
+            // Contar miembros activos
+            const { count: membersCount } = await supabaseClient
+                .from('project_members')
+                .select('*', { count: 'exact', head: true })
+                .eq('project_id', project.id)
+                .eq('status', 'active');
+
+            project.files_count = filesCount || 0;
+            project.members_count = membersCount || 0;
+        }
+
+        renderCollaborativeProjects(collaborativeProjects);
+
+    } catch (error) {
+        console.error('Error loading collaborative projects:', error);
+        document.getElementById('collaborativeProjectsGrid').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-            `).join('');
-        }
+                <p>Error al cargar los proyectos colaborativos</p>
+                <small>Inténtalo de nuevo más tarde</small>
+            </div>
+        `;
+    }
+}
 
-        async function handleInvitation(invitationId, status) {
+
+function renderCollaborativeProjects(projects) {
+    console.log('Renderizando proyectos colaborativos:', projects);
+    const container = document.getElementById('collaborativeProjectsGrid');
+    
+    if (projects.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <p>No participas en proyectos colaborativos</p>
+                <small>Acepta invitaciones o solicita unirte a proyectos existentes</small>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = projects.map(project => `
+        <div class="project-card">
+            <div class="project-header">
+                <div>
+                    <div class="project-name">${escapeHtml(project.name)}</div>
+                    <div class="project-owner">Por ${escapeHtml(project.owner_name || project.owner_email || 'Usuario')}</div>
+                </div>
+                <span class="project-role role-${project.role}">${getRoleDisplayName(project.role)}</span>
+            </div>
+            
+            <div class="project-meta">
+                <span>
+                    <i class="fas fa-file"></i>
+                    ${project.files_count || 0} archivos
+                </span>
+                <span>
+                    <i class="fas fa-users"></i>
+                    ${project.members_count || 0} miembros
+                </span>
+                <span>
+                    <i class="fas fa-calendar"></i>
+                    Unido ${formatDate(project.joined_at)}
+                </span>
+                <span>
+                    <i class="fas fa-key"></i>
+                    Código: ${project.invite_code || 'N/A'}
+                </span>
+            </div>
+            
+            <div class="project-actions" style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-primary" onclick="openProject('${project.id}', '${project.invite_code || ''}')" style="flex: 1;">
+                    <i class="fas fa-eye"></i>
+                    Ver Proyecto
+                </button>
+                <button class="btn btn-secondary" onclick="leaveProject('${project.id}', '${escapeHtml(project.name)}')" style="flex: 1;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Salir
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+async function handleInvitation(invitationId, status) {
             try {
                 console.log('Procesando invitación:', invitationId, status);
                 
@@ -593,32 +657,88 @@
             }
         }
 
-        async function leaveProject(projectId, projectName) {
-            if (!confirm(`¿Estás seguro de que quieres salir del proyecto "${projectName}"?`)) {
-                return;
-            }
 
-            try {
-                const { error } = await supabaseClient
-                    .from('project_members')
-                    .update({ status: 'inactive' })
-                    .eq('project_id', projectId)
-                    .eq('user_id', currentUser.id);
 
-                if (error) throw error;
+async function leaveProject(projectId, projectName) {
+    if (!confirm(`¿Estás seguro de que quieres salir del proyecto "${projectName}"? Se eliminarán todos tus datos de membresía.`)) {
+        return;
+    }
 
-                alert('Has salido del proyecto correctamente');
-                loadCollaborativeProjects();
+    try {
+        console.log('Eliminando usuario del proyecto:', projectId);
+        
+        // 1. ELIMINAR de project_members (tabla principal de membresías)
+        const { error: memberError } = await supabaseClient
+            .from('project_members')
+            .delete()
+            .eq('project_id', projectId)
+            .eq('user_id', currentUser.id);
 
-            } catch (error) {
-                console.error('Error leaving project:', error);
-                alert('Error al salir del proyecto: ' + error.message);
+        if (memberError) {
+            console.error('Error eliminando de project_members:', memberError);
+            throw memberError;
+        }
+
+        // 2. Obtener todos los archivos del proyecto para limpiar datos específicos
+        const { data: projectFiles, error: filesError } = await supabaseClient
+            .from('project_files')
+            .select('id')
+            .eq('project_id', projectId);
+
+        if (filesError) {
+            console.error('Error obteniendo archivos del proyecto:', filesError);
+            throw filesError;
+        }
+
+        const fileIds = projectFiles.map(file => file.id);
+
+        // 3. Eliminar de active_editors (usando file_id en lugar de project_id)
+        if (fileIds.length > 0) {
+            const { error: editorError } = await supabaseClient
+                .from('active_editors')
+                .delete()
+                .in('file_id', fileIds)
+                .eq('user_id', currentUser.id);
+
+            if (editorError) {
+                console.error('Error eliminando de active_editors:', editorError);
             }
         }
 
-        function openProject(projectId) {
-            window.location.href = `project-detail.html?id=${projectId}`;
+        // 4. Eliminar de file_activity (usando file_id en lugar de project_id)
+        if (fileIds.length > 0) {
+            const { error: activityError } = await supabaseClient
+                .from('file_activity')
+                .delete()
+                .in('file_id', fileIds)
+                .eq('user_id', currentUser.id);
+
+            if (activityError) {
+                console.error('Error eliminando de file_activity:', activityError);
+            }
         }
+
+        console.log('Usuario eliminado completamente del proyecto');
+        alert('Has salido del proyecto correctamente. Todos tus datos fueron eliminados.');
+        
+        // Recargar la lista de proyectos
+        await loadCollaborativeProjects();
+
+    } catch (error) {
+        console.error('Error leaving project:', error);
+        alert('Error al salir del proyecto: ' + error.message);
+    }
+}
+
+
+function openProject(projectId, inviteCode = null) {
+    // Obtener el código de invitación si existe
+    let url = `../dashboard.html?project=${projectId}`;
+    if (inviteCode) {
+        url += `&code=${inviteCode}`;
+    }
+    window.location.href = url;
+}
 
         function getRoleDisplayName(role) {
             const roles = {

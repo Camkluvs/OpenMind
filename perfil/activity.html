@@ -207,7 +207,7 @@
                         <i class="fas fa-users"></i>
                         <span>Proyectos Colaborativos</span>
                     </a>
-                    <a href="discussions.html" class="nav-item">
+                    <a href="discuss.html" class="nav-item">
                         <i class="fas fa-comments"></i>
                         <span>Discusiones</span>
                     </a>
@@ -326,6 +326,8 @@
             await checkAuth();
             applyTheme();
             loadActivity();
+
+             setupRealTimeUpdates();
         }
 
         async function checkAuth() {
@@ -361,62 +363,250 @@
             }
         }
 
-        async function loadActivity() {
-            try {
-                // Simular carga de actividad de múltiples fuentes
-                const activities = [
-                    {
-                        type: 'file',
-                        title: 'Archivo creado',
-                        description: 'Se creó el archivo "main.js" en el proyecto "Mi App"',
-                        timestamp: new Date(Date.now() - 1000 * 60 * 30), // hace 30 minutos
-                        icon: 'fas fa-file'
-                    },
-                    {
-                        type: 'discussion',
-                        title: 'Nueva discusión',
-                        description: 'Se inició la discusión "Mejoras en el diseño"',
-                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // hace 2 horas
-                        icon: 'fas fa-comments'
-                    },
-                    {
-                        type: 'member',
-                        title: 'Nuevo miembro',
-                        description: 'Juan García se unió al proyecto "Web App"',
-                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5), // hace 5 horas
-                        icon: 'fas fa-user-plus'
-                    },
-                    {
-                        type: 'project',
-                        title: 'Proyecto actualizado',
-                        description: 'Se actualizó la descripción del proyecto "API REST"',
-                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // hace 1 día
-                        icon: 'fas fa-folder'
-                    },
-                    {
-                        type: 'file',
-                        title: 'Archivo modificado',
-                        description: 'Se modificó el archivo "styles.css" en el proyecto "Portfolio"',
-                        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // hace 2 días
-                        icon: 'fas fa-edit'
-                    }
-                ];
 
-                allActivities = activities;
-                renderActivity(activities);
-                
-            } catch (error) {
-                console.error('Error loading activity:', error);
-                document.getElementById('activityTimeline').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <p>Error al cargar la actividad</p>
-                    </div>
-                `;
+
+async function loadActivity() {
+    try {
+        const activities = [];
+        
+        // 1. Obtener proyectos donde el usuario es owner
+        const { data: ownedProjects } = await supabaseClient
+            .from('projects')
+            .select('id, name, owner_id')
+            .eq('owner_id', currentUser.id);
+
+        // 2. Obtener proyectos donde el usuario es miembro
+        const { data: membershipData } = await supabaseClient
+            .from('project_members')
+            .select('project_id')
+            .eq('user_id', currentUser.id);
+
+        // 3. Obtener detalles de proyectos donde es miembro
+        let memberProjects = [];
+        if (membershipData && membershipData.length > 0) {
+            const memberProjectIds = membershipData.map(m => m.project_id);
+            const { data: memberProjectDetails } = await supabaseClient
+                .from('projects')
+                .select('id, name, owner_id')
+                .in('id', memberProjectIds);
+            
+            if (memberProjectDetails) {
+                memberProjects = memberProjectDetails;
             }
         }
+
+        // Combinar ambos arrays de proyectos
+        const userProjects = [];
+        if (ownedProjects) userProjects.push(...ownedProjects);
+        if (memberProjects) userProjects.push(...memberProjects);
+
+        // Remover duplicados
+        const uniqueProjects = userProjects.filter((project, index, self) => 
+            index === self.findIndex(p => p.id === project.id)
+        );
+
+        if (!uniqueProjects || uniqueProjects.length === 0) {
+            renderActivity([]);
+            return;
+        }
+
+        const projectIds = uniqueProjects.map(p => p.id);
+        const ownedProjectIds = uniqueProjects.filter(p => p.owner_id === currentUser.id).map(p => p.id);
+
+        // 4. ACTIVIDAD DE ARCHIVOS - Consultas separadas
+        const { data: fileChanges } = await supabaseClient
+            .from('file_changes')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+        if (fileChanges && fileChanges.length > 0) {
+            // Obtener detalles de archivos para los cambios
+            const fileIds = fileChanges.map(fc => fc.file_id);
+            const { data: fileDetails } = await supabaseClient
+                .from('project_files')
+                .select('id, file_name, project_id')
+                .in('id', fileIds)
+                .in('project_id', projectIds);
+
+            // Obtener nombres de proyectos
+            const { data: projectDetails } = await supabaseClient
+                .from('projects')
+                .select('id, name')
+                .in('id', projectIds);
+
+            // Obtener nombres de usuarios
+            const userIds = [...new Set(fileChanges.map(fc => fc.user_id))];
+            const { data: userProfiles } = await supabaseClient
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', userIds);
+
+            // Crear mapas para búsqueda rápida
+            const fileMap = new Map(fileDetails?.map(f => [f.id, f]) || []);
+            const projectMap = new Map(projectDetails?.map(p => [p.id, p]) || []);
+            const userMap = new Map(userProfiles?.map(u => [u.id, u]) || []);
+
+            // Filtrar y procesar cambios de archivos
+            fileChanges.forEach(change => {
+                const file = fileMap.get(change.file_id);
+                if (file && projectIds.includes(file.project_id)) {
+                    const project = projectMap.get(file.project_id);
+                    const user = userMap.get(change.user_id);
+                    
+                    activities.push({
+                        type: 'file',
+                        title: `Archivo ${change.change_type === 'edit' ? 'editado' : 'modificado'}`,
+                        description: `${user?.full_name || 'Usuario'} ${change.change_type === 'edit' ? 'editó' : 'modificó'} "${file.file_name}" en "${project?.name || 'Proyecto'}"`,
+                        timestamp: new Date(change.created_at),
+                        icon: change.change_type === 'edit' ? 'fas fa-edit' : 'fas fa-file',
+                        projectId: file.project_id,
+                        isOwned: ownedProjectIds.includes(file.project_id)
+                    });
+                }
+            });
+        }
+
+        // 5. NUEVOS MIEMBROS (solo para proyectos propios)
+        if (ownedProjectIds.length > 0) {
+            const { data: newMembers } = await supabaseClient
+                .from('project_members')
+                .select('*')
+                .in('project_id', ownedProjectIds)
+                .neq('user_id', currentUser.id)
+                .order('joined_at', { ascending: false })
+                .limit(20);
+
+            if (newMembers && newMembers.length > 0) {
+                // Obtener nombres de proyectos
+                const { data: memberProjectDetails } = await supabaseClient
+                    .from('projects')
+                    .select('id, name')
+                    .in('id', ownedProjectIds);
+
+                const memberProjectMap = new Map(memberProjectDetails?.map(p => [p.id, p]) || []);
+
+                newMembers.forEach(member => {
+                    const project = memberProjectMap.get(member.project_id);
+                    activities.push({
+                        type: 'member',
+                        title: 'Nuevo miembro',
+                        description: `${member.user_name} se unió al proyecto "${project?.name || 'Proyecto'}"`,
+                        timestamp: new Date(member.joined_at),
+                        icon: 'fas fa-user-plus',
+                        projectId: member.project_id,
+                        isOwned: true
+                    });
+                });
+            }
+        }
+
+        // 6. NUEVAS DISCUSIONES
+        const { data: discussions } = await supabaseClient
+            .from('discussions')
+            .select('*')
+            .in('project_id', projectIds)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+        if (discussions && discussions.length > 0) {
+            // Obtener detalles de proyectos y usuarios
+            const discussionProjectIds = [...new Set(discussions.map(d => d.project_id))];
+            const discussionUserIds = [...new Set(discussions.map(d => d.created_by))];
+
+            const { data: discussionProjects } = await supabaseClient
+                .from('projects')
+                .select('id, name')
+                .in('id', discussionProjectIds);
+
+            const { data: discussionUsers } = await supabaseClient
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', discussionUserIds);
+
+            const discussionProjectMap = new Map(discussionProjects?.map(p => [p.id, p]) || []);
+            const discussionUserMap = new Map(discussionUsers?.map(u => [u.id, u]) || []);
+
+            discussions.forEach(discussion => {
+                const project = discussionProjectMap.get(discussion.project_id);
+                const user = discussionUserMap.get(discussion.created_by);
+                
+                activities.push({
+                    type: 'discussion',
+                    title: 'Nueva discusión',
+                    description: `${user?.full_name || 'Usuario'} creó la discusión "${discussion.title}" en "${project?.name || 'Proyecto'}"`,
+                    timestamp: new Date(discussion.created_at),
+                    icon: 'fas fa-comments',
+                    projectId: discussion.project_id,
+                    isOwned: ownedProjectIds.includes(discussion.project_id)
+                });
+            });
+        }
+
+        // 7. CREACIÓN DE ARCHIVOS
+        const { data: newFiles } = await supabaseClient
+            .from('project_files')
+            .select('*')
+            .in('project_id', projectIds)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+        if (newFiles && newFiles.length > 0) {
+            // Obtener detalles de proyectos y usuarios
+            const fileProjectIds = [...new Set(newFiles.map(f => f.project_id))];
+            const fileUserIds = [...new Set(newFiles.map(f => f.created_by))];
+
+            const { data: fileProjects } = await supabaseClient
+                .from('projects')
+                .select('id, name')
+                .in('id', fileProjectIds);
+
+            const { data: fileUsers } = await supabaseClient
+                .from('profiles')
+                .select('id, full_name')
+                .in('id', fileUserIds);
+
+            const fileProjectMap = new Map(fileProjects?.map(p => [p.id, p]) || []);
+            const fileUserMap = new Map(fileUsers?.map(u => [u.id, u]) || []);
+
+            newFiles.forEach(file => {
+                const project = fileProjectMap.get(file.project_id);
+                const user = fileUserMap.get(file.created_by);
+                
+                activities.push({
+                    type: 'file',
+                    title: file.is_folder ? 'Carpeta creada' : 'Archivo creado',
+                    description: `${user?.full_name || 'Usuario'} creó ${file.is_folder ? 'la carpeta' : 'el archivo'} "${file.file_name}" en "${project?.name || 'Proyecto'}"`,
+                    timestamp: new Date(file.created_at),
+                    icon: file.is_folder ? 'fas fa-folder-plus' : 'fas fa-file-plus',
+                    projectId: file.project_id,
+                    isOwned: ownedProjectIds.includes(file.project_id)
+                });
+            });
+        }
+
+        // Ordenar todas las actividades por fecha (más recientes primero)
+        activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Limitar a las 50 más recientes
+        const limitedActivities = activities.slice(0, 50);
+        
+        allActivities = limitedActivities;
+        renderActivity(limitedActivities);
+        
+    } catch (error) {
+        console.error('Error loading activity:', error);
+        document.getElementById('activityTimeline').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <p>Error al cargar la actividad: ${error.message}</p>
+            </div>
+        `;
+    }
+}
+
 
         function renderActivity(activities) {
             const container = document.getElementById('activityTimeline');
@@ -494,29 +684,70 @@
                    date1.getDate() === date2.getDate();
         }
 
-        function filterActivity(filter) {
-            currentFilter = filter;
-            
-            // Actualizar chips activos
-            document.querySelectorAll('.filter-chip').forEach(chip => {
-                chip.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            let filtered = [...allActivities];
-            
-            if (filter !== 'all') {
-                filtered = filtered.filter(a => {
-                    if (filter === 'files') return a.type === 'file';
-                    if (filter === 'discussions') return a.type === 'discussion';
-                    if (filter === 'projects') return a.type === 'project';
-                    if (filter === 'members') return a.type === 'member';
-                    return false;
-                });
+      function filterActivity(filter) {
+    currentFilter = filter;
+    
+    // Actualizar chips activos
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    let filtered = [...allActivities];
+    
+    if (filter !== 'all') {
+        filtered = filtered.filter(a => {
+            if (filter === 'files') return a.type === 'file';
+            if (filter === 'discussions') return a.type === 'discussion';
+            if (filter === 'projects') return a.type === 'project';
+            if (filter === 'members') return a.type === 'member';
+            return false;
+        });
+    }
+    
+    renderActivity(filtered);
+}
+
+
+
+function setupRealTimeUpdates() {
+    // Escuchar cambios en archivos
+    supabaseClient
+        .channel('file_changes')
+        .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'file_changes' }, 
+            (payload) => {
+                console.log('File change detected:', payload);
+                loadActivity(); // Recargar actividad
             }
-            
-            renderActivity(filtered);
-        }
+        )
+        .subscribe();
+
+    // Escuchar nuevos miembros
+    supabaseClient
+        .channel('project_members')
+        .on('postgres_changes', 
+            { event: 'INSERT', schema: 'public', table: 'project_members' }, 
+            (payload) => {
+                console.log('New member detected:', payload);
+                loadActivity();
+            }
+        )
+        .subscribe();
+
+    // Escuchar nuevas discusiones
+    supabaseClient
+        .channel('discussions')
+        .on('postgres_changes', 
+            { event: 'INSERT', schema: 'public', table: 'discussions' }, 
+            (payload) => {
+                console.log('New discussion detected:', payload);
+                loadActivity();
+            }
+        )
+        .subscribe();
+}
+
 
         // Funciones de UI
         function toggleSidebar() {
