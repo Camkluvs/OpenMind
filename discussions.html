@@ -3563,41 +3563,44 @@
             }
         });
 
-        async function loadProjectMembers() {
-            try {
-                // Paso 1: Obtener user_ids del proyecto
-                const { data: members, error: membersError } = await supabaseClient
-                    .from('project_members')
-                    .select('user_id')
-                    .eq('project_id', currentProject.id);
+       async function loadProjectMembers() {
+    try {
+        // Paso 1: Obtener user_ids del proyecto
+        const { data: members, error: membersError } = await supabaseClient
+            .from('project_members')
+            .select('user_id, user_email') // AGREGAR user_email
+            .eq('project_id', currentProject.id);
 
-                if (membersError) throw membersError;
+        if (membersError) throw membersError;
 
-                // Paso 2: Obtener perfiles por separado
-                const userIds = members.map(m => m.user_id);
+        // Paso 2: Obtener perfiles por separado
+        const userIds = members.map(m => m.user_id);
 
-                const { data: profiles, error: profilesError } = await supabaseClient
-                    .from('profiles')
-                    .select('id, username, full_name')
-                    .in('id', userIds);
+        const { data: profiles, error: profilesError } = await supabaseClient
+            .from('profiles')
+            .select('id, username, full_name')
+            .in('id', userIds);
 
-                if (profilesError) throw profilesError;
+        if (profilesError) throw profilesError;
 
-                // Paso 3: Combinar datos
-                projectMembers = profiles.map(profile => ({
-                    id: profile.id,
-                    username: profile.username || profile.id.substring(0, 8),
-                    name: profile.full_name || profile.username || 'Usuario'
-                }));
+        // Paso 3: Combinar datos CON EMAIL
+        projectMembers = profiles.map(profile => {
+            const memberData = members.find(m => m.user_id === profile.id);
+            return {
+                id: profile.id,
+                username: profile.username || profile.id.substring(0, 8),
+                name: profile.full_name || profile.username || 'Usuario',
+                email: memberData?.user_email || 'unknown@email.com' // AGREGAR EMAIL
+            };
+        });
 
-                console.log('Miembros cargados correctamente:', projectMembers);
+        console.log('Miembros cargados correctamente:', projectMembers);
 
-            } catch (error) {
-                console.error('Error loading project members:', error);
-                projectMembers = [];
-            }
-        }
-
+    } catch (error) {
+        console.error('Error loading project members:', error);
+        projectMembers = [];
+    }
+}
 
         async function loadReplies(discussionId) {
             try {
@@ -3979,48 +3982,147 @@
             });
         }
 
-        // Enviar respuesta inline (anidada)
-        async function submitInlineReply(parentReplyId) {
-            const textarea = document.getElementById(`inline-textarea-${parentReplyId}`);
-            const content = textarea.value.trim();
+     // Función corregida para procesar menciones
+async function processMentionsAndNotify(content, discussionId, replyId = null) {
+    // Extraer menciones del contenido
+    const mentionMatches = content.match(/@(\w+)/g);
+    if (!mentionMatches) return [];
 
-            if (!content) {
-                showToast('Escribe algo antes de responder', 'error');
-                return;
-            }
+    const mentionedUsernames = mentionMatches.map(match => match.replace('@', ''));
+    const mentionedUserIds = [];
 
-            if (!currentDiscussion) {
-                showToast('Error: No hay discusión seleccionada', 'error');
-                return;
-            }
+    // Buscar IDs de usuarios mencionados
+    for (const username of mentionedUsernames) {
+        const mentionedUser = projectMembers.find(member => 
+            member.username.toLowerCase() === username.toLowerCase()
+        );
 
-            try {
-                const { data, error } = await supabaseClient
-                    .from('discussion_replies')
-                    .insert([{
-                        discussion_id: currentDiscussion.id,
-                        content: content,
-                        created_by: currentUser.id,
-                        parent_reply_id: parentReplyId  // <- Aquí está la magia de la anidación
-                    }])
-                    .select()
-                    .single();
+        // EVITAR AUTO-MENCIÓN Y VERIFICAR QUE EXISTE
+        if (mentionedUser && mentionedUser.id !== currentUser.id) {
+            mentionedUserIds.push(mentionedUser.id);
 
-                if (error) throw error;
-
-                showToast('Respuesta enviada correctamente');
-                hideInlineReplyForm(parentReplyId);
-
-                // Recargar respuestas
-                await loadReplies(currentDiscussion.id);
-
-            } catch (error) {
-                console.error('Error submitting nested reply:', error);
-                showToast('Error al enviar la respuesta', 'error');
+            // SOLO crear notificación si el usuario NO está en esta discusión
+            const isUserInCurrentDiscussion = window.location.pathname.includes('discussions.html') && 
+                                            new URLSearchParams(window.location.search).get('discussion') === discussionId;
+            
+            if (!isUserInCurrentDiscussion) {
+                try {
+                    await supabaseClient
+                        .from('mention_notifications')
+                        .insert([{
+                            user_id: mentionedUser.id,
+                            user_email: mentionedUser.email,
+                            mentioned_by_id: currentUser.id,
+                            mentioned_by_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+                            discussion_id: discussionId,
+                            reply_id: replyId,
+                            discussion_title: currentDiscussion.title,
+                            mention_content: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
+                            project_id: currentProject.id,
+                            project_name: currentProject.name
+                        }]);
+                } catch (error) {
+                    console.error('Error creating mention notification:', error);
+                }
             }
         }
+    }
 
-        // Variables de vista
+    return mentionedUserIds;
+}
+// Modificar submitReply para incluir menciones
+async function submitReply() {
+    const textarea = document.getElementById('reply-textarea');
+    const content = textarea.value.trim();
+
+    if (!content) {
+        showToast('Escribe algo antes de responder', 'error');
+        return;
+    }
+
+    if (!currentDiscussion) {
+        showToast('Error: No hay discusión seleccionada', 'error');
+        return;
+    }
+
+    try {
+        // Procesar menciones ANTES de insertar
+        const mentionedUserIds = await processMentionsAndNotify(content, currentDiscussion.id);
+
+        const { data, error } = await supabaseClient
+            .from('discussion_replies')
+            .insert([{
+                discussion_id: currentDiscussion.id,
+                content: content,
+                created_by: currentUser.id,
+                parent_reply_id: null,
+                mentioned_users: mentionedUserIds // Guardar IDs mencionados
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        showToast('Respuesta enviada correctamente');
+        textarea.value = '';
+
+        // Recargar respuestas
+        await loadReplies(currentDiscussion.id);
+
+    } catch (error) {
+        console.error('Error submitting reply:', error);
+        showToast('Error al enviar la respuesta', 'error');
+    }
+}
+
+
+// Enviar respuesta inline (anidada) - CORREGIDA
+async function submitInlineReply(parentReplyId) {
+    const textarea = document.getElementById(`inline-textarea-${parentReplyId}`);
+    const content = textarea.value.trim();
+
+    if (!content) {
+        showToast('Escribe algo antes de responder', 'error');
+        return;
+    }
+
+    if (!currentDiscussion) {
+        showToast('Error: No hay discusión seleccionada', 'error');
+        return;
+    }
+
+    try {
+        // PROCESAR MENCIONES ANTES DE INSERTAR
+        const mentionedUserIds = await processMentionsAndNotify(content, currentDiscussion.id);
+
+        const { data, error } = await supabaseClient
+            .from('discussion_replies')
+            .insert([{
+                discussion_id: currentDiscussion.id,
+                content: content,
+                created_by: currentUser.id,
+                parent_reply_id: parentReplyId,
+                mentioned_users: mentionedUserIds // Guardar IDs mencionados
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        showToast('Respuesta enviada correctamente');
+        hideInlineReplyForm(parentReplyId);
+
+        // Recargar respuestas
+        await loadReplies(currentDiscussion.id);
+
+    } catch (error) {
+        console.error('Error submitting nested reply:', error);
+        showToast('Error al enviar la respuesta', 'error');
+    }
+}
+
+
+// Variables de vista
         let currentView = 'discussions-list';
 
         // Asegurar project ID
@@ -4125,6 +4227,7 @@
 
                 console.log('Discussions loaded successfully');
                 initializeThemeAndLanguage();
+                await subscribeToRealtimeChanges();
 
             } catch (error) {
                 console.error('Error in checkAuthenticationAndLoadData:', error);
@@ -4372,9 +4475,11 @@
             }, 200);
         }
 
-        function showDiscussionsList() {
-            showView('discussions-list');
-        }
+      function showDiscussionsList() {
+    showView('discussions-list');
+    cleanupRealtimeSubscriptions();
+    subscribeToRealtimeChanges();
+}
 
         function showDiscussionDetail(discussionId) {
             showView('discussion-detail');
@@ -4422,6 +4527,7 @@
                 await loadReplies(discussionId);
 
                 await initEnhancedFeatures();
+                subscribeToReplies(discussionId);
 
             } catch (error) {
                 console.error('Error loading discussion detail:', error);
@@ -4650,32 +4756,69 @@
 
 
 
-        function setupTypingIndicator() {
-            const textarea = document.getElementById('reply-textarea');
-            if (!textarea) return;
+      // MODIFICAR setupTypingIndicator para incluir menciones en inline replies
+function setupTypingIndicator() {
+    const textarea = document.getElementById('reply-textarea');
+    if (!textarea) return;
 
-            textarea.addEventListener('input', () => {
-                if (!currentDiscussion) return;
+    textarea.addEventListener('input', () => {
+        if (!currentDiscussion) return;
 
-                // Limpiar timer anterior
-                if (typingTimer) {
-                    clearTimeout(typingTimer);
-                }
-
-                // Actualizar estado de escribiendo
-                updateTypingStatus(true);
-
-                // Limpiar después de 3 segundos de inactividad
-                typingTimer = setTimeout(() => {
-                    updateTypingStatus(false);
-                }, 3000);
-            });
-
-            textarea.addEventListener('blur', () => {
-                updateTypingStatus(false);
-            });
+        // Limpiar timer anterior
+        if (typingTimer) {
+            clearTimeout(typingTimer);
         }
 
+        // Actualizar estado de escribiendo
+        updateTypingStatus(true);
+
+        // Limpiar después de 3 segundos de inactividad
+        typingTimer = setTimeout(() => {
+            updateTypingStatus(false);
+        }, 3000);
+    });
+
+    textarea.addEventListener('blur', () => {
+        updateTypingStatus(false);
+    });
+
+    // AGREGAR MENCIONES PARA RESPUESTAS INLINE
+    document.addEventListener('input', (e) => {
+        if (e.target.classList.contains('reply-textarea') && e.target.id.startsWith('inline-textarea-')) {
+            if (!currentDiscussion) return;
+
+            // Typing indicator
+            if (typingTimer) {
+                clearTimeout(typingTimer);
+            }
+
+            updateTypingStatus(true);
+
+            typingTimer = setTimeout(() => {
+                updateTypingStatus(false);
+            }, 2000);
+
+            // MENCIONES PARA INLINE REPLIES
+            const text = e.target.value;
+            const cursorPos = e.target.selectionStart;
+
+            // Buscar @ antes del cursor
+            const beforeCursor = text.substring(0, cursorPos);
+            const atMatch = beforeCursor.match(/@(\w*)$/);
+
+            if (atMatch) {
+                currentMentionInput = {
+                    textarea: e.target,
+                    start: cursorPos - atMatch[0].length,
+                    query: atMatch[1]
+                };
+                showMentionSuggestions(atMatch[1], e.target);
+            } else {
+                hideMentionSuggestions();
+            }
+        }
+    });
+}
         async function updateTypingStatus(isTyping) {
             // Limpiar timer anterior
             if (typingDebounceTimer) {
@@ -4710,30 +4853,30 @@
             }, 500);
         }
 
-        function setupMentions(textareaId) {
-            const textarea = document.getElementById(textareaId);
-            if (!textarea) return;
+function setupMentions(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    if (!textarea) return;
 
-            textarea.addEventListener('input', (e) => {
-                const text = e.target.value;
-                const cursorPos = e.target.selectionStart;
+    textarea.addEventListener('input', (e) => {
+        const text = e.target.value;
+        const cursorPos = e.target.selectionStart;
 
-                // Buscar @ antes del cursor
-                const beforeCursor = text.substring(0, cursorPos);
-                const atMatch = beforeCursor.match(/@(\w*)$/);
+        // Buscar @ antes del cursor
+        const beforeCursor = text.substring(0, cursorPos);
+        const atMatch = beforeCursor.match(/@(\w*)$/);
 
-                if (atMatch) {
-                    currentMentionInput = {
-                        textarea: textarea,
-                        start: cursorPos - atMatch[0].length,
-                        query: atMatch[1]
-                    };
-                    showMentionSuggestions(atMatch[1], textarea);
-                } else {
-                    hideMentionSuggestions();
-                }
-            });
+        if (atMatch) {
+            currentMentionInput = {
+                textarea: textarea,
+                start: cursorPos - atMatch[0].length,
+                query: atMatch[1]
+            };
+            showMentionSuggestions(atMatch[1], textarea);
+        } else {
+            hideMentionSuggestions();
         }
+    });
+}
 
 
         function showMentionSuggestions(query, textarea) {
@@ -4926,46 +5069,6 @@
             }
         }
 
-
-        async function submitReply() {
-            const textarea = document.getElementById('reply-textarea');
-            const content = textarea.value.trim();
-
-            if (!content) {
-                showToast('Escribe algo antes de responder', 'error');
-                return;
-            }
-
-            if (!currentDiscussion) {
-                showToast('Error: No hay discusión seleccionada', 'error');
-                return;
-            }
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('discussion_replies')
-                    .insert([{
-                        discussion_id: currentDiscussion.id,
-                        content: content,
-                        created_by: currentUser.id,
-                        parent_reply_id: null  // Respuesta directa a la discusión
-                    }])
-                    .select()
-                    .single();
-
-                if (error) throw error;
-
-                showToast('Respuesta enviada correctamente');
-                textarea.value = '';
-
-                // Recargar respuestas
-                await loadReplies(currentDiscussion.id);
-
-            } catch (error) {
-                console.error('Error submitting reply:', error);
-                showToast('Error al enviar la respuesta', 'error');
-            }
-        }
 
         function focusReplyTextarea() {
             const textarea = document.getElementById('reply-textarea');
@@ -5374,10 +5477,708 @@
             }
         });
 
+// Variables para subscripciones
+let realtimeSubscriptions = [];
 
-        // Exponer funciones globales
+// Función para suscribirse a cambios en tiempo real
+async function subscribeToRealtimeChanges() {
+    if (!currentProject) return;
+
+    // Limpiar suscripciones anteriores
+    realtimeSubscriptions.forEach(sub => {
+        supabaseClient.removeChannel(sub);
+    });
+    realtimeSubscriptions = [];
+
+    // 1. Suscripción a nuevas discusiones
+    const discussionsChannel = supabaseClient
+        .channel('discussions_changes')
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'discussions',
+            filter: `project_id=eq.${currentProject.id}`
+        }, (payload) => {
+            handleNewDiscussion(payload.new);
+        })
+        .on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'discussions',
+            filter: `project_id=eq.${currentProject.id}`
+        }, (payload) => {
+            handleUpdatedDiscussion(payload.new);
+        })
+        .on('postgres_changes', {
+            event: 'DELETE',
+            schema: 'public',
+            table: 'discussions'
+        }, (payload) => {
+            handleDeletedDiscussion(payload.old);
+        })
+        .subscribe();
+
+    realtimeSubscriptions.push(discussionsChannel);
+
+    // 2. Suscripción a respuestas (solo si estamos viendo una discusión)
+    if (currentDiscussion) {
+        subscribeToReplies(currentDiscussion.id);
+    }
+
+    // 3. Suscripción a estado de escritura
+    const typingChannel = supabaseClient
+        .channel('typing_status')
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'typing_status'
+        }, (payload) => {
+            handleTypingStatusChange(payload);
+        })
+        .subscribe();
+
+    realtimeSubscriptions.push(typingChannel);
+
+    const mentionsChannel = supabaseClient
+    .channel('mention_notifications')
+    .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'mention_notifications',
+        filter: `user_id=eq.${currentUser.id}`
+    }, (payload) => {
+        // Solo mostrar si no está en la discusión actual
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentViewingDiscussion = urlParams.get('discussion');
+        
+        if (currentViewingDiscussion !== payload.new.discussion_id) {
+            loadNotificationCount();
+            showRealtimeNotification(`${payload.new.mentioned_by_name} te mencionó en "${payload.new.discussion_title}"`);
+        }
+    })
+    .subscribe();
+
+realtimeSubscriptions.push(mentionsChannel);
+}
+
+// Suscribirse a respuestas de una discusión específica
+function subscribeToReplies(discussionId) {
+    // Remover suscripción anterior de respuestas si existe
+    const existingRepliesChannel = realtimeSubscriptions.find(sub => sub.topic.includes('replies'));
+    if (existingRepliesChannel) {
+        supabaseClient.removeChannel(existingRepliesChannel);
+        realtimeSubscriptions = realtimeSubscriptions.filter(sub => sub !== existingRepliesChannel);
+    }
+
+    const repliesChannel = supabaseClient
+        .channel(`replies_${discussionId}`)
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'discussion_replies',
+            filter: `discussion_id=eq.${discussionId}`
+        }, (payload) => {
+            handleNewReply(payload.new);
+        })
+        .on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'discussion_replies',
+            filter: `discussion_id=eq.${discussionId}`
+        }, (payload) => {
+            handleUpdatedReply(payload.new);
+        })
+        .on('postgres_changes', {
+            event: 'DELETE',
+            schema: 'public',
+            table: 'discussion_replies'
+        }, (payload) => {
+            handleDeletedReply(payload.old);
+        })
+        .subscribe();
+
+    realtimeSubscriptions.push(repliesChannel);
+}
+
+// Manejadores de eventos en tiempo real
+async function handleNewDiscussion(discussion) {
+    if (currentView === 'discussions-list') {
+        // Agregar la nueva discusión a la lista
+        const authorName = await getUserName(discussion.created_by);
+        const discussionWithInfo = {
+            ...discussion,
+            author_name: authorName,
+            likes_count: 0,
+            replies_count: 0
+        };
+
+        discussions.unshift(discussionWithInfo);
+        renderDiscussions();
+
+        // Mostrar notificación si no es del usuario actual
+        if (discussion.created_by !== currentUser.id) {
+            showRealtimeNotification(`${authorName} creó una nueva discusión: "${discussion.title}"`);
+        }
+    }
+}
+
+async function handleUpdatedDiscussion(discussion) {
+    // Actualizar en la lista
+    const index = discussions.findIndex(d => d.id === discussion.id);
+    if (index !== -1) {
+        const authorName = await getUserName(discussion.created_by);
+        discussions[index] = {
+            ...discussion,
+            author_name: authorName,
+            likes_count: discussions[index].likes_count,
+            replies_count: discussions[index].replies_count
+        };
+
+        if (currentView === 'discussions-list') {
+            renderDiscussions();
+        }
+    }
+
+    // Si estamos viendo esta discusión, actualizar el detalle
+    if (currentDiscussion && currentDiscussion.id === discussion.id) {
+        currentDiscussion = discussion;
+        await loadDiscussionDetail(discussion.id);
+    }
+}
+
+function handleDeletedDiscussion(discussion) {
+    // Remover de la lista
+    discussions = discussions.filter(d => d.id !== discussion.id);
+    
+    if (currentView === 'discussions-list') {
+        renderDiscussions();
+    }
+
+    // Si estamos viendo esta discusión, volver a la lista
+    if (currentDiscussion && currentDiscussion.id === discussion.id) {
+        showDiscussionsList();
+        showRealtimeNotification('La discusión que estabas viendo fue eliminada');
+    }
+}
+
+async function handleNewReply(reply) {
+    if (currentDiscussion && reply.discussion_id === currentDiscussion.id) {
+        // Recargar respuestas para mantener la jerarquía correcta
+        await loadReplies(currentDiscussion.id);
+
+        // Mostrar notificación si no es del usuario actual
+        if (reply.created_by !== currentUser.id) {
+            const authorName = await getUserName(reply.created_by);
+            showRealtimeNotification(`${authorName} respondió en la discusión`);
+            
+            // Hacer scroll al final de las respuestas
+            setTimeout(() => {
+                const repliesContainer = document.getElementById('replies-list');
+                if (repliesContainer) {
+                    repliesContainer.scrollTop = repliesContainer.scrollHeight;
+                }
+            }, 500);
+        }
+    }
+}
+
+async function handleUpdatedReply(reply) {
+    if (currentDiscussion && reply.discussion_id === currentDiscussion.id) {
+        await loadReplies(currentDiscussion.id);
+    }
+}
+
+function handleDeletedReply(reply) {
+    if (currentDiscussion && reply.discussion_id === currentDiscussion.id) {
+        loadReplies(currentDiscussion.id);
+    }
+}
+
+// Manejo del estado de escritura
+async function handleTypingStatusChange(payload) {
+    if (!currentDiscussion) return;
+
+    const { eventType, new: newData, old: oldData } = payload;
+    const data = newData || oldData;
+
+    if (!data || data.discussion_id !== currentDiscussion.id) return;
+
+    // No mostrar nuestro propio estado de escritura
+    if (data.user_id === currentUser.id) return;
+
+    if (eventType === 'INSERT' || eventType === 'UPDATE') {
+        // Alguien está escribiendo
+        const userName = await getUserName(data.user_id);
+        showTypingIndicator(userName, data.user_id);
+    } else if (eventType === 'DELETE') {
+        // Alguien dejó de escribir
+        hideTypingIndicator(data.user_id);
+    }
+}
+
+// Mostrar indicador de escritura
+function showTypingIndicator(userName, userId) {
+    const repliesContainer = document.getElementById('replies-list');
+    if (!repliesContainer) return;
+
+    // Remover indicador existente de este usuario
+    const existingIndicator = document.getElementById(`typing-${userId}`);
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+
+    // Crear nuevo indicador
+    const typingDiv = document.createElement('div');
+    typingDiv.id = `typing-${userId}`;
+    typingDiv.className = 'typing-indicator show';
+    typingDiv.innerHTML = `
+        <span>${userName} está escribiendo</span>
+        <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    `;
+
+    repliesContainer.appendChild(typingDiv);
+
+    // Auto-remover después de 5 segundos (por si el evento de DELETE no llega)
+    setTimeout(() => {
+        const indicator = document.getElementById(`typing-${userId}`);
+        if (indicator) {
+            indicator.remove();
+        }
+    }, 5000);
+}
+
+// Ocultar indicador de escritura
+function hideTypingIndicator(userId) {
+    const indicator = document.getElementById(`typing-${userId}`);
+    if (indicator) {
+        indicator.classList.remove('show');
+        setTimeout(() => {
+            if (indicator && indicator.parentNode) {
+                indicator.remove();
+            }
+        }, 300);
+    }
+}
+
+// Función para mostrar notificaciones en tiempo real
+function showRealtimeNotification(message) {
+    // Crear notificación flotante
+    const notification = document.createElement('div');
+    notification.className = 'realtime-notification';
+    notification.innerHTML = `
+        <i class="fas fa-bell"></i>
+        <span>${message}</span>
+    `;
+
+    // Agregar estilos si no existen
+    if (!document.getElementById('realtime-notification-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'realtime-notification-styles';
+        styles.textContent = `
+            .realtime-notification {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: rgba(74, 158, 255, 0.95);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                max-width: 300px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            }
+            .realtime-notification.show {
+                transform: translateX(0);
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+
+    document.body.appendChild(notification);
+
+    // Mostrar animación
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+
+    // Ocultar después de 4 segundos
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 4000);
+}
+
+// Función para limpiar suscripciones
+function cleanupRealtimeSubscriptions() {
+    realtimeSubscriptions.forEach(sub => {
+        supabaseClient.removeChannel(sub);
+    });
+    realtimeSubscriptions = [];
+}
+
+// Función mejorada para actualizar estado de escritura
+async function updateTypingStatus(isTyping) {
+    if (!currentDiscussion) return;
+
+    // Limpiar timer anterior
+    if (typingDebounceTimer) {
+        clearTimeout(typingDebounceTimer);
+    }
+
+    // Debounce de 300ms
+    typingDebounceTimer = setTimeout(async () => {
+        try {
+            if (isTyping) {
+                const { error } = await supabaseClient
+                    .from('typing_status')
+                    .upsert({
+                        discussion_id: currentDiscussion.id,
+                        user_id: currentUser.id,
+                        updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'discussion_id,user_id'
+                    });
+
+                if (error) throw error;
+            } else {
+                await supabaseClient
+                    .from('typing_status')
+                    .delete()
+                    .eq('discussion_id', currentDiscussion.id)
+                    .eq('user_id', currentUser.id);
+            }
+        } catch (error) {
+            console.log('Error updating typing status:', error);
+        }
+    }, 300);
+}
+
+// Limpiar al salir de la página
+window.addEventListener('beforeunload', () => {
+    if (currentDiscussion && currentUser) {
+        updateTypingStatus(false);
+    }
+    cleanupRealtimeSubscriptions();
+});
+
+
+// SISTEMA COMPLETO DE MENCIONES - AGREGAR AL FINAL DEL ARCHIVO
+async function initializeMentionSystem() {
+    // Solo ejecutar si estamos en discussions.html
+    if (!window.location.pathname.includes('discussions.html')) return;
+    
+    console.log('Inicializando sistema de menciones...');
+    
+    // 1. Suscripción a notificaciones de menciones en tiempo real
+    if (typeof supabaseClient !== 'undefined' && currentUser) {
+        const mentionsChannel = supabaseClient
+            .channel('mention_notifications_' + currentUser.id)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'mention_notifications',
+                filter: `user_id=eq.${currentUser.id}`
+            }, (payload) => {
+                // Solo mostrar si NO está viendo esa discusión específica
+                const shouldShow = !currentDiscussion || currentDiscussion.id !== payload.new.discussion_id;
+                
+                if (shouldShow) {
+                    if (typeof loadNotificationCount === 'function') {
+                        loadNotificationCount();
+                    }
+                    showRealtimeNotification(`${payload.new.mentioned_by_name} te mencionó en "${payload.new.discussion_title}"`);
+                }
+            })
+            .subscribe();
+            
+        // Agregar a suscripciones para limpieza
+        if (typeof realtimeSubscriptions !== 'undefined') {
+            realtimeSubscriptions.push(mentionsChannel);
+        }
+    }
+    
+    // 2. Procesar menciones en contenido
+    window.processMentions = async function(content, discussionId, replyId = null) {
+        const mentionRegex = /@(\w+)/g;
+        const mentions = [...content.matchAll(mentionRegex)];
+        const mentionedUserIds = [];
+        
+        for (const match of mentions) {
+            const username = match[1];
+            const mentionedUser = projectMembers.find(member => 
+                member.username && member.username.toLowerCase() === username.toLowerCase()
+            );
+            
+            if (mentionedUser && mentionedUser.id !== currentUser.id) {
+                mentionedUserIds.push(mentionedUser.id);
+                
+                // Crear notificación
+                try {
+                    await supabaseClient.from('mention_notifications').insert([{
+                        user_id: mentionedUser.id,
+                        user_email: mentionedUser.email || 'unknown@email.com',
+                        mentioned_by_id: currentUser.id,
+                        mentioned_by_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+                        discussion_id: discussionId,
+                        reply_id: replyId,
+                        discussion_title: currentDiscussion?.title || 'Discusión',
+                        mention_content: content.substring(0, 200) + (content.length > 200 ? '...' : ''),
+                        project_id: currentProject?.id,
+                        project_name: currentProject?.name || 'Proyecto'
+                    }]);
+                } catch (error) {
+                    console.error('Error creating mention notification:', error);
+                }
+            }
+        }
+        
+        return mentionedUserIds;
+    };
+    
+    // 3. Interceptar envío de respuestas para procesar menciones
+    const originalSubmitReply = window.submitReply;
+    window.submitReply = async function() {
+        const textarea = document.getElementById('reply-textarea');
+        const content = textarea.value.trim();
+
+        if (!content || !currentDiscussion) {
+            if (originalSubmitReply) return originalSubmitReply();
+            return;
+        }
+
+        try {
+            // Procesar menciones
+            const mentionedUserIds = await window.processMentions(content, currentDiscussion.id);
+
+            const { data, error } = await supabaseClient
+                .from('discussion_replies')
+                .insert([{
+                    discussion_id: currentDiscussion.id,
+                    content: content,
+                    created_by: currentUser.id,
+                    parent_reply_id: null,
+                    mentioned_users: mentionedUserIds
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            showToast('Respuesta enviada correctamente');
+            textarea.value = '';
+            await loadReplies(currentDiscussion.id);
+
+        } catch (error) {
+            console.error('Error submitting reply:', error);
+            showToast('Error al enviar la respuesta', 'error');
+        }
+    };
+    
+    // 4. Interceptar respuestas inline
+    const originalSubmitInlineReply = window.submitInlineReply;
+    window.submitInlineReply = async function(parentReplyId) {
+        const textarea = document.getElementById(`inline-textarea-${parentReplyId}`);
+        const content = textarea.value.trim();
+
+        if (!content || !currentDiscussion) {
+            if (originalSubmitInlineReply) return originalSubmitInlineReply(parentReplyId);
+            return;
+        }
+
+        try {
+            // Procesar menciones
+            const mentionedUserIds = await window.processMentions(content, currentDiscussion.id, parentReplyId);
+
+            const { data, error } = await supabaseClient
+                .from('discussion_replies')
+                .insert([{
+                    discussion_id: currentDiscussion.id,
+                    content: content,
+                    created_by: currentUser.id,
+                    parent_reply_id: parentReplyId,
+                    mentioned_users: mentionedUserIds
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            showToast('Respuesta enviada correctamente');
+            hideInlineReplyForm(parentReplyId);
+            await loadReplies(currentDiscussion.id);
+
+        } catch (error) {
+            console.error('Error submitting nested reply:', error);
+            showToast('Error al enviar la respuesta', 'error');
+        }
+    };
+    
+    // 5. Mejorar sistema de menciones en textareas
+    function enhanceMentions() {
+        // Para textarea principal
+        const mainTextarea = document.getElementById('reply-textarea');
+        if (mainTextarea && !mainTextarea.dataset.mentionsEnhanced) {
+            mainTextarea.dataset.mentionsEnhanced = 'true';
+            setupMentionSuggestions(mainTextarea);
+        }
+        
+        // Para textareas inline (se ejecuta cada vez que se crean)
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('reply-textarea') && 
+                e.target.id.startsWith('inline-textarea-') && 
+                !e.target.dataset.mentionsEnhanced) {
+                e.target.dataset.mentionsEnhanced = 'true';
+                setupMentionSuggestions(e.target);
+            }
+        });
+    }
+    
+    function setupMentionSuggestions(textarea) {
+        textarea.addEventListener('input', (e) => {
+            const text = e.target.value;
+            const cursorPos = e.target.selectionStart;
+            const beforeCursor = text.substring(0, cursorPos);
+            const atMatch = beforeCursor.match(/@(\w*)$/);
+
+            if (atMatch && projectMembers && projectMembers.length > 0) {
+                const query = atMatch[1].toLowerCase();
+                const filtered = projectMembers.filter(member =>
+                    member.username && member.username.toLowerCase().includes(query)
+                ).slice(0, 5);
+
+                if (filtered.length > 0) {
+                    showMentionDropdown(filtered, textarea, cursorPos - atMatch[0].length, atMatch[0].length);
+                } else {
+                    hideMentionDropdown();
+                }
+            } else {
+                hideMentionDropdown();
+            }
+        });
+    }
+    
+    function showMentionDropdown(members, textarea, start, length) {
+        hideMentionDropdown();
+        
+        const dropdown = document.createElement('div');
+        dropdown.id = 'mention-dropdown';
+        dropdown.style.cssText = `
+            position: absolute;
+            background: rgba(15, 20, 25, 0.95);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10000;
+            min-width: 200px;
+            backdrop-filter: blur(20px);
+        `;
+        
+        members.forEach((member, index) => {
+            const item = document.createElement('div');
+            item.style.cssText = `
+                padding: 8px 12px;
+                cursor: pointer;
+                font-size: 12px;
+                color: #e2e8f0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                transition: background 0.2s;
+            `;
+            item.textContent = `${member.name} (@${member.username})`;
+            
+            item.addEventListener('mouseenter', () => {
+                item.style.background = 'rgba(74, 158, 255, 0.1)';
+                item.style.color = '#4a9eff';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.background = 'transparent';
+                item.style.color = '#e2e8f0';
+            });
+            
+            item.addEventListener('click', () => {
+                const before = textarea.value.substring(0, start);
+                const after = textarea.value.substring(start + length);
+                textarea.value = before + '@' + member.username + ' ' + after;
+                textarea.focus();
+                textarea.setSelectionRange(start + member.username.length + 2, start + member.username.length + 2);
+                hideMentionDropdown();
+            });
+            
+            dropdown.appendChild(item);
+        });
+        
+        const rect = textarea.getBoundingClientRect();
+        dropdown.style.top = (rect.bottom + 5) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        
+        document.body.appendChild(dropdown);
+    }
+    
+    function hideMentionDropdown() {
+        const existing = document.getElementById('mention-dropdown');
+        if (existing) existing.remove();
+    }
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#mention-dropdown') && !e.target.classList.contains('reply-textarea')) {
+            hideMentionDropdown();
+        }
+    });
+    
+    // 6. Inicializar mejoras
+    enhanceMentions();
+    
+    // 7. Reinicializar cuando se cargan nuevas respuestas
+    const originalLoadReplies = window.loadReplies;
+    if (originalLoadReplies) {
+        window.loadReplies = async function(discussionId) {
+            await originalLoadReplies(discussionId);
+            setTimeout(enhanceMentions, 100); // Dar tiempo a que se rendericen las respuestas
+        };
+    }
+    
+    console.log('Sistema de menciones inicializado correctamente');
+}
+
+// Auto-inicializar cuando todo esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initializeMentionSystem, 1000);
+    });
+} else {
+    setTimeout(initializeMentionSystem, 1000);
+}
+
+// También inicializar cuando se detecten las variables necesarias
+const mentionSystemChecker = setInterval(() => {
+    if (typeof currentUser !== 'undefined' && currentUser && 
+        typeof projectMembers !== 'undefined' && projectMembers.length > 0) {
+        initializeMentionSystem();
+        clearInterval(mentionSystemChecker);
+    }
+}, 2000);
+
+
+        window.subscribeToRealtimeChanges = subscribeToRealtimeChanges;
+        window.subscribeToReplies = subscribeToReplies;
+        window.cleanupRealtimeSubscriptions = cleanupRealtimeSubscriptions;
         window.toggleTheme = toggleTheme;
-
         window.deleteDiscussion = deleteDiscussion;
         window.showDeleteModal = showDeleteModal;
         window.closeDeleteModal = closeDeleteModal;
@@ -5404,6 +6205,9 @@
         window.showNewDiscussionModal = showNewDiscussionModal;
         window.closeNewDiscussionModal = closeNewDiscussionModal;
         window.createNewDiscussion = createNewDiscussion;
+
+
+
     </script>
     <script src="js/mi-chat.js"></script>
 </body>

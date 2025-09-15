@@ -1899,6 +1899,208 @@ document.addEventListener('click', function(event) {
         dropdown.classList.remove('show');
     }
 });
+
+
+
+// AGREGAR AL FINAL DE TU ARCHIVO noti.js
+
+// Suscripción realtime para menciones (para todas las páginas)
+function initializeMentionNotifications() {
+    // Solo ejecutar si NO estamos en discussions.html
+    if (window.location.pathname.includes('discussions.html')) {
+        return; // En discussions.html ya se maneja por separado
+    }
+    
+    if (typeof supabaseClient !== 'undefined' && currentUser) {
+        const mentionsChannel = supabaseClient
+            .channel('global_mention_notifications_' + currentUser.id)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'mention_notifications',
+                filter: `user_id=eq.${currentUser.id}`
+            }, (payload) => {
+                // En otras páginas, SIEMPRE mostrar notificaciones de menciones
+                loadNotificationCount();
+                showGlobalMentionNotification(payload.new);
+            })
+            .subscribe();
+            
+        console.log('Notificaciones de menciones inicializadas para página:', window.location.pathname);
+    }
+}
+
+// Mostrar notificación global de mención
+function showGlobalMentionNotification(mention) {
+    // Crear notificación flotante específica para menciones
+    const notification = document.createElement('div');
+    notification.className = 'global-mention-notification';
+    notification.innerHTML = `
+        <div class="mention-notification-header">
+            <i class="fas fa-at"></i>
+            <span>Te mencionaron</span>
+        </div>
+        <div class="mention-notification-content">
+            <strong>${mention.mentioned_by_name}</strong> te mencionó en "${mention.discussion_title}"
+            <br><em>"${mention.mention_content.substring(0, 80)}..."</em>
+        </div>
+        <div class="mention-notification-actions">
+            <button onclick="goToMentionFromGlobal('${mention.project_id}', '${mention.discussion_id}')" class="mention-btn-go">
+                Ver discusión
+            </button>
+            <button onclick="dismissGlobalMention(this)" class="mention-btn-dismiss">
+                ✕
+            </button>
+        </div>
+    `;
+
+    // Agregar estilos si no existen
+    if (!document.getElementById('global-mention-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'global-mention-styles';
+        styles.textContent = `
+            .global-mention-notification {
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: rgba(74, 158, 255, 0.95);
+                color: white;
+                padding: 16px;
+                border-radius: 12px;
+                font-size: 14px;
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                max-width: 350px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+            .global-mention-notification.show {
+                transform: translateX(0);
+            }
+            .mention-notification-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                font-size: 15px;
+            }
+            .mention-notification-content {
+                line-height: 1.4;
+                margin-bottom: 12px;
+            }
+            .mention-notification-actions {
+                display: flex;
+                gap: 8px;
+                justify-content: flex-end;
+            }
+            .mention-btn-go, .mention-btn-dismiss {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: white;
+                padding: 6px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12px;
+                transition: all 0.2s ease;
+            }
+            .mention-btn-go:hover {
+                background: rgba(255, 255, 255, 0.3);
+            }
+            .mention-btn-dismiss {
+                padding: 6px 8px;
+                font-weight: bold;
+            }
+            .mention-btn-dismiss:hover {
+                background: rgba(255, 0, 0, 0.3);
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+
+    document.body.appendChild(notification);
+
+    // Mostrar animación
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+
+    // Auto-ocultar después de 8 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 8000);
+}
+
+// Ir a mención desde notificación global
+function goToMentionFromGlobal(projectId, discussionId) {
+    // Marcar como leída y navegar
+    markMentionAsReadAndNavigate(discussionId, projectId);
+}
+
+// Marcar mención como leída y navegar
+async function markMentionAsReadAndNavigate(discussionId, projectId) {
+    try {
+        await supabaseClient
+            .from('mention_notifications')
+            .update({ status: 'read' })
+            .eq('user_id', currentUser.id)
+            .eq('discussion_id', discussionId);
+
+        // Navegar a la discusión
+        window.location.href = `discussions.html?project=${projectId}&discussion=${discussionId}`;
+        
+    } catch (error) {
+        console.error('Error going to mention:', error);
+        // Navegar aunque haya error
+        window.location.href = `discussions.html?project=${projectId}&discussion=${discussionId}`;
+    }
+}
+
+// Cerrar notificación global
+function dismissGlobalMention(button) {
+    const notification = button.closest('.global-mention-notification');
+    if (notification) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }
+}
+
+// Auto-inicializar notificaciones de menciones
+const initMentionNotificationsChecker = setInterval(() => {
+    if (typeof currentUser !== 'undefined' && currentUser && 
+        typeof supabaseClient !== 'undefined') {
+        initializeMentionNotifications();
+        clearInterval(initMentionNotificationsChecker);
+    }
+}, 1000);
+
+// También inicializar cuando se detecte que currentUser está disponible
+if (typeof window !== 'undefined') {
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            if (typeof currentUser !== 'undefined' && currentUser) {
+                initializeMentionNotifications();
+            }
+        }, 2000);
+    });
+}
+
+// Exponer funciones globales
+window.goToMentionFromGlobal = goToMentionFromGlobal;
+window.dismissGlobalMention = dismissGlobalMention;
+window.markMentionAsReadAndNavigate = markMentionAsReadAndNavigate;
     </script>
 </body>
 </html>

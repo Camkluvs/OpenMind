@@ -76,49 +76,7 @@
             color: var(--text-secondary);
         }
 
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 26px;
-        }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--border-color);
-            transition: 0.4s;
-            border-radius: 26px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .toggle-slider {
-            background-color: var(--accent-color);
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(24px);
-        }
 
         .danger-zone {
             background: rgba(255, 68, 68, 0.05);
@@ -144,6 +102,153 @@
             color: var(--text-secondary);
             cursor: pointer;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 0;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .modal-close:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4444, #ff6666);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body data-theme="dark">
@@ -165,7 +270,7 @@
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">Principal</div>
-                    <a href="dashboard.html" class="nav-item">
+                    <a href="../index.html" class="nav-item">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>
@@ -267,10 +372,18 @@
                     
                     <div class="settings-row">
                         <div class="settings-label">
+                            <div class="settings-label-title">Nombre completo</div>
+                            <div class="settings-label-description" id="userFullName">No configurado</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="openNameModal()">Cambiar</button>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <div class="settings-label">
                             <div class="settings-label-title">Email</div>
                             <div class="settings-label-description" id="userEmail">usuario@ejemplo.com</div>
                         </div>
-                        <button class="btn btn-secondary" onclick="changeEmail()">Cambiar</button>
+                        <button class="btn btn-secondary" onclick="openEmailModal()">Cambiar</button>
                     </div>
                     
                     <div class="settings-row">
@@ -280,170 +393,9 @@
                         </div>
                         <button class="btn btn-secondary" onclick="openPasswordModal()">Cambiar</button>
                     </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Autenticación de dos factores</div>
-                            <div class="settings-label-description">Añade una capa extra de seguridad</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="2faToggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
                 </div>
 
-                <!-- Notifications Settings -->
-                <div class="settings-section">
-                    <div class="settings-header">
-                        <div class="settings-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div>
-                            <div class="settings-title">Notificaciones</div>
-                            <div class="settings-subtitle">Controla cómo recibes las notificaciones</div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Notificaciones por email</div>
-                            <div class="settings-label-description">Recibe actualizaciones importantes por correo</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="emailNotifications" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Invitaciones a proyectos</div>
-                            <div class="settings-label-description">Notificar cuando te inviten a un proyecto</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="projectInvitations" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Nuevas discusiones</div>
-                            <div class="settings-label-description">Notificar sobre nuevas discusiones en tus proyectos</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="discussionNotifications">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Actividad de archivos</div>
-                            <div class="settings-label-description">Notificar cuando se modifiquen archivos</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="fileActivity">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Privacy Settings -->
-                <div class="settings-section">
-                    <div class="settings-header">
-                        <div class="settings-icon">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                        <div>
-                            <div class="settings-title">Privacidad</div>
-                            <div class="settings-subtitle">Gestiona tu privacidad y visibilidad</div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Perfil público</div>
-                            <div class="settings-label-description">Permite que otros usuarios vean tu perfil</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="publicProfile" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Mostrar actividad</div>
-                            <div class="settings-label-description">Muestra tu actividad reciente en tu perfil</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="showActivity">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Mostrar proyectos</div>
-                            <div class="settings-label-description">Lista tus proyectos públicos en tu perfil</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="showProjects" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Preferences -->
-                <div class="settings-section">
-                    <div class="settings-header">
-                        <div class="settings-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div>
-                            <div class="settings-title">Preferencias</div>
-                            <div class="settings-subtitle">Personaliza tu experiencia</div>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Idioma</div>
-                            <div class="settings-label-description">Selecciona tu idioma preferido</div>
-                        </div>
-                        <select class="form-select" style="width: 150px;">
-                            <option value="es">Español</option>
-                            <option value="en">English</option>
-                            <option value="fr">Français</option>
-                        </select>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Zona horaria</div>
-                            <div class="settings-label-description">Define tu zona horaria local</div>
-                        </div>
-                        <select class="form-select" style="width: 200px;">
-                            <option value="UTC-5">América/Bogotá (UTC-5)</option>
-                            <option value="UTC-3">América/Buenos_Aires (UTC-3)</option>
-                            <option value="UTC+1">Europa/Madrid (UTC+1)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="settings-row">
-                        <div class="settings-label">
-                            <div class="settings-label-title">Formato de fecha</div>
-                            <div class="settings-label-description">Elige cómo mostrar las fechas</div>
-                        </div>
-                        <select class="form-select" style="width: 150px;">
-                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                        </select>
-                    </div>
-                </div>
+          
 
                 <!-- Danger Zone -->
                 <div class="settings-section danger-zone">
@@ -469,6 +421,50 @@
         </main>
     </div>
 
+    <!-- Modal de cambio de nombre -->
+    <div class="modal" id="nameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cambiar Nombre Completo</h3>
+                <button class="modal-close" onclick="closeNameModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="nameForm">
+                    <div class="form-group">
+                        <label class="form-label">Nombre Completo</label>
+                        <input type="text" class="form-input" id="fullNameInput" placeholder="Ingresa tu nombre completo" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeNameModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de cambio de email -->
+    <div class="modal" id="emailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cambiar Email</h3>
+                <button class="modal-close" onclick="closeEmailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="emailForm">
+                    <div class="form-group">
+                        <label class="form-label">Nuevo Email</label>
+                        <input type="email" class="form-input" id="newEmailInput" placeholder="nuevo@email.com" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEmailModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Cambiar Email</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de cambio de contraseña -->
     <div class="modal" id="passwordModal">
         <div class="modal-content">
@@ -476,39 +472,41 @@
                 <h3 class="modal-title">Cambiar Contraseña</h3>
                 <button class="modal-close" onclick="closePasswordModal()">&times;</button>
             </div>
-            <form id="passwordForm">
-                <div class="form-group">
-                    <label class="form-label">Contraseña Actual</label>
-                    <div class="password-input-group">
-                        <input type="password" class="form-input" id="currentPassword" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('currentPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+            <div class="modal-body">
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label class="form-label">Contraseña Actual</label>
+                        <div class="password-input-group">
+                            <input type="password" class="form-input" id="currentPassword" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('currentPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nueva Contraseña</label>
-                    <div class="password-input-group">
-                        <input type="password" class="form-input" id="newPassword" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                    <div class="form-group">
+                        <label class="form-label">Nueva Contraseña</label>
+                        <div class="password-input-group">
+                            <input type="password" class="form-input" id="newPassword" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Confirmar Nueva Contraseña</label>
-                    <div class="password-input-group">
-                        <input type="password" class="form-input" id="confirmPassword" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Nueva Contraseña</label>
+                        <div class="password-input-group">
+                            <input type="password" class="form-input" id="confirmPassword" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
-                </div>
-            </form>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -520,6 +518,7 @@
         let supabaseClient;
         let currentUser = null;
         let currentTheme = localStorage.getItem('theme') || 'dark';
+        let userProfile = null;
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
@@ -530,6 +529,7 @@
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             await checkAuth();
             applyTheme();
+            await loadUserProfile();
             loadSettings();
         }
 
@@ -543,12 +543,36 @@
                 }
 
                 currentUser = session.user;
-                updateUserHeader();
-                document.getElementById('userEmail').textContent = currentUser.email;
+                await updateUserHeader();
                 
             } catch (error) {
                 console.error('Error checking auth:', error);
                 window.location.href = 'login.html';
+            }
+        }
+
+        async function loadUserProfile() {
+            try {
+                // Cargar perfil desde la tabla profiles
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+                    throw error;
+                }
+
+                userProfile = profile;
+                
+                // Actualizar UI con datos del perfil
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('userFullName').textContent = profile?.full_name || 'No configurado';
+                
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showNotification('Error al cargar el perfil', 'error');
             }
         }
 
@@ -567,35 +591,78 @@
             }
         }
 
-        function loadSettings() {
-            // Cargar configuraciones guardadas desde localStorage
-            const settings = {
-                emailNotifications: localStorage.getItem('emailNotifications') !== 'false',
-                projectInvitations: localStorage.getItem('projectInvitations') !== 'false',
-                discussionNotifications: localStorage.getItem('discussionNotifications') === 'true',
-                fileActivity: localStorage.getItem('fileActivity') === 'true',
-                publicProfile: localStorage.getItem('publicProfile') !== 'false',
-                showActivity: localStorage.getItem('showActivity') === 'true',
-                showProjects: localStorage.getItem('showProjects') !== 'false'
-            };
-
-            // Aplicar configuraciones a los toggles
-            Object.keys(settings).forEach(key => {
-                const toggle = document.getElementById(key);
-                if (toggle) {
-                    toggle.checked = settings[key];
-                }
-            });
-
-            // Agregar listeners a los toggles
-            document.querySelectorAll('.toggle-switch input').forEach(toggle => {
-                toggle.addEventListener('change', (e) => {
-                    localStorage.setItem(e.target.id, e.target.checked);
-                    showNotification('Configuración guardada');
-                });
-            });
+        // Funciones para modal de nombre
+        function openNameModal() {
+            document.getElementById('fullNameInput').value = userProfile?.full_name || '';
+            document.getElementById('nameModal').style.display = 'flex';
         }
 
+        function closeNameModal() {
+            document.getElementById('nameModal').style.display = 'none';
+            document.getElementById('nameForm').reset();
+        }
+
+        document.getElementById('nameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newName = document.getElementById('fullNameInput').value.trim();
+            if (!newName) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .upsert({ 
+                        id: currentUser.id, 
+                        full_name: newName,
+                        updated_at: new Date().toISOString()
+                    });
+                
+                if (error) throw error;
+                
+                // Actualizar UI
+                document.getElementById('userFullName').textContent = newName;
+                document.getElementById('headerUserName').textContent = newName;
+                
+                userProfile = { ...userProfile, full_name: newName };
+                closeNameModal();
+                showNotification('Nombre actualizado correctamente');
+                
+            } catch (error) {
+                console.error('Error updating name:', error);
+                showNotification('Error al actualizar el nombre: ' + error.message, 'error');
+            }
+        });
+
+        // Funciones para modal de email
+        function openEmailModal() {
+            document.getElementById('emailModal').style.display = 'flex';
+        }
+
+        function closeEmailModal() {
+            document.getElementById('emailModal').style.display = 'none';
+            document.getElementById('emailForm').reset();
+        }
+
+        document.getElementById('emailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const newEmail = document.getElementById('newEmailInput').value;
+            if (!newEmail) return;
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({ email: newEmail });
+                
+                if (error) throw error;
+                
+                closeEmailModal();
+                showNotification('Se ha enviado un correo de confirmación a tu nuevo email');
+            } catch (error) {
+                console.error('Error updating email:', error);
+                showNotification('Error al actualizar el email: ' + error.message, 'error');
+            }
+        });
+
+        // Funciones para modal de contraseña
         function openPasswordModal() {
             document.getElementById('passwordModal').style.display = 'flex';
         }
@@ -618,22 +685,6 @@
             }
         }
 
-        async function changeEmail() {
-            const newEmail = prompt('Ingresa tu nuevo email:');
-            if (!newEmail) return;
-
-            try {
-                const { error } = await supabaseClient.auth.updateUser({ email: newEmail });
-                
-                if (error) throw error;
-                
-                alert('Se ha enviado un correo de confirmación a tu nuevo email');
-            } catch (error) {
-                console.error('Error updating email:', error);
-                alert('Error al actualizar el email: ' + error.message);
-            }
-        }
-
         document.getElementById('passwordForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -641,7 +692,12 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (newPassword !== confirmPassword) {
-                alert('Las contraseñas no coinciden');
+                showNotification('Las contraseñas no coinciden', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showNotification('La contraseña debe tener al menos 6 caracteres', 'error');
                 return;
             }
             
@@ -651,12 +707,38 @@
                 if (error) throw error;
                 
                 closePasswordModal();
-                alert('Contraseña actualizada correctamente');
+                showNotification('Contraseña actualizada correctamente');
             } catch (error) {
                 console.error('Error updating password:', error);
-                alert('Error al actualizar la contraseña: ' + error.message);
+                showNotification('Error al actualizar la contraseña: ' + error.message, 'error');
             }
         });
+
+        function loadSettings() {
+            // Cargar configuraciones guardadas desde localStorage
+            const settings = {
+                emailNotifications: localStorage.getItem('emailNotifications') !== 'false',
+                projectInvitations: localStorage.getItem('projectInvitations') !== 'false',
+                discussionNotifications: localStorage.getItem('discussionNotifications') === 'true',
+                fileActivity: localStorage.getItem('fileActivity') === 'true'
+            };
+
+            // Aplicar configuraciones a los toggles
+            Object.keys(settings).forEach(key => {
+                const toggle = document.getElementById(key);
+                if (toggle) {
+                    toggle.checked = settings[key];
+                }
+            });
+
+            // Agregar listeners a los toggles
+            document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+                toggle.addEventListener('change', (e) => {
+                    localStorage.setItem(e.target.id, e.target.checked);
+                    showNotification('Configuración guardada');
+                });
+            });
+        }
 
         async function deleteAccount() {
             if (!confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.')) {
@@ -668,22 +750,34 @@
             }
             
             try {
-                // Aquí se implementaría la lógica para eliminar la cuenta
-                alert('Función de eliminación de cuenta no implementada en este demo');
+                // Primero eliminar el perfil
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .delete()
+                    .eq('id', currentUser.id);
+
+                if (profileError) {
+                    console.error('Error deleting profile:', profileError);
+                }
+
+                // Luego eliminar la cuenta de auth
+                showNotification('Función de eliminación de cuenta no implementada completamente');
+                
             } catch (error) {
                 console.error('Error deleting account:', error);
-                alert('Error al eliminar la cuenta: ' + error.message);
+                showNotification('Error al eliminar la cuenta: ' + error.message, 'error');
             }
         }
 
-        function showNotification(message) {
+        function showNotification(message, type = 'success') {
             // Crear notificación temporal
             const notification = document.createElement('div');
+            const bgColor = type === 'error' ? '#ff4444' : 'var(--accent-color)';
             notification.style.cssText = `
                 position: fixed;
                 bottom: 20px;
                 right: 20px;
-                background: var(--accent-color);
+                background: ${bgColor};
                 color: white;
                 padding: 12px 20px;
                 border-radius: 8px;
@@ -737,7 +831,7 @@
                 
             } catch (error) {
                 console.error('Error logging out:', error);
-                alert('Error al cerrar sesión: ' + error.message);
+                showNotification('Error al cerrar sesión: ' + error.message, 'error');
             }
         }
 
@@ -749,6 +843,17 @@
             if (userDropdown && userMenu && !userMenu.contains(event.target)) {
                 userDropdown.classList.remove('show');
             }
+        });
+
+        // Cerrar modales al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            const modals = ['nameModal', 'emailModal', 'passwordModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
