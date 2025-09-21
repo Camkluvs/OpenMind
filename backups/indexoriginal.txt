@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenMind AI - Unlock Collective Intelligence</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend@2.4.2/dist/umd/i18nextHttpBackend.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-bg: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+            --secondary-bg: rgba(255, 255, 255, 0.02);
+            --text-primary: #ffffff;
+            --text-secondary: #8892a6;
+            --accent-color: #4a9eff;
+            --accent-gradient: linear-gradient(135deg, #4a9eff 0%, #00d4ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="light"] {
+            --primary-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            --secondary-bg: rgba(0, 0, 0, 0.02);
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent-color: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background: var(--accent-gradient);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-btn:hover {
+            background: rgba(74, 158, 255, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .get-started-btn {
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            color: var(--accent-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .get-started-btn:hover {
+            background: rgba(74, 158, 255, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        /* User Info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .user-name {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 40px 120px;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 50px;
+        }
+
+        .join-btn {
+            background: var(--accent-gradient);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(74, 158, 255, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .join-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(74, 158, 255, 0.4);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 40px;
+            background: var(--secondary-bg);
+            backdrop-filter: blur(10px);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(74, 158, 255, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 80px;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: var(--accent-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(74, 158, 255, 0.3);
+        }
+
+        .step:hover .step-icon {
+            box-shadow: 0 12px 48px rgba(74, 158, 255, 0.5);
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 40px;
+            background: var(--secondary-bg);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: attr(data-popular);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(74, 158, 255, 0.15);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .plan-price {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .plan-period {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .plan-features li i {
+            color: #00d4aa;
+            font-size: 12px;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 12px 24px;
+            border: 1px solid var(--accent-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .plan-btn.primary {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+        }
+
+        .plan-btn.secondary {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        .plan-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Language Selector */
+        .language-selector {
+            position: relative;
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 180px;
+            display: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-option:hover {
+            background: rgba(74, 158, 255, 0.1);
+        }
+
+        .language-option.active {
+            background: rgba(74, 158, 255, 0.2);
+            color: var(--accent-color);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Background Effects */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(74, 158, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-dot:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: -0.5s;
+        }
+
+        .floating-dot:nth-child(2) {
+            top: 60%;
+            left: 85%;
+            animation-delay: -2s;
+        }
+
+        .floating-dot:nth-child(3) {
+            top: 40%;
+            left: 75%;
+            animation-delay: -3.5s;
+        }
+
+        .floating-dot:nth-child(4) {
+            top: 80%;
+            left: 20%;
+            animation-delay: -1s;
+        }
+
+        .floating-dot:nth-child(5) {
+            top: 25%;
+            left: 60%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+        }
+
+        /* Content positioning */
+        .content {
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .header-controls {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero {
+                padding: 60px 20px 80px;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .features,
+            .how-it-works,
+            .pricing {
+                padding: 60px 20px;
+            }
+
+            .steps-container {
+                gap: 40px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="bg-pattern">
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+        <div class="floating-dot"></div>
+    </div>
+
+    <div class="content">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                OpenMind AI
+            </div>
+            
+            <div id="header-content">
+                <div class="loading-spinner"></div>
+     <div class="notifications-container">
+    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+    </button>
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notifications-header">
+            <h4>Notificaciones</h4>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <div class="notification-item loading">
+                Cargando...
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h1 class="hero-title" data-i18n="hero.title">
+                    Unlock Collective Intelligence
+                </h1>
+                <p class="hero-description" data-i18n="hero.description">
+                    OpenMind is a comprehensive web platform that enables development teams to collaborate in real-time.
+                </p>
+                <a href="login.html" class="join-btn" data-i18n="hero.joinBtn">Join for Free</a>
+            </section>
+
+            <section class="features">
+                <h2 class="section-title" data-i18n="features.title">Key Features</h2>
+                <p class="section-subtitle" data-i18n="features.subtitle">Everything you need to collaborate efficiently</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 class="feature-title" data-i18n="features.codeEditor.title">Collaborative Code Editor</h3>
+                        <p class="feature-description" data-i18n="features.codeEditor.description">Edit code in real-time with your team.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="feature-title" data-i18n="features.ai.title">Integrated AI</h3>
+                        <p class="feature-description" data-i18n="features.ai.description">AI assistant for coding and optimization.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="feature-title" data-i18n="features.communication.title">Chat & Video</h3>
+                        <p class="feature-description" data-i18n="features.communication.description">Seamless team communication.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h3 class="feature-title" data-i18n="features.projectManagement.title">Project Management</h3>
+                        <p class="feature-description" data-i18n="features.projectManagement.description">Kanban boards and sprint management.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-git-alt"></i>
+                        </div>
+                        <h3 class="feature-title" data-i18n="features.versionControl.title">Version Control</h3>
+                        <p class="feature-description" data-i18n="features.versionControl.description">Integrated Git with visual interface.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <h3 class="feature-title" data-i18n="features.deployment.title">Auto Deployment</h3>
+                        <p class="feature-description" data-i18n="features.deployment.description">CI/CD with automatic deployment.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="how-it-works">
+                <h2 class="section-title" data-i18n="howItWorks.title">How It Works</h2>
+                <p class="section-subtitle" data-i18n="howItWorks.subtitle">Simple workflow to bring ideas to life</p>
+                
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="howItWorks.step1.title">1. Create or Join</h3>
+                        <p class="step-description" data-i18n="howItWorks.step1.description">
+                            Start a new project or join existing one.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="howItWorks.step2.title">2. Submit Ideas</h3>
+                        <p class="step-description" data-i18n="howItWorks.step2.description">
+                            Post proposals and discussion points.
+                        </p>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3 class="step-title" data-i18n="howItWorks.step3.title">3. Collaborate</h3>
+                        <p class="step-description" data-i18n="howItWorks.step3.description">
+                            Use AI analysis to reach consensus.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pricing">
+                <h2 class="section-title" data-i18n="pricing.title">Plans & Pricing</h2>
+                <p class="section-subtitle" data-i18n="pricing.subtitle">Choose the perfect plan</p>
+                
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3 class="plan-name" data-i18n="pricing.free.name">Mind Free</h3>
+                        <div class="plan-price">$0</div>
+                        <div class="plan-period" data-i18n="pricing.free.period">per month</div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.projects">Up to 3 projects</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.members">5 members per project</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.storage">1GB storage</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.chat">Basic chat</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.support">Email support</span></li>
+                        </ul>
+                        <a href="login.html" class="plan-btn secondary" data-i18n="pricing.free.button">Start Free</a>
+                    </div>
+
+                    <div class="pricing-card featured" data-popular="">
+                        <h3 class="plan-name" data-i18n="pricing.pro.name">Mind Pro</h3>
+                        <div class="plan-price">$29</div>
+                        <div class="plan-period" data-i18n="pricing.pro.period">per month</div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.projects">Unlimited projects</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.members">Up to 25 members</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.storage">100GB storage</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.ai">Advanced AI</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.video">Video conferences</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.git">Git integrations</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.support">Priority support</span></li>
+                        </ul>
+                        <a href="login.html" class="plan-btn primary" data-i18n="pricing.pro.button">Choose Pro</a>
+                    </div>
+
+                    <div class="pricing-card">
+                        <h3 class="plan-name" data-i18n="pricing.ultra.name">Mind Ultra</h3>
+                        <div class="plan-price">$99</div>
+                        <div class="plan-period" data-i18n="pricing.ultra.period">per month</div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.everything">Everything in Pro</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.members">Unlimited members</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.storage">1TB storage</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.customAi">Custom AI</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.deployment">Auto deployment</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.analytics">Advanced analytics</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.support247">24/7 support</span></li>
+                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.onboarding">Dedicated onboarding</span></li>
+                        </ul>
+                        <a href="login.html" class="plan-btn secondary" data-i18n="pricing.ultra.button">Choose Ultra</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/hlobalscript.js"></script>
+<script>
+    
+// Configuración
+const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+
+let supabaseClient;
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+// Idiomas soportados
+const supportedLanguages = {
+    'en': { name: 'English', flag: '🇺🇸' },
+    'es': { name: 'Español', flag: '🇪🇸' },
+    'fr': { name: 'Français', flag: '🇫🇷' },
+    'de': { name: 'Deutsch', flag: '🇩🇪' },
+    'it': { name: 'Italiano', flag: '🇮🇹' },
+    'pt': { name: 'Português', flag: '🇵🇹' },
+    'ru': { name: 'Русский', flag: '🇷🇺' },
+    'ja': { name: '日本語', flag: '🇯🇵' },
+    'ko': { name: '한국어', flag: '🇰🇷' },
+    'zh': { name: '中文', flag: '🇨🇳' },
+    'ar': { name: 'العربية', flag: '🇸🇦' },
+    'hi': { name: 'हिंदी', flag: '🇮🇳' },
+    'nl': { name: 'Nederlands', flag: '🇳🇱' }
+};
+
+// Fallback translations (incluidas en el código como respaldo)
+const fallbackTranslations = {
+    en: {
+        "common.welcome": "Welcome",
+        "common.logout": "Logout",
+        "common.themeToggle": "Toggle Theme",
+        "common.language": "Language",
+        "common.access": "Access",
+        "common.mostPopular": "Most Popular",
+        "hero.title": "Unlock Collective Intelligence",
+        "hero.description": "OpenMind is a comprehensive web platform that enables development teams to collaborate in real-time.",
+        "hero.joinBtn": "Join for Free"
+    },
+    es: {
+        "common.welcome": "Bienvenido",
+        "common.logout": "Cerrar Sesión",
+        "common.themeToggle": "Cambiar Tema",
+        "common.language": "Idioma",
+        "common.access": "Acceder",
+        "common.mostPopular": "Más Popular",
+        "hero.title": "Desbloquea la Inteligencia Colectiva",
+        "hero.description": "OpenMind es una plataforma web integral que permite a equipos de desarrollo colaborar en tiempo real.",
+        "hero.joinBtn": "Únete Gratis"
+    }
+};
+
+
+// Cargar traducciones directamente (sin backend HTTP)
+async function loadTranslations() {
+    const translations = {};
+    
+    // Lista de idiomas que tienes en tu carpeta translations
+    const languages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 'ar', 'hi', 'nl'];
+    
+    for (const lang of languages) {
+        try {
+            const response = await fetch(`./translations/${lang}.json`);
+            if (response.ok) {
+                translations[lang] = { translation: await response.json() };
+            }
+        } catch (error) {
+            console.warn(`Could not load ${lang}.json, using fallback`);
+            if (fallbackTranslations[lang]) {
+                translations[lang] = { translation: fallbackTranslations[lang] };
+            }
+        }
+    }
+    
+    return translations;
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Cargar todas las traducciones
+    const translations = await loadTranslations();
+    
+    // Inicializar i18next SIN i18nextHttpBackend
+    i18next
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            fallbackLng: 'en',
+            debug: true,
+            resources: translations,
+            detection: {
+                order: ['localStorage', 'navigator', 'htmlTag'],
+                caches: ['localStorage']
+            }
+        }, function(err, t) {
+            if (err) {
+                console.warn('Error initializing i18next:', err);
+            }
+            
+            initializeApp();
+        });
+});
+
+
+function useFallbackTranslations() {
+    // Si fallan los archivos JSON externos, usar las traducciones internas
+    Object.keys(fallbackTranslations).forEach(lang => {
+        i18next.addResourceBundle(lang, 'translation', fallbackTranslations[lang], true);
+    });
+}
+
+function initializeApp() {
+    // Inicializar Supabase
+    if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        checkAuthAndUpdateHeader();
+    }
+
+    // Aplicar tema guardado
+    document.body.setAttribute('data-theme', currentTheme);
+    
+    // Actualizar contenido con traducciones
+    updateContent();
+    
+    // Efectos visuales
+    addVisualEffects();
+}
+
+function updateContent() {
+    // Actualizar elementos con data-i18n
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = i18next.t(key);
+        
+        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            element.placeholder = translation;
+        } else {
+            element.textContent = translation;
+        }
+    });
+
+    // Actualizar atributo data-popular
+    const featuredCard = document.querySelector('.pricing-card.featured');
+    if (featuredCard) {
+        featuredCard.setAttribute('data-popular', i18next.t('common.mostPopular'));
+    }
+
+    // Actualizar título de la página
+    document.title = `OpenMind AI - ${i18next.t('hero.title')}`;
+}
+
+async function checkAuthAndUpdateHeader() {
+    try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        const headerContent = document.getElementById('header-content');
+        
+        if (session && session.user) {
+            // Usuario logueado
+            const userName = session.user.user_metadata?.full_name || 
+                           session.user.user_metadata?.name || 
+                           session.user.email.split('@')[0];
+            
+            headerContent.innerHTML = `
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>
+                        <span>${i18next.t('common.themeToggle')}</span>
+                    </button>
+                    ${generateLanguageSelector()}
+                    <div class="user-info">
+                        <div class="welcome-text">
+                            ${i18next.t('common.welcome')}, <span class="user-name">${userName}</span>
+                        </div>
+                        <button class="logout-btn" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> 
+                            ${i18next.t('common.logout')}
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Usuario no logueado
+            headerContent.innerHTML = `
+                <div class="header-controls">
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>
+                        <span>${i18next.t('common.themeToggle')}</span>
+                    </button>
+                    ${generateLanguageSelector()}
+                    <a href="login.html" class="get-started-btn">
+                        ${i18next.t('common.access')}
+                    </a>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error checking auth:', error);
+        showBasicHeader();
+    }
+}
+
+function generateLanguageSelector() {
+    return `
+        <div class="language-selector">
+            <button class="control-btn" onclick="toggleLanguageDropdown()">
+                <i class="fas fa-globe"></i>
+                <span>${i18next.t('common.language')}</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown">
+                ${generateLanguageOptions()}
+            </div>
+        </div>
+    `;
+}
+
+function generateLanguageOptions() {
+    const currentLang = i18next.language;
+    return Object.entries(supportedLanguages).map(([code, lang]) => 
+        `<div class="language-option ${currentLang === code ? 'active' : ''}" 
+              onclick="changeLanguage('${code}')">
+            ${lang.flag} ${lang.name}
+         </div>`
+    ).join('');
+}
+
+function showBasicHeader() {
+    const headerContent = document.getElementById('header-content');
+    headerContent.innerHTML = `
+        <div class="header-controls">
+            <button class="control-btn" onclick="toggleTheme()">
+                <i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>
+                <span>${i18next.t('common.themeToggle')}</span>
+            </button>
+            ${generateLanguageSelector()}
+            <a href="login.html" class="get-started-btn">
+                ${i18next.t('common.access')}
+            </a>
+        </div>
+    `;
+}
+
+async function handleLogout() {
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        
+        checkAuthAndUpdateHeader();
+        alert(`${i18next.t('common.logout')} successful`);
+        
+    } catch (error) {
+        console.error('Error logging out:', error);
+        alert('Error: ' + error.message);
+    }
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
+    
+    // Actualizar iconos
+    const themeIcons = document.querySelectorAll('.control-btn i.fa-sun, .control-btn i.fa-moon');
+    themeIcons.forEach(icon => {
+        icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+    });
+}
+
+function toggleLanguageDropdown() {
+    const dropdown = document.getElementById('languageDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+function changeLanguage(lang) {
+    if (supportedLanguages[lang]) {
+        i18next.changeLanguage(lang, (err, t) => {
+            if (err) {
+                console.log('Error changing language:', err);
+                return;
+            }
+            
+            updateContent();
+            checkAuthAndUpdateHeader();
+            
+            const dropdown = document.getElementById('languageDropdown');
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+        });
+    }
+}
+
+function addVisualEffects() {
+    // Efecto parallax
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const dots = document.querySelectorAll('.floating-dot');
+        
+        dots.forEach((dot, index) => {
+            const speed = 0.5 + (index * 0.1);
+            dot.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+    });
+
+    // Animaciones de entrada
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    });
+
+    const animatedElements = document.querySelectorAll('.step, .feature-card, .pricing-card');
+    animatedElements.forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'all 0.6s ease';
+        observer.observe(element);
+    });
+}
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector');
+    const dropdown = document.getElementById('languageDropdown');
+    
+    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Función para agregar nuevo idioma dinámicamente
+function addLanguage(code, name, flag, translationData) {
+    if (!supportedLanguages[code]) {
+        supportedLanguages[code] = { name, flag };
+        
+        // Agregar traducciones
+        if (translationData) {
+            i18next.addResourceBundle(code, 'translation', translationData, true);
+        }
+        
+        // Regenerar selector de idiomas si está visible
+        const dropdown = document.getElementById('languageDropdown');
+        if (dropdown) {
+            dropdown.innerHTML = generateLanguageOptions();
+        }
+        
+        console.log(`Language ${name} (${code}) added successfully`);
+    }
+}
+
+// Función de utilidad para obtener traducción con fallback
+function t(key, fallback = '') {
+    const translation = i18next.t(key);
+    return translation !== key ? translation : fallback;
+}
+</script>
+</body>
+</html>

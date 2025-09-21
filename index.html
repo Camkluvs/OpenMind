@@ -7,7 +7,6 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
     <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend@2.4.2/dist/umd/i18nextHttpBackend.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -17,110 +16,1168 @@
         }
 
         :root {
-            --primary-bg: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
-            --secondary-bg: rgba(255, 255, 255, 0.02);
+            --primary-bg: #000000;
+            --header-bg: rgba(0, 0, 0, 0.95);
             --text-primary: #ffffff;
-            --text-secondary: #8892a6;
-            --accent-color: #4a9eff;
-            --accent-gradient: linear-gradient(135deg, #4a9eff 0%, #00d4ff 100%);
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #a855f7;
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.03);
             --border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        [data-theme="light"] {
-            --primary-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
-            --secondary-bg: rgba(0, 0, 0, 0.02);
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --accent-color: #3b82f6;
-            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --border-color: rgba(0, 0, 0, 0.1);
+            --purple-gradient: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: var(--primary-bg);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
-            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+
+        /* Animated Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInStars 1.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInStars {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: moveStars linear infinite, twinkle 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .star.small { 
+            width: 1px; 
+            height: 1px; 
+            opacity: 0.6; 
+        }
+        
+        .star.medium { 
+            width: 2px; 
+            height: 2px; 
+            opacity: 0.8; 
+        }
+        
+        .star.large { 
+            width: 3px; 
+            height: 3px; 
+            opacity: 1; 
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes moveStars {
+            from {
+                transform: translateY(-100vh) translateX(0);
+            }
+            to {
+                transform: translateY(100vh) translateX(-50px);
+            }
+        }
+
+        /* Purple Orbital Effect */
+        .purple-orb {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, 
+                rgba(139, 92, 246, 0.3) 0%, 
+                rgba(168, 85, 247, 0.2) 30%, 
+                rgba(192, 132, 252, 0.1) 60%, 
+                transparent 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbitalRotate 20s linear infinite, fadeInOrb 2s ease-out 0.2s both;
+            z-index: 2;
+            pointer-events: none;
+            filter: blur(1px);
+        }
+
+        @keyframes fadeInOrb {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .purple-orb::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, 
+                rgba(139, 92, 246, 0.6) 0%, 
+                rgba(168, 85, 247, 0.3) 50%, 
+                transparent 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbitalPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes orbitalRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes orbitalPulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
         }
 
         /* Header */
         .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+            padding: 15px 0;
+            transform: translateY(-100%);
+            animation: slideDownHeader 0.8s ease-out 0.3s forwards;
+        }
+
+        @keyframes slideDownHeader {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            position: relative;
-            z-index: 10;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .logo {
             display: flex;
             align-items: center;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
-            color: var(--accent-color);
+            color: var(--text-primary);
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: slideInLeft 0.6s ease-out 1.2s forwards;
+            letter-spacing: -0.02em;
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .logo-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-            background: var(--accent-gradient);
-            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            background: var(--purple-gradient);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 14px;
+            font-size: 16px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .nav-link:nth-child(1) { animation: fadeInDown 0.5s ease-out 1.4s forwards; }
+        .nav-link:nth-child(2) { animation: fadeInDown 0.5s ease-out 1.5s forwards; }
+        .nav-link:nth-child(3) { animation: fadeInDown 0.5s ease-out 1.6s forwards; }
+        .nav-link:nth-child(4) { animation: fadeInDown 0.5s ease-out 1.7s forwards; }
+
+        @keyframes fadeInDown {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--purple-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
         }
 
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .control-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            padding: 8px 12px;
+            padding: 10px 16px;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
         .control-btn:hover {
-            background: rgba(74, 158, 255, 0.1);
-            border-color: var(--accent-color);
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--accent-primary);
         }
 
-        .get-started-btn {
-            background: rgba(74, 158, 255, 0.1);
-            border: 1px solid rgba(74, 158, 255, 0.3);
-            color: var(--accent-color);
+        .cta-button {
+            background: var(--purple-gradient);
+            border: none;
+            color: white;
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
+            box-shadow: 0 4px 20px var(--accent-glow);
         }
 
-        .get-started-btn:hover {
-            background: rgba(74, 158, 255, 0.2);
-            border-color: var(--accent-color);
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        /* Main Content */
+        .content {
+            position: relative;
+            z-index: 10;
+            padding-top: 100px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--accent-primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 40px;
+            animation: glow 2s ease-in-out infinite alternate, fadeInScale 0.8s ease-out 0.5s both;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .hero-badge .badge-text {
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+            to { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }
+        }
+
+        .hero-title {
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            max-width: 900px;
+            background: linear-gradient(135deg, 
+                var(--text-primary) 0%, 
+                rgba(255, 255, 255, 0.8) 50%, 
+                var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+            letter-spacing: -0.025em;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out 1.2s forwards;
+            font-weight: 400;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out 1.6s forwards;
+        }
+
+        .primary-btn {
+            background: var(--purple-gradient);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px var(--accent-glow);
+        }
+
+        .secondary-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .secondary-btn:hover {
+            background: var(--card-bg);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        /* Animaciones de aparición en scroll */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .scroll-animate.animate-left {
+            transform: translateX(-50px);
+        }
+
+        .scroll-animate.animate-right {
+            transform: translateX(50px);
+        }
+
+        .scroll-animate.animate-scale {
+            transform: scale(0.8);
+        }
+
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        .stagger-animation {
+            transition-delay: 0s;
+        }
+
+        .stagger-animation:nth-child(1) { transition-delay: 0.1s; }
+        .stagger-animation:nth-child(2) { transition-delay: 0.2s; }
+        .stagger-animation:nth-child(3) { transition-delay: 0.3s; }
+        .stagger-animation:nth-child(4) { transition-delay: 0.4s; }
+        .stagger-animation:nth-child(5) { transition-delay: 0.5s; }
+        .stagger-animation:nth-child(6) { transition-delay: 0.6s; }
+
+        /* Sections */
+        .section {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Diagonal Feature Section */
+        .diagonal-section {
+            position: relative;
+            padding: 120px 0;
+            margin: 80px 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, 
+                rgba(139, 92, 246, 0.05) 0%, 
+                rgba(0, 0, 0, 0.02) 100%);
+        }
+
+        .diagonal-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                transparent 0%, 
+                rgba(139, 92, 246, 0.1) 50%, 
+                transparent 100%);
+            transform: skewY(-2deg);
+            transform-origin: top left;
+        }
+
+        .diagonal-content {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .diagonal-text {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .diagonal-text.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .diagonal-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--accent-primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .diagonal-title {
+            font-size: 32px;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .diagonal-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .diagonal-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .diagonal-image {
+            opacity: 0;
+            transform: translateX(50px) scale(0.9);
+            transition: all 0.8s ease-out 0.2s;
+        }
+
+        .diagonal-image.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        .image-container {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .image-container:hover::before {
+            left: 100%;
+        }
+
+        .mock-interface {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .interface-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .interface-title {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .interface-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .control-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .control-dot.active {
+            background: var(--accent-primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .interface-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(139, 92, 246, 0.15);
+            transform: translateX(4px);
+        }
+
+        .task-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .task-text {
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .task-status {
+            margin-left: auto;
+            width: 8px;
+            height: 8px;
+            background: #00d4aa;
+            border-radius: 50%;
+        }
+
+        /* AI Assistant Interface Styles */
+        .ai-chat-interface {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .ai-avatar {
+            margin-bottom: 20px;
+        }
+
+        .ai-orb {
+            width: 60px;
+            height: 60px;
+            background: conic-gradient(from 0deg, #8b5cf6, #a855f7, #c084fc, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: orbitalRotate 3s linear infinite;
+            position: relative;
+        }
+
+        .ai-orb::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: #0a0a0a;
+            border-radius: 50%;
+        }
+
+        .ai-content {
+            width: 100%;
+        }
+
+        .ai-question {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .ai-description {
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .ai-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .ai-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .ai-input button {
+            background: var(--accent-primary);
+            border: none;
+            color: white;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .ai-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .suggestion-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .suggestion-tag {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-tag:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-primary);
+        }
+
+        /* Collaboration Interface Styles */
+        .collaboration-interface {
+            padding: 16px;
+        }
+
+        .project-stats {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-icon {
+            font-size: 16px;
+        }
+
+        .stat-title {
+            color: var(--text-secondary);
+            font-size: 10px;
+            line-height: 1;
+        }
+
+        .stat-value {
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .team-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .activity-text {
+            flex: 1;
+            color: var(--text-primary);
+            font-size: 11px;
+        }
+
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 10px;
+        }
+
+        /* Animaciones específicas para títulos de sección */
+        .section-title {
+            font-size: 36px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out 0.2s;
+            font-weight: 400;
+        }
+
+        .section-title.visible,
+        .section-subtitle.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-top: 80px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.2);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: var(--purple-gradient);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-top: 80px;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--accent-primary);
+            transform: scale(1.05);
+            background: radial-gradient(circle at top, rgba(139, 92, 246, 0.1), var(--card-bg));
+        }
+
+        .pricing-card.featured::before {
+            content: attr(data-popular);
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--purple-gradient);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(139, 92, 246, 0.3);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .plan-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .plan-price {
+            font-size: 56px;
+            font-weight: 800;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+
+        .plan-period {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .plan-features li {
+            padding: 12px 0;
+            font-size: 16px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .plan-features li i {
+            color: var(--accent-primary);
+            font-size: 16px;
+            min-width: 20px;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .plan-btn.primary {
+            background: var(--purple-gradient);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .plan-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px var(--accent-glow);
+        }
+
+        .plan-btn.secondary {
+            background: transparent;
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+
+        .plan-btn.secondary:hover {
+            background: rgba(139, 92, 246, 0.1);
+            transform: translateY(-2px);
         }
 
         /* User Info */
@@ -136,7 +1193,7 @@
         }
 
         .user-name {
-            color: var(--accent-color);
+            color: var(--accent-primary);
             font-weight: 600;
         }
 
@@ -160,300 +1217,6 @@
             color: #ff4444;
         }
 
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 80px 40px 120px;
-            position: relative;
-        }
-
-        .hero-title {
-            font-size: clamp(48px, 8vw, 80px);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 40px;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-description {
-            font-size: 18px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 50px;
-        }
-
-        .join-btn {
-            background: var(--accent-gradient);
-            border: none;
-            color: white;
-            padding: 16px 32px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(74, 158, 255, 0.3);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .join-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(74, 158, 255, 0.4);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 80px 40px;
-            background: var(--secondary-bg);
-            backdrop-filter: blur(10px);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(74, 158, 255, 0.1);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 20px;
-            background: var(--accent-gradient);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-        }
-
-        .feature-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-
-        .feature-description {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-        }
-
-        /* How It Works Section */
-        .how-it-works {
-            padding: 80px 40px;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .section-subtitle {
-            text-align: center;
-            font-size: 18px;
-            color: var(--text-secondary);
-            margin-bottom: 80px;
-        }
-
-        .steps-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 60px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .step {
-            text-align: center;
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .step:hover {
-            transform: translateY(-10px);
-        }
-
-        .step-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 30px;
-            background: var(--accent-gradient);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-            box-shadow: 0 8px 32px rgba(74, 158, 255, 0.3);
-        }
-
-        .step:hover .step-icon {
-            box-shadow: 0 12px 48px rgba(74, 158, 255, 0.5);
-        }
-
-        .step-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .step-description {
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            max-width: 280px;
-            margin: 0 auto;
-        }
-
-        /* Pricing Section */
-        .pricing {
-            padding: 80px 40px;
-            background: var(--secondary-bg);
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .pricing-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .pricing-card.featured {
-            border: 2px solid var(--accent-color);
-            transform: scale(1.05);
-        }
-
-        .pricing-card.featured::before {
-            content: attr(data-popular);
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-gradient);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(74, 158, 255, 0.15);
-        }
-
-        .pricing-card.featured:hover {
-            transform: scale(1.05) translateY(-5px);
-        }
-
-        .plan-name {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-
-        .plan-price {
-            font-size: 48px;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 5px;
-        }
-
-        .plan-period {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .plan-features {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .plan-features li {
-            padding: 8px 0;
-            font-size: 14px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .plan-features li i {
-            color: #00d4aa;
-            font-size: 12px;
-        }
-
-        .plan-btn {
-            width: 100%;
-            padding: 12px 24px;
-            border: 1px solid var(--accent-color);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .plan-btn.primary {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-        }
-
-        .plan-btn.secondary {
-            background: transparent;
-            color: var(--accent-color);
-        }
-
-        .plan-btn:hover {
-            transform: translateY(-2px);
-        }
-
         /* Language Selector */
         .language-selector {
             position: relative;
@@ -463,14 +1226,14 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background: var(--card-bg);
+            background: var(--header-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 8px 0;
             min-width: 180px;
             display: none;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
 
@@ -479,23 +1242,23 @@
         }
 
         .language-option {
-            padding: 8px 16px;
+            padding: 12px 16px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
             color: var(--text-primary);
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .language-option:hover {
-            background: rgba(74, 158, 255, 0.1);
+            background: rgba(139, 92, 246, 0.1);
         }
 
         .language-option.active {
-            background: rgba(74, 158, 255, 0.2);
-            color: var(--accent-color);
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-primary);
         }
 
         /* Loading Spinner */
@@ -505,7 +1268,7 @@
             height: 20px;
             border: 3px solid var(--border-color);
             border-radius: 50%;
-            border-top-color: var(--accent-color);
+            border-top-color: var(--accent-primary);
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -513,111 +1276,59 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Background Effects */
-        .bg-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .floating-dot {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(74, 158, 255, 0.6);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-dot:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            animation-delay: -0.5s;
-        }
-
-        .floating-dot:nth-child(2) {
-            top: 60%;
-            left: 85%;
-            animation-delay: -2s;
-        }
-
-        .floating-dot:nth-child(3) {
-            top: 40%;
-            left: 75%;
-            animation-delay: -3.5s;
-        }
-
-        .floating-dot:nth-child(4) {
-            top: 80%;
-            left: 20%;
-            animation-delay: -1s;
-        }
-
-        .floating-dot:nth-child(5) {
-            top: 25%;
-            left: 60%;
-            animation-delay: -4s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-                opacity: 0.6;
-            }
-            50% {
-                transform: translateY(-20px);
-                opacity: 1;
-            }
-        }
-
-        /* Content positioning */
-        .content {
-            position: relative;
-            z-index: 5;
-        }
-
         /* Responsive Design */
         @media (max-width: 768px) {
-            .header {
-                padding: 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+            .header-content {
+                padding: 0 20px;
+                flex-direction: column;
+                gap: 20px;
             }
 
-            .header-controls {
+            .nav-menu {
                 order: 3;
                 width: 100%;
                 justify-content: center;
+                gap: 20px;
             }
 
             .hero {
-                padding: 60px 20px 80px;
+                padding: 0 20px;
+                min-height: 90vh;
             }
 
             .hero-title {
-                font-size: 48px;
+                font-size: 28px;
             }
 
             .hero-description {
                 font-size: 16px;
             }
 
-            .features,
-            .how-it-works,
-            .pricing {
-                padding: 60px 20px;
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
             }
 
-            .steps-container {
-                gap: 40px;
+            .section {
+                padding: 80px 20px;
             }
 
             .section-title {
-                font-size: 36px;
+                font-size: 28px;
+            }
+
+            .features-grid,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .pricing-card.featured:hover {
+                transform: translateY(-10px);
             }
 
             .user-info {
@@ -626,23 +1337,45 @@
                 text-align: center;
             }
 
-            .pricing-card.featured {
-                transform: none;
+            .purple-orb {
+                width: 250px;
+                height: 250px;
+            }
+
+            /* Diagonal section responsive */
+            .diagonal-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 0 20px;
+            }
+
+            .diagonal-text {
+                text-align: center;
+            }
+
+            .diagonal-title {
+                font-size: 24px;
+            }
+
+            .diagonal-stats {
+                justify-content: center;
+                gap: 30px;
+            }
+
+            .mock-interface {
+                min-height: 250px;
             }
         }
     </style>
 </head>
-<body data-theme="dark">
-    <div class="bg-pattern">
-        <div class="floating-dot"></div>
-        <div class="floating-dot"></div>
-        <div class="floating-dot"></div>
-        <div class="floating-dot"></div>
-        <div class="floating-dot"></div>
-    </div>
+<body>
+    <!-- Animated Background -->
+    <div class="stars-container" id="starsContainer"></div>
+    <div class="purple-orb"></div>
 
-    <div class="content">
-        <header class="header">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
             <div class="logo">
                 <div class="logo-icon">
                     <i class="fas fa-brain"></i>
@@ -650,545 +1383,841 @@
                 OpenMind AI
             </div>
             
+            <nav class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+            </nav>
+
             <div id="header-content">
                 <div class="loading-spinner"></div>
-     <div class="notifications-container">
-    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
-        <i class="fas fa-bell"></i>
-        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
-    </button>
-    <div class="notifications-dropdown" id="notificationsDropdown">
-        <div class="notifications-header">
-            <h4>Notificaciones</h4>
-        </div>
-        <div class="notifications-list" id="notificationsList">
-            <div class="notification-item loading">
-                Cargando...
             </div>
         </div>
-    </div>
-</div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-badge">
+                <span class="badge-text">New</span>
+                <span data-i18n="hero.badge">Automated Lead Generation</span>
             </div>
-        </header>
+            
+            <h1 class="hero-title" data-i18n="hero.title">
+                Intelligent Automation for Modern Businesses.
+            </h1>
+            
+            <p class="hero-description" data-i18n="hero.description">
+                OpenMind brings AI automation to your fingertips & streamline tasks.
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="login.html" class="primary-btn" data-i18n="hero.primaryBtn">
+                    Get in touch <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#features" class="secondary-btn" data-i18n="hero.secondaryBtn">
+                    View services
+                </a>
+            </div>
+        </section>
 
-        <main>
-            <section class="hero">
-                <h1 class="hero-title" data-i18n="hero.title">
-                    Unlock Collective Intelligence
-                </h1>
-                <p class="hero-description" data-i18n="hero.description">
-                    OpenMind is a comprehensive web platform that enables development teams to collaborate in real-time.
-                </p>
-                <a href="login.html" class="join-btn" data-i18n="hero.joinBtn">Join for Free</a>
-            </section>
-
-            <section class="features">
-                <h2 class="section-title" data-i18n="features.title">Key Features</h2>
-                <p class="section-subtitle" data-i18n="features.subtitle">Everything you need to collaborate efficiently</p>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-code"></i>
+        <!-- Diagonal Feature Section -->
+        <section class="diagonal-section">
+            <div class="diagonal-content">
+                <div class="diagonal-text scroll-animate">
+                    <span class="diagonal-badge" data-i18n="workflow.badge">Workflow Automation</span>
+                    <h2 class="diagonal-title" data-i18n="workflow.title">
+                        Automate repetitive tasks
+                    </h2>
+                    <p class="diagonal-description" data-i18n="workflow.description">
+                        We help you streamline internal operations by automating manual workflows like data entry, reporting, and approval chains saving time and cutting down errors.
+                    </p>
+                    <div class="diagonal-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-i18n="workflow.stats.bots">100+</span>
+                            <span class="stat-label" data-i18n="workflow.stats.botsLabel">Internal Task Bots</span>
                         </div>
-                        <h3 class="feature-title" data-i18n="features.codeEditor.title">Collaborative Code Editor</h3>
-                        <p class="feature-description" data-i18n="features.codeEditor.description">Edit code in real-time with your team.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-robot"></i>
+                        <div class="stat-item">
+                            <span class="stat-number" data-i18n="workflow.stats.automations">100+</span>
+                            <span class="stat-label" data-i18n="workflow.stats.automationsLabel">Automations</span>
                         </div>
-                        <h3 class="feature-title" data-i18n="features.ai.title">Integrated AI</h3>
-                        <p class="feature-description" data-i18n="features.ai.description">AI assistant for coding and optimization.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <h3 class="feature-title" data-i18n="features.communication.title">Chat & Video</h3>
-                        <p class="feature-description" data-i18n="features.communication.description">Seamless team communication.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <h3 class="feature-title" data-i18n="features.projectManagement.title">Project Management</h3>
-                        <p class="feature-description" data-i18n="features.projectManagement.description">Kanban boards and sprint management.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-git-alt"></i>
-                        </div>
-                        <h3 class="feature-title" data-i18n="features.versionControl.title">Version Control</h3>
-                        <p class="feature-description" data-i18n="features.versionControl.description">Integrated Git with visual interface.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-cloud"></i>
-                        </div>
-                        <h3 class="feature-title" data-i18n="features.deployment.title">Auto Deployment</h3>
-                        <p class="feature-description" data-i18n="features.deployment.description">CI/CD with automatic deployment.</p>
                     </div>
                 </div>
-            </section>
-
-            <section class="how-it-works">
-                <h2 class="section-title" data-i18n="howItWorks.title">How It Works</h2>
-                <p class="section-subtitle" data-i18n="howItWorks.subtitle">Simple workflow to bring ideas to life</p>
-                
-                <div class="steps-container">
-                    <div class="step">
-                        <div class="step-icon">
-                            <i class="fas fa-users"></i>
+                <div class="diagonal-image scroll-animate">
+                    <div class="image-container">
+                        <div class="mock-interface">
+                            <div class="interface-header">
+                                <span class="interface-title">AI Tasks - Waiting for approval</span>
+                                <div class="interface-controls">
+                                    <div class="control-dot"></div>
+                                    <div class="control-dot"></div>
+                                    <div class="control-dot active"></div>
+                                </div>
+                            </div>
+                            <div class="interface-content">
+                                <div class="task-item">
+                                    <div class="task-icon"><i class="fas fa-dollar-sign"></i></div>
+                                    <div class="task-text">Payroll management<br><small>Due on 2024 by.</small></div>
+                                    <div class="task-status"></div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-icon"><i class="fas fa-users"></i></div>
+                                    <div class="task-text">Employee tracking<br><small>2 days ago</small></div>
+                                    <div class="task-status"></div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-icon"><i class="fas fa-share-alt"></i></div>
+                                    <div class="task-text">Social media post<br><small>Canceled by Marc.</small></div>
+                                    <div class="task-status"></div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="task-icon"><i class="fas fa-list"></i></div>
+                                    <div class="task-text">Lead list<br><small>100+ new ones</small></div>
+                                    <div class="task-status"></div>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="step-title" data-i18n="howItWorks.step1.title">1. Create or Join</h3>
-                        <p class="step-description" data-i18n="howItWorks.step1.description">
-                            Start a new project or join existing one.
-                        </p>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-icon">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <h3 class="step-title" data-i18n="howItWorks.step2.title">2. Submit Ideas</h3>
-                        <p class="step-description" data-i18n="howItWorks.step2.description">
-                            Post proposals and discussion points.
-                        </p>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-icon">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <h3 class="step-title" data-i18n="howItWorks.step3.title">3. Collaborate</h3>
-                        <p class="step-description" data-i18n="howItWorks.step3.description">
-                            Use AI analysis to reach consensus.
-                        </p>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="pricing">
-                <h2 class="section-title" data-i18n="pricing.title">Plans & Pricing</h2>
-                <p class="section-subtitle" data-i18n="pricing.subtitle">Choose the perfect plan</p>
-                
-                <div class="pricing-grid">
-                    <div class="pricing-card">
-                        <h3 class="plan-name" data-i18n="pricing.free.name">Mind Free</h3>
-                        <div class="plan-price">$0</div>
-                        <div class="plan-period" data-i18n="pricing.free.period">per month</div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.projects">Up to 3 projects</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.members">5 members per project</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.storage">1GB storage</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.chat">Basic chat</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.support">Email support</span></li>
-                        </ul>
-                        <a href="login.html" class="plan-btn secondary" data-i18n="pricing.free.button">Start Free</a>
-                    </div>
-
-                    <div class="pricing-card featured" data-popular="">
-                        <h3 class="plan-name" data-i18n="pricing.pro.name">Mind Pro</h3>
-                        <div class="plan-price">$29</div>
-                        <div class="plan-period" data-i18n="pricing.pro.period">per month</div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.projects">Unlimited projects</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.members">Up to 25 members</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.storage">100GB storage</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.ai">Advanced AI</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.video">Video conferences</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.git">Git integrations</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.support">Priority support</span></li>
-                        </ul>
-                        <a href="login.html" class="plan-btn primary" data-i18n="pricing.pro.button">Choose Pro</a>
-                    </div>
-
-                    <div class="pricing-card">
-                        <h3 class="plan-name" data-i18n="pricing.ultra.name">Mind Ultra</h3>
-                        <div class="plan-price">$99</div>
-                        <div class="plan-period" data-i18n="pricing.ultra.period">per month</div>
-                        <ul class="plan-features">
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.everything">Everything in Pro</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.members">Unlimited members</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.storage">1TB storage</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.customAi">Custom AI</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.deployment">Auto deployment</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.analytics">Advanced analytics</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.support247">24/7 support</span></li>
-                            <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.onboarding">Dedicated onboarding</span></li>
-                        </ul>
-                        <a href="login.html" class="plan-btn secondary" data-i18n="pricing.ultra.button">Choose Ultra</a>
+        <!-- AI Assistant Section -->
+        <section class="diagonal-section">
+            <div class="diagonal-content">
+                <div class="diagonal-image scroll-animate">
+                    <div class="image-container">
+                        <div class="mock-interface">
+                            <div class="interface-header">
+                                <span class="interface-title">AI Assistant</span>
+                                <div class="interface-controls">
+                                    <div class="control-dot active"></div>
+                                    <div class="control-dot"></div>
+                                    <div class="control-dot"></div>
+                                </div>
+                            </div>
+                            <div class="ai-chat-interface">
+                                <div class="ai-avatar">
+                                    <div class="ai-orb"></div>
+                                </div>
+                                <div class="ai-content">
+                                    <h4 class="ai-question">What can I help with?</h4>
+                                    <p class="ai-description">Whether you want help in customer handling or make changes in your system just give me command</p>
+                                    <div class="ai-input">
+                                        <input type="text" placeholder="Provide me full report" readonly>
+                                        <button><i class="fas fa-paper-plane"></i></button>
+                                    </div>
+                                    <div class="ai-suggestions">
+                                        <span class="suggestion-tag">+ Add document</span>
+                                        <div class="suggestion-row">
+                                            <span class="suggestion-tag">📊 Analyze</span>
+                                            <span class="suggestion-tag">🖼️ Generate image</span>
+                                            <span class="suggestion-tag">🔍 Research</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
-        </main>
+                <div class="diagonal-text scroll-animate">
+                    <span class="diagonal-badge" data-i18n="assistant.badge">AI Assistant</span>
+                    <h2 class="diagonal-title" data-i18n="assistant.title">
+                        Delegate Daily Tasks
+                    </h2>
+                    <p class="diagonal-description" data-i18n="assistant.description">
+                        From managing calendars to drafting emails and summarizing meetings, our AI assistants work around the clock to keep your business running smarter and faster.
+                    </p>
+                    <div class="diagonal-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-i18n="assistant.stats.summaries">∞</span>
+                            <span class="stat-label" data-i18n="assistant.stats.summariesLabel">Summaries</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-i18n="assistant.stats.scheduling">24/7</span>
+                            <span class="stat-label" data-i18n="assistant.stats.schedulingLabel">Scheduling</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Collaboration Section -->
+        <section class="diagonal-section">
+            <div class="diagonal-content">
+                <div class="diagonal-text scroll-animate">
+                    <span class="diagonal-badge" data-i18n="collaboration.badge">Team Collaboration</span>
+                    <h2 class="diagonal-title" data-i18n="collaboration.title">
+                        Real-time Team Workspace
+                    </h2>
+                    <p class="diagonal-description" data-i18n="collaboration.description">
+                        Collaborate seamlessly with your team using integrated code editors, project management tools, and instant communication channels all in one unified platform.
+                    </p>
+                    <div class="diagonal-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-i18n="collaboration.stats.realtime">100%</span>
+                            <span class="stat-label" data-i18n="collaboration.stats.realtimeLabel">Real-time Sync</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-i18n="collaboration.stats.tools">50+</span>
+                            <span class="stat-label" data-i18n="collaboration.stats.toolsLabel">Integrated Tools</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="diagonal-image scroll-animate">
+                    <div class="image-container">
+                        <div class="mock-interface">
+                            <div class="interface-header">
+                                <span class="interface-title">Project Dashboard</span>
+                                <div class="interface-controls">
+                                    <div class="control-dot"></div>
+                                    <div class="control-dot active"></div>
+                                    <div class="control-dot"></div>
+                                </div>
+                            </div>
+                            <div class="collaboration-interface">
+                                <div class="project-stats">
+                                    <div class="stat-card">
+                                        <span class="stat-icon">👥</span>
+                                        <div>
+                                            <div class="stat-title">Team Members</div>
+                                            <div class="stat-value">8 Active</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-icon">📝</span>
+                                        <div>
+                                            <div class="stat-title">Tasks</div>
+                                            <div class="stat-value">24 Complete</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="team-activity">
+                                    <div class="activity-item">
+                                        <div class="user-avatar">JS</div>
+                                        <span class="activity-text">John updated frontend components</span>
+                                        <span class="activity-time">2m ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="user-avatar">MS</div>
+                                        <span class="activity-text">Maria deployed to staging</span>
+                                        <span class="activity-time">5m ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="user-avatar">AL</div>
+                                        <span class="activity-text">Alex created new branch</span>
+                                        <span class="activity-time">8m ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section" id="features">
+            <h2 class="section-title" data-i18n="features.title">Key Features</h2>
+            <p class="section-subtitle" data-i18n="features.subtitle">Everything you need to collaborate efficiently</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="features.codeEditor.title">Collaborative Code Editor</h3>
+                    <p class="feature-description" data-i18n="features.codeEditor.description">Edit code in real-time with your team using advanced AI assistance.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="features.ai.title">Integrated AI</h3>
+                    <p class="feature-description" data-i18n="features.ai.description">Powerful AI assistant for coding, optimization, and automation.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="features.communication.title">Chat & Video</h3>
+                    <p class="feature-description" data-i18n="features.communication.description">Seamless team communication with integrated video calls.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="features.projectManagement.title">Project Management</h3>
+                    <p class="feature-description" data-i18n="features.projectManagement.description">Advanced Kanban boards and intelligent sprint management.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-git-alt"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="features.versionControl.title">Version Control</h3>
+                    <p class="feature-description" data-i18n="features.versionControl.description">Integrated Git with beautiful visual interface.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3 class="feature-title" data-i18n="features.deployment.title">Auto Deployment</h3>
+                    <p class="feature-description" data-i18n="features.deployment.description">Intelligent CI/CD with automatic deployment.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="section" id="pricing">
+            <h2 class="section-title scroll-animate" data-i18n="pricing.title">Plans & Pricing</h2>
+            <p class="section-subtitle scroll-animate" data-i18n="pricing.subtitle">Choose the perfect plan for your needs</p>
+            
+            <div class="pricing-grid scroll-animate">
+                <div class="pricing-card scroll-animate stagger-animation">
+                    <h3 class="plan-name" data-i18n="pricing.free.name">Mind Free</h3>
+                    <div class="plan-price">$0</div>
+                    <div class="plan-period" data-i18n="pricing.free.period">per month</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.projects">Up to 3 projects</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.members">5 members per project</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.storage">1GB storage</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.chat">Basic chat support</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.free.features.support">Email support</span></li>
+                    </ul>
+                    <a href="login.html" class="plan-btn secondary" data-i18n="pricing.free.button">Start Free</a>
+                </div>
+
+                <div class="pricing-card featured scroll-animate stagger-animation" data-popular="Most Popular">
+                    <h3 class="plan-name" data-i18n="pricing.pro.name">Mind Pro</h3>
+                    <div class="plan-price">$29</div>
+                    <div class="plan-period" data-i18n="pricing.pro.period">per month</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.projects">Unlimited projects</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.members">Up to 25 members</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.storage">100GB storage</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.ai">Advanced AI features</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.video">Video conferences</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.git">Git integrations</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.pro.features.support">Priority support</span></li>
+                    </ul>
+                    <a href="login.html" class="plan-btn primary" data-i18n="pricing.pro.button">Choose Pro</a>
+                </div>
+
+                <div class="pricing-card scroll-animate stagger-animation">
+                    <h3 class="plan-name" data-i18n="pricing.ultra.name">Mind Ultra</h3>
+                    <div class="plan-price">$99</div>
+                    <div class="plan-period" data-i18n="pricing.ultra.period">per month</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.everything">Everything in Pro</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.members">Unlimited members</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.storage">1TB storage</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.customAi">Custom AI models</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.deployment">Auto deployment</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.analytics">Advanced analytics</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.support247">24/7 support</span></li>
+                        <li><i class="fas fa-check"></i> <span data-i18n="pricing.ultra.features.onboarding">Dedicated onboarding</span></li>
+                    </ul>
+                    <a href="login.html" class="plan-btn secondary" data-i18n="pricing.ultra.button">Choose Ultra</a>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <script src="js/hlobalscript.js"></script>
-<script>
-    
-// Configuración
-const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+    <script>
+        // Configuración
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
 
-let supabaseClient;
-let currentTheme = localStorage.getItem('theme') || 'dark';
+        let supabaseClient;
+        let currentTheme = 'dark'; // Always dark theme for this design
 
-// Idiomas soportados
-const supportedLanguages = {
-    'en': { name: 'English', flag: '🇺🇸' },
-    'es': { name: 'Español', flag: '🇪🇸' },
-    'fr': { name: 'Français', flag: '🇫🇷' },
-    'de': { name: 'Deutsch', flag: '🇩🇪' },
-    'it': { name: 'Italiano', flag: '🇮🇹' },
-    'pt': { name: 'Português', flag: '🇵🇹' },
-    'ru': { name: 'Русский', flag: '🇷🇺' },
-    'ja': { name: '日本語', flag: '🇯🇵' },
-    'ko': { name: '한국어', flag: '🇰🇷' },
-    'zh': { name: '中文', flag: '🇨🇳' },
-    'ar': { name: 'العربية', flag: '🇸🇦' },
-    'hi': { name: 'हिंदी', flag: '🇮🇳' },
-    'nl': { name: 'Nederlands', flag: '🇳🇱' }
-};
+        // Idiomas soportados
+        const supportedLanguages = {
+            'en': { name: 'English', flag: '🇺🇸' },
+            'es': { name: 'Español', flag: '🇪🇸' },
+            'fr': { name: 'Français', flag: '🇫🇷' },
+            'de': { name: 'Deutsch', flag: '🇩🇪' },
+            'it': { name: 'Italiano', flag: '🇮🇹' },
+            'pt': { name: 'Português', flag: '🇵🇹' },
+            'ru': { name: 'Русский', flag: '🇷🇺' },
+            'ja': { name: '日本語', flag: '🇯🇵' },
+            'ko': { name: '한국어', flag: '🇰🇷' },
+            'zh': { name: '中文', flag: '🇨🇳' },
+            'ar': { name: 'العربية', flag: '🇸🇦' },
+            'hi': { name: 'हिंदी', flag: '🇮🇳' },
+            'nl': { name: 'Nederlands', flag: '🇳🇱' }
+        };
 
-// Fallback translations (incluidas en el código como respaldo)
-const fallbackTranslations = {
-    en: {
-        "common.welcome": "Welcome",
-        "common.logout": "Logout",
-        "common.themeToggle": "Toggle Theme",
-        "common.language": "Language",
-        "common.access": "Access",
-        "common.mostPopular": "Most Popular",
-        "hero.title": "Unlock Collective Intelligence",
-        "hero.description": "OpenMind is a comprehensive web platform that enables development teams to collaborate in real-time.",
-        "hero.joinBtn": "Join for Free"
-    },
-    es: {
-        "common.welcome": "Bienvenido",
-        "common.logout": "Cerrar Sesión",
-        "common.themeToggle": "Cambiar Tema",
-        "common.language": "Idioma",
-        "common.access": "Acceder",
-        "common.mostPopular": "Más Popular",
-        "hero.title": "Desbloquea la Inteligencia Colectiva",
-        "hero.description": "OpenMind es una plataforma web integral que permite a equipos de desarrollo colaborar en tiempo real.",
-        "hero.joinBtn": "Únete Gratis"
-    }
-};
-
-
-// Cargar traducciones directamente (sin backend HTTP)
-async function loadTranslations() {
-    const translations = {};
-    
-    // Lista de idiomas que tienes en tu carpeta translations
-    const languages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 'ar', 'hi', 'nl'];
-    
-    for (const lang of languages) {
-        try {
-            const response = await fetch(`./translations/${lang}.json`);
-            if (response.ok) {
-                translations[lang] = { translation: await response.json() };
+        // Fallback translations
+        const fallbackTranslations = {
+            en: {
+                "common.welcome": "Welcome",
+                "common.logout": "Logout",
+                "common.themeToggle": "Toggle Theme",
+                "common.language": "Language",
+                "common.access": "Book a call",
+                "common.mostPopular": "Most Popular",
+                "hero.badge": "Automated Lead Generation",
+                "hero.title": "Intelligent Automation for Modern Businesses.",
+                "hero.description": "OpenMind brings AI automation to your fingertips & streamline tasks.",
+                "hero.primaryBtn": "Get in touch",
+                "hero.secondaryBtn": "View services",
+                "workflow.badge": "Workflow Automation",
+                "workflow.title": "Automate repetitive tasks",
+                "workflow.description": "We help you streamline internal operations by automating manual workflows like data entry, reporting, and approval chains saving time and cutting down errors.",
+                "workflow.stats.bots": "100+",
+                "workflow.stats.botsLabel": "Internal Task Bots",
+                "workflow.stats.automations": "100+",
+                "workflow.stats.automationsLabel": "Automations",
+                "assistant.badge": "AI Assistant",
+                "assistant.title": "Delegate Daily Tasks",
+                "assistant.description": "From managing calendars to drafting emails and summarizing meetings, our AI assistants work around the clock to keep your business running smarter and faster.",
+                "assistant.stats.summaries": "∞",
+                "assistant.stats.summariesLabel": "Summaries",
+                "assistant.stats.scheduling": "24/7",
+                "assistant.stats.schedulingLabel": "Scheduling",
+                "collaboration.badge": "Team Collaboration",
+                "collaboration.title": "Real-time Team Workspace",
+                "collaboration.description": "Collaborate seamlessly with your team using integrated code editors, project management tools, and instant communication channels all in one unified platform.",
+                "collaboration.stats.realtime": "100%",
+                "collaboration.stats.realtimeLabel": "Real-time Sync",
+                "collaboration.stats.tools": "50+",
+                "collaboration.stats.toolsLabel": "Integrated Tools",
+                "features.title": "Key Features",
+                "features.subtitle": "Everything you need to collaborate efficiently",
+                "features.codeEditor.title": "Collaborative Code Editor",
+                "features.codeEditor.description": "Edit code in real-time with your team using advanced AI assistance.",
+                "features.ai.title": "Integrated AI",
+                "features.ai.description": "Powerful AI assistant for coding, optimization, and automation.",
+                "features.communication.title": "Chat & Video",
+                "features.communication.description": "Seamless team communication with integrated video calls.",
+                "features.projectManagement.title": "Project Management",
+                "features.projectManagement.description": "Advanced Kanban boards and intelligent sprint management.",
+                "features.versionControl.title": "Version Control",
+                "features.versionControl.description": "Integrated Git with beautiful visual interface.",
+                "features.deployment.title": "Auto Deployment",
+                "features.deployment.description": "Intelligent CI/CD with automatic deployment.",
+                "pricing.title": "Plans & Pricing",
+                "pricing.subtitle": "Choose the perfect plan for your needs"
+            },
+            es: {
+                "common.welcome": "Bienvenido",
+                "common.logout": "Cerrar Sesión",
+                "common.themeToggle": "Cambiar Tema",
+                "common.language": "Idioma",
+                "common.access": "Reservar llamada",
+                "common.mostPopular": "Más Popular",
+                "hero.badge": "Generación Automática de Leads",
+                "hero.title": "Automatización Inteligente para Empresas Modernas.",
+                "hero.description": "OpenMind trae automatización AI a tus manos y optimiza tareas.",
+                "hero.primaryBtn": "Contáctanos",
+                "hero.secondaryBtn": "Ver servicios",
+                "workflow.badge": "Automatización de Flujos",
+                "workflow.title": "Automatiza tareas repetitivas",
+                "workflow.description": "Te ayudamos a optimizar operaciones internas automatizando flujos manuales como ingreso de datos, reportes y cadenas de aprobación, ahorrando tiempo y reduciendo errores.",
+                "workflow.stats.bots": "100+",
+                "workflow.stats.botsLabel": "Bots de Tareas Internas",
+                "workflow.stats.automations": "100+",
+                "workflow.stats.automationsLabel": "Automatizaciones",
+                "assistant.badge": "Asistente IA",
+                "assistant.title": "Delega Tareas Diarias",
+                "assistant.description": "Desde gestionar calendarios hasta redactar emails y resumir reuniones, nuestros asistentes IA trabajan las 24 horas para mantener tu negocio funcionando de manera más inteligente y rápida.",
+                "assistant.stats.summaries": "∞",
+                "assistant.stats.summariesLabel": "Resúmenes",
+                "assistant.stats.scheduling": "24/7",
+                "assistant.stats.schedulingLabel": "Programación",
+                "collaboration.badge": "Colaboración en Equipo",
+                "collaboration.title": "Espacio de Trabajo en Tiempo Real",
+                "collaboration.description": "Colabora sin problemas con tu equipo usando editores de código integrados, herramientas de gestión de proyectos y canales de comunicación instantánea, todo en una plataforma unificada.",
+                "collaboration.stats.realtime": "100%",
+                "collaboration.stats.realtimeLabel": "Sincronización en Tiempo Real",
+                "collaboration.stats.tools": "50+",
+                "collaboration.stats.toolsLabel": "Herramientas Integradas",
+                "features.title": "Características Clave",
+                "features.subtitle": "Todo lo que necesitas para colaborar eficientemente",
+                "pricing.title": "Planes y Precios",
+                "pricing.subtitle": "Elige el plan perfecto para tus necesidades"
             }
-        } catch (error) {
-            console.warn(`Could not load ${lang}.json, using fallback`);
-            if (fallbackTranslations[lang]) {
-                translations[lang] = { translation: fallbackTranslations[lang] };
+        };
+
+        // Crear estrellas animadas
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 150;
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = `star ${['small', 'medium', 'large'][Math.floor(Math.random() * 3)]}`;
+                
+                // Posición inicial aleatoria
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = -10 + 'px';
+                
+                // Duración y delay aleatorios
+                const duration = 15 + Math.random() * 20;
+                const delay = Math.random() * 20;
+                
+                star.style.animationDuration = duration + 's';
+                star.style.animationDelay = -delay + 's';
+                
+                container.appendChild(star);
+                
+                // Remover y recrear la estrella cuando termine la animación
+                setTimeout(() => {
+                    star.remove();
+                }, (duration - delay) * 1000);
             }
         }
-    }
-    
-    return translations;
-}
 
-document.addEventListener('DOMContentLoaded', async function() {
-    // Cargar todas las traducciones
-    const translations = await loadTranslations();
-    
-    // Inicializar i18next SIN i18nextHttpBackend
-    i18next
-        .use(i18nextBrowserLanguageDetector)
-        .init({
-            fallbackLng: 'en',
-            debug: true,
-            resources: translations,
-            detection: {
-                order: ['localStorage', 'navigator', 'htmlTag'],
-                caches: ['localStorage']
-            }
-        }, function(err, t) {
-            if (err) {
-                console.warn('Error initializing i18next:', err);
+        // Recrear estrellas continuamente
+        function maintainStars() {
+            createStars();
+            setInterval(() => {
+                if (document.querySelectorAll('.star').length < 50) {
+                    createStars();
+                }
+            }, 5000);
+        }
+
+        // Cargar traducciones
+        async function loadTranslations() {
+            const translations = {};
+            const languages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'ja', 'ko', 'zh', 'ar', 'hi', 'nl'];
+            
+            for (const lang of languages) {
+                try {
+                    const response = await fetch(`./translations/${lang}.json`);
+                    if (response.ok) {
+                        translations[lang] = { translation: await response.json() };
+                    }
+                } catch (error) {
+                    console.warn(`Could not load ${lang}.json, using fallback`);
+                    if (fallbackTranslations[lang]) {
+                        translations[lang] = { translation: fallbackTranslations[lang] };
+                    }
+                }
             }
             
-            initializeApp();
+            return translations;
+        }
+
+        // Inicializar aplicación
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Iniciar animaciones de fondo
+            maintainStars();
+            
+            // Cargar traducciones
+            const translations = await loadTranslations();
+            
+            // Inicializar i18next
+            i18next
+                .use(i18nextBrowserLanguageDetector)
+                .init({
+                    fallbackLng: 'en',
+                    debug: true,
+                    resources: translations,
+                    detection: {
+                        order: ['localStorage', 'navigator', 'htmlTag'],
+                        caches: ['localStorage']
+                    }
+                }, function(err, t) {
+                    if (err) {
+                        console.warn('Error initializing i18next:', err);
+                    }
+                    initializeApp();
+                });
         });
-});
 
+        function initializeApp() {
+            // Inicializar Supabase
+            if (typeof supabase !== 'undefined') {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                checkAuthAndUpdateHeader();
+            } else {
+                showBasicHeader();
+            }
 
-function useFallbackTranslations() {
-    // Si fallan los archivos JSON externos, usar las traducciones internas
-    Object.keys(fallbackTranslations).forEach(lang => {
-        i18next.addResourceBundle(lang, 'translation', fallbackTranslations[lang], true);
-    });
-}
-
-function initializeApp() {
-    // Inicializar Supabase
-    if (typeof supabase !== 'undefined') {
-        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        checkAuthAndUpdateHeader();
-    }
-
-    // Aplicar tema guardado
-    document.body.setAttribute('data-theme', currentTheme);
-    
-    // Actualizar contenido con traducciones
-    updateContent();
-    
-    // Efectos visuales
-    addVisualEffects();
-}
-
-function updateContent() {
-    // Actualizar elementos con data-i18n
-    const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        const translation = i18next.t(key);
-        
-        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-            element.placeholder = translation;
-        } else {
-            element.textContent = translation;
-        }
-    });
-
-    // Actualizar atributo data-popular
-    const featuredCard = document.querySelector('.pricing-card.featured');
-    if (featuredCard) {
-        featuredCard.setAttribute('data-popular', i18next.t('common.mostPopular'));
-    }
-
-    // Actualizar título de la página
-    document.title = `OpenMind AI - ${i18next.t('hero.title')}`;
-}
-
-async function checkAuthAndUpdateHeader() {
-    try {
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        const headerContent = document.getElementById('header-content');
-        
-        if (session && session.user) {
-            // Usuario logueado
-            const userName = session.user.user_metadata?.full_name || 
-                           session.user.user_metadata?.name || 
-                           session.user.email.split('@')[0];
+            // Actualizar contenido con traducciones
+            updateContent();
             
-            headerContent.innerHTML = `
-                <div class="header-controls">
-                    <button class="control-btn" onclick="toggleTheme()">
-                        <i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>
-                        <span>${i18next.t('common.themeToggle')}</span>
-                    </button>
-                    ${generateLanguageSelector()}
-                    <div class="user-info">
-                        <div class="welcome-text">
-                            ${i18next.t('common.welcome')}, <span class="user-name">${userName}</span>
+            // Scroll suave para navegación
+            initSmoothScroll();
+            
+            // Inicializar animaciones de scroll
+            initScrollAnimations();
+        }
+
+        // Función para inicializar las animaciones de scroll
+        function initScrollAnimations() {
+            // Crear observador de intersección
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // Si es un contenedor de elementos con stagger
+                        const staggerElements = entry.target.querySelectorAll('.stagger-animation');
+                        staggerElements.forEach((element, index) => {
+                            setTimeout(() => {
+                                element.classList.add('visible');
+                            }, index * 100);
+                        });
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            // Observar todos los elementos con animación
+            const animatedElements = document.querySelectorAll('.scroll-animate, .section-title, .section-subtitle');
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
+
+            // Configurar elementos específicos para animaciones
+            setupSpecificAnimations();
+        }
+
+        function setupSpecificAnimations() {
+            // Añadir clases de animación a los elementos existentes
+            const featureCards = document.querySelectorAll('.feature-card');
+            const pricingCards = document.querySelectorAll('.pricing-card');
+            
+            featureCards.forEach((card, index) => {
+                card.classList.add('scroll-animate', 'stagger-animation');
+                if (index % 2 === 0) {
+                    card.classList.add('animate-left');
+                } else {
+                    card.classList.add('animate-right');
+                }
+            });
+
+            pricingCards.forEach((card, index) => {
+                card.classList.add('scroll-animate', 'stagger-animation');
+                if (index === 1) {
+                    card.classList.add('animate-scale');
+                } else {
+                    card.classList.add(index === 0 ? 'animate-left' : 'animate-right');
+                }
+            });
+
+            // Añadir animación a las grids
+            const featuresGrid = document.querySelector('.features-grid');
+            const pricingGrid = document.querySelector('.pricing-grid');
+            
+            if (featuresGrid) featuresGrid.classList.add('scroll-animate');
+            if (pricingGrid) pricingGrid.classList.add('scroll-animate');
+        }
+
+        function updateContent() {
+            // Actualizar elementos con data-i18n
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = i18next.t(key);
+                
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = translation;
+                } else {
+                    element.textContent = translation;
+                }
+            });
+
+            // Actualizar atributo data-popular
+            const featuredCard = document.querySelector('.pricing-card.featured');
+            if (featuredCard) {
+                featuredCard.setAttribute('data-popular', i18next.t('common.mostPopular'));
+            }
+
+            // Actualizar título de la página
+            document.title = `OpenMind AI - ${i18next.t('hero.title')}`;
+        }
+
+        async function checkAuthAndUpdateHeader() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                const headerContent = document.getElementById('header-content');
+                
+                if (session && session.user) {
+                    // Usuario logueado
+                    const userName = session.user.user_metadata?.full_name || 
+                                   session.user.user_metadata?.name || 
+                                   session.user.email.split('@')[0];
+                    
+                    headerContent.innerHTML = `
+                        <div class="header-controls">
+                            <button class="control-btn" onclick="toggleTheme()">
+                                <i class="fas fa-palette"></i>
+                                <span>${i18next.t('common.themeToggle')}</span>
+                            </button>
+                            ${generateLanguageSelector()}
+                            <div class="user-info">
+                                <div class="welcome-text">
+                                    ${i18next.t('common.welcome')}, <span class="user-name">${userName}</span>
+                                </div>
+                                <button class="logout-btn" onclick="handleLogout()">
+                                    <i class="fas fa-sign-out-alt"></i> 
+                                    ${i18next.t('common.logout')}
+                                </button>
+                            </div>
                         </div>
-                        <button class="logout-btn" onclick="handleLogout()">
-                            <i class="fas fa-sign-out-alt"></i> 
-                            ${i18next.t('common.logout')}
-                        </button>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Usuario no logueado
+                    `;
+                } else {
+                    // Usuario no logueado
+                    showBasicHeader();
+                }
+            } catch (error) {
+                console.error('Error checking auth:', error);
+                showBasicHeader();
+            }
+        }
+
+        function showBasicHeader() {
+            const headerContent = document.getElementById('header-content');
             headerContent.innerHTML = `
                 <div class="header-controls">
                     <button class="control-btn" onclick="toggleTheme()">
-                        <i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>
+                        <i class="fas fa-palette"></i>
                         <span>${i18next.t('common.themeToggle')}</span>
                     </button>
                     ${generateLanguageSelector()}
-                    <a href="login.html" class="get-started-btn">
+                    <a href="login.html" class="cta-button">
                         ${i18next.t('common.access')}
                     </a>
                 </div>
             `;
         }
-    } catch (error) {
-        console.error('Error checking auth:', error);
-        showBasicHeader();
-    }
-}
 
-function generateLanguageSelector() {
-    return `
-        <div class="language-selector">
-            <button class="control-btn" onclick="toggleLanguageDropdown()">
-                <i class="fas fa-globe"></i>
-                <span>${i18next.t('common.language')}</span>
-            </button>
-            <div class="language-dropdown" id="languageDropdown">
-                ${generateLanguageOptions()}
-            </div>
-        </div>
-    `;
-}
+        function generateLanguageSelector() {
+            return `
+                <div class="language-selector">
+                    <button class="control-btn" onclick="toggleLanguageDropdown()">
+                        <i class="fas fa-globe"></i>
+                        <span>${i18next.t('common.language')}</span>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        ${generateLanguageOptions()}
+                    </div>
+                </div>
+            `;
+        }
 
-function generateLanguageOptions() {
-    const currentLang = i18next.language;
-    return Object.entries(supportedLanguages).map(([code, lang]) => 
-        `<div class="language-option ${currentLang === code ? 'active' : ''}" 
-              onclick="changeLanguage('${code}')">
-            ${lang.flag} ${lang.name}
-         </div>`
-    ).join('');
-}
+        function generateLanguageOptions() {
+            const currentLang = i18next.language;
+            return Object.entries(supportedLanguages).map(([code, lang]) => 
+                `<div class="language-option ${currentLang === code ? 'active' : ''}" 
+                      onclick="changeLanguage('${code}')">
+                    ${lang.flag} ${lang.name}
+                 </div>`
+            ).join('');
+        }
 
-function showBasicHeader() {
-    const headerContent = document.getElementById('header-content');
-    headerContent.innerHTML = `
-        <div class="header-controls">
-            <button class="control-btn" onclick="toggleTheme()">
-                <i class="fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}"></i>
-                <span>${i18next.t('common.themeToggle')}</span>
-            </button>
-            ${generateLanguageSelector()}
-            <a href="login.html" class="get-started-btn">
-                ${i18next.t('common.access')}
-            </a>
-        </div>
-    `;
-}
-
-async function handleLogout() {
-    try {
-        const { error } = await supabaseClient.auth.signOut();
-        if (error) throw error;
-        
-        checkAuthAndUpdateHeader();
-        alert(`${i18next.t('common.logout')} successful`);
-        
-    } catch (error) {
-        console.error('Error logging out:', error);
-        alert('Error: ' + error.message);
-    }
-}
-
-function toggleTheme() {
-    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', currentTheme);
-    localStorage.setItem('theme', currentTheme);
-    
-    // Actualizar iconos
-    const themeIcons = document.querySelectorAll('.control-btn i.fa-sun, .control-btn i.fa-moon');
-    themeIcons.forEach(icon => {
-        icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
-    });
-}
-
-function toggleLanguageDropdown() {
-    const dropdown = document.getElementById('languageDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
-}
-
-function changeLanguage(lang) {
-    if (supportedLanguages[lang]) {
-        i18next.changeLanguage(lang, (err, t) => {
-            if (err) {
-                console.log('Error changing language:', err);
-                return;
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                checkAuthAndUpdateHeader();
+                alert(`${i18next.t('common.logout')} successful`);
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                alert('Error: ' + error.message);
             }
-            
-            updateContent();
-            checkAuthAndUpdateHeader();
-            
+        }
+
+        function toggleTheme() {
+            // En este diseño mantenemos siempre el tema oscuro
+            console.log('Theme is fixed to dark for this design');
+        }
+
+        function toggleLanguageDropdown() {
             const dropdown = document.getElementById('languageDropdown');
             if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function changeLanguage(lang) {
+            if (supportedLanguages[lang]) {
+                i18next.changeLanguage(lang, (err, t) => {
+                    if (err) {
+                        console.log('Error changing language:', err);
+                        return;
+                    }
+                    
+                    updateContent();
+                    checkAuthAndUpdateHeader();
+                    
+                    const dropdown = document.getElementById('languageDropdown');
+                    if (dropdown) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+            }
+        }
+
+        function initSmoothScroll() {
+            // Navegación suave
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Efecto parallax en scroll
+            let ticking = false;
+            
+            function updateParallax() {
+                const scrolled = window.pageYOffset;
+                const orb = document.querySelector('.purple-orb');
+                
+                if (orb) {
+                    const speed = 0.5;
+                    orb.style.transform = `translate(-50%, -50%) translateY(${scrolled * speed}px) rotate(${scrolled * 0.1}deg)`;
+                }
+                
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(updateParallax);
+                    ticking = true;
+                }
+            });
+        }
+
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const dropdown = document.getElementById('languageDropdown');
+            
+            if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
                 dropdown.classList.remove('show');
             }
         });
-    }
-}
 
-function addVisualEffects() {
-    // Efecto parallax
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const dots = document.querySelectorAll('.floating-dot');
-        
-        dots.forEach((dot, index) => {
-            const speed = 0.5 + (index * 0.1);
-            dot.style.transform = `translateY(${scrolled * speed}px)`;
-        });
-    });
-
-    // Animaciones de entrada
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    });
-
-    const animatedElements = document.querySelectorAll('.step, .feature-card, .pricing-card');
-    animatedElements.forEach(element => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(30px)';
-        element.style.transition = 'all 0.6s ease';
-        observer.observe(element);
-    });
-}
-
-// Cerrar dropdown al hacer clic fuera
-document.addEventListener('click', function(event) {
-    const languageSelector = document.querySelector('.language-selector');
-    const dropdown = document.getElementById('languageDropdown');
-    
-    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-// Función para agregar nuevo idioma dinámicamente
-function addLanguage(code, name, flag, translationData) {
-    if (!supportedLanguages[code]) {
-        supportedLanguages[code] = { name, flag };
-        
-        // Agregar traducciones
-        if (translationData) {
-            i18next.addResourceBundle(code, 'translation', translationData, true);
+        // Función de utilidad para obtener traducción
+        function t(key, fallback = '') {
+            const translation = i18next.t(key);
+            return translation !== key ? translation : fallback;
         }
-        
-        // Regenerar selector de idiomas si está visible
-        const dropdown = document.getElementById('languageDropdown');
-        if (dropdown) {
-            dropdown.innerHTML = generateLanguageOptions();
-        }
-        
-        console.log(`Language ${name} (${code}) added successfully`);
-    }
-}
-
-// Función de utilidad para obtener traducción con fallback
-function t(key, fallback = '') {
-    const translation = i18next.t(key);
-    return translation !== key ? translation : fallback;
-}
-</script>
+    </script>
 </body>
 </html>
