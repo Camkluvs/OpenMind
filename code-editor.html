@@ -43,6 +43,29 @@ body {
     transition: transform 0.3s ease;
 }
 
+.delete-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    background: #ef4444;
+    color: white;
+}
+
+.delete-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+.delete-btn:disabled {
+    background: rgba(239, 68, 68, 0.5) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
 .sidebar.hidden {
     transform: translateX(-100%);
 }
@@ -1760,7 +1783,9 @@ let openTabs = [];
 let activeTab = null;
 let saveTimeout = null;
 let expandedFolders = new Set();
-
+let projectRepositories = [];
+let currentViewMode = 'repositories'; // 'repositories' o 'files'
+let selectedRepository = null;
 // Variables para sincronización simplificada
 let syncInterval = null;
 let lastSyncTime = 0;
@@ -1911,13 +1936,15 @@ async function checkAuthenticationAndLoadData() {
             redirectToHome('No tienes acceso a este proyecto');
             return;
         }
+        updateUserRoleDisplay();
 
         await initMonacoEditor();
 
         await Promise.all([
             loadProjectData(projectId),
-            loadProjectFiles(projectId)
+            
         ]);
+        await loadProjectRepositories(projectId);
 
         console.log('Code editor loaded successfully');
 
@@ -2058,7 +2085,12 @@ async function syncFileChanges() {
 
 async function saveFileChanges() {
     if (!activeTab || !activeTab.modified) return;
-    if (currentUserRole === 'inspector') return;
+    
+    // CAMBIO: Permitir a owner Y admin guardar
+    if (currentUserRole === 'member') {
+        console.log('Member no puede guardar cambios');
+        return;
+    }
 
     try {
         if (monacoEditor) {
@@ -2084,6 +2116,7 @@ async function saveFileChanges() {
         updateSaveStatus('error');
     }
 }
+
 
 async function checkForOtherEditors() {
     if (!activeTab) return;
@@ -2185,6 +2218,7 @@ function getUserName() {
            currentUser.email.split('@')[0];
 }
 
+
 async function verifyProjectAccess(projectId) {
     try {
         const { data: membership, error } = await supabaseClient
@@ -2205,6 +2239,14 @@ async function verifyProjectAccess(projectId) {
         }
 
         currentUserRole = membership.role;
+        
+        // DEBUG: Verificar que el rol se asigna correctamente
+        console.log('=== DEBUG ROL ===');
+        console.log('Rol obtenido de DB:', membership.role);
+        console.log('Rol asignado a currentUserRole:', currentUserRole);
+        console.log('Puede editar:', ['owner', 'admin'].includes(currentUserRole));
+        console.log('==================');
+        
         return true;
 
     } catch (error) {
@@ -2213,6 +2255,28 @@ async function verifyProjectAccess(projectId) {
     }
 }
 
+
+function updateUserRoleDisplay() {
+    const userInfo = document.querySelector('.user-info');
+    if (userInfo && currentUserRole) {
+        let roleIndicator = document.getElementById('role-indicator');
+        if (!roleIndicator) {
+            roleIndicator = document.createElement('div');
+            roleIndicator.id = 'role-indicator';
+            roleIndicator.style.cssText = `
+                font-size: 11px;
+                color: #4a9eff;
+                background: rgba(74, 158, 255, 0.1);
+                padding: 2px 6px;
+                border-radius: 4px;
+                margin-left: 8px;
+            `;
+            userInfo.insertBefore(roleIndicator, userInfo.firstChild);
+        }
+        roleIndicator.textContent = currentUserRole.toUpperCase();
+    }
+
+}
 async function loadProjectData(projectId) {
     try {
         const { data: projectData, error } = await supabaseClient
@@ -2256,17 +2320,82 @@ async function loadProjectFiles(projectId) {
     }
 }
 
-function renderFileTree() {
+async function loadRepositoryFiles(repositoryId) {
+    try {
+        const { data: files, error } = await supabaseClient
+            .from('project_files')
+            .select('*')
+            .eq('repository_id', repositoryId)
+            .order('file_path', { ascending: true });
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        projectFiles = files || [];
+        renderRepositoryFiles();
+        console.log('Archivos del repositorio cargados:', projectFiles.length);
+
+    } catch (error) {
+        console.error('Error loading repository files:', error);
+        showToast('Error cargando archivos del repositorio', 'error');
+    }
+}
+
+function renderRepositoryFiles() {
     const fileTree = document.getElementById('file-tree');
-    if (!fileTree) return;
-    
     fileTree.innerHTML = '';
 
+    // Header con botón de regreso
+    const header = document.createElement('div');
+    header.style.cssText = `
+        padding: 12px 15px;
+        background: rgba(74, 158, 255, 0.1);
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border-left: 3px solid #4a9eff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    `;
+
+    header.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button onclick="backToRepositories()" style="
+                background: rgba(74, 158, 255, 0.2);
+                border: none;
+                color: #4a9eff;
+                padding: 8px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            ">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div>
+                <h3 style="color: #4a9eff; font-size: 14px; margin: 0; font-weight: 600;">
+                    ${selectedRepository?.name || 'Repositorio'}
+                </h3>
+                <p style="color: #8892a6; font-size: 11px; margin: 0;">
+                    ${projectFiles.length} archivos
+                </p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 5px;">
+            <button onclick="triggerFolderUpload()" style="background: rgba(74, 158, 255, 0.2); border: none; color: #4a9eff; padding: 6px 8px; border-radius: 4px; cursor: pointer;" title="Subir carpeta">
+                <i class="fas fa-upload"></i>
+            </button>
+            <button onclick="showNewFileModal()" style="background: rgba(74, 158, 255, 0.2); border: none; color: #4a9eff; padding: 6px 8px; border-radius: 4px; cursor: pointer;" title="Nuevo archivo">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+    `;
+    
+    fileTree.appendChild(header);
+
     if (projectFiles.length === 0) {
-        fileTree.innerHTML = `
+        fileTree.innerHTML += `
             <div style="text-align: center; padding: 30px; color: #8892a6;">
                 <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
-                <p style="font-size: 1.1rem; margin-bottom: 5px;">Proyecto vacío</p>
+                <p style="font-size: 1.1rem; margin-bottom: 5px;">Repositorio vacío</p>
                 <p style="font-size: 0.9rem; opacity: 0.7;">Sube archivos o crea nuevos para comenzar</p>
             </div>
         `;
@@ -2276,6 +2405,362 @@ function renderFileTree() {
     const tree = buildFileTree(projectFiles);
     renderFileTreeNode(tree, fileTree, 0);
 }
+
+function backToRepositories() {
+    currentViewMode = 'repositories';
+    selectedRepository = null;
+    renderRepositories();
+}
+
+window.backToRepositories = backToRepositories;
+
+function renderFileTree() {
+    const fileTree = document.getElementById('file-tree');
+    if (!fileTree) return;
+    
+    if (currentViewMode === 'repositories') {
+        renderRepositories();
+    } else {
+        renderRepositoryFiles();
+    }
+}
+
+function renderRepositories() {
+    const fileTree = document.getElementById('file-tree');
+    fileTree.innerHTML = '';
+
+    // Header SIN botones de crear archivo
+    const header = document.createElement('div');
+    header.style.cssText = `
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 15px;
+    `;
+    
+    header.innerHTML = `
+        <h3 style="color: #ffffff; font-size: 16px; margin: 0;">
+            <i class="fas fa-code-branch" style="margin-right: 8px; color: #4a9eff;"></i>
+            Repositorios
+        </h3>
+        <button onclick="showCreateRepositoryModal()" style="
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">
+            <i class="fas fa-plus"></i> Nuevo
+        </button>
+    `;
+    
+    fileTree.appendChild(header);
+
+    if (projectRepositories.length === 0) {
+        fileTree.innerHTML += `
+            <div style="text-align: center; padding: 40px 20px; color: #8892a6;">
+                <i class="fas fa-code-branch" style="font-size: 3rem; margin-bottom: 15px; display: block; opacity: 0.3;"></i>
+                <h3 style="color: #ffffff; margin-bottom: 8px;">No hay repositorios</h3>
+                <p style="font-size: 14px; margin-bottom: 20px; opacity: 0.8;">Crea tu primer repositorio para organizar tu código</p>
+                <button onclick="showCreateRepositoryModal()" style="
+                    background: linear-gradient(45deg, #4a9eff, #00d4ff);
+                    border: none;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">
+                    <i class="fas fa-plus"></i> Crear Repositorio
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    // Cards de repositorios
+    projectRepositories.forEach(repo => {
+        const card = createRepositoryCard(repo);
+        fileTree.appendChild(card);
+    });
+}
+
+
+
+function createRepositoryCard(repository) {
+    const card = document.createElement('div');
+    card.style.cssText = `
+        background: linear-gradient(135deg, rgba(74, 158, 255, 0.1) 0%, rgba(74, 158, 255, 0.05) 100%);
+        border: 1px solid rgba(74, 158, 255, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 0 15px 15px 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    `;
+
+    const filesCount = projectFiles.filter(f => f.repository_id === repository.id).length;
+
+    card.innerHTML = `
+        <div style="display: flex; align-items: flex-start; gap: 15px;">
+            <div style="
+                width: 56px;
+                height: 56px;
+                background: linear-gradient(45deg, #4a9eff, #00d4ff);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                color: white;
+                box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+                flex-shrink: 0;
+            ">
+                <i class="fas fa-code-branch"></i>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <h3 style="color: #ffffff; font-size: 16px; margin: 0 0 8px 0; font-weight: 600;">
+                    ${repository.name}
+                </h3>
+                <p style="color: #8892a6; font-size: 13px; margin: 0 0 8px 0; line-height: 1.4;">
+                    ${repository.description || 'Sin descripción'}
+                </p>
+                <div style="display: flex; gap: 15px; font-size: 11px; color: #8892a6;">
+                    <span><i class="fas fa-file"></i> ${filesCount} archivos</span>
+                    <span><i class="fas fa-clock"></i> ${new Date(repository.updated_at).toLocaleDateString('es-ES')}</span>
+                </div>
+            </div>
+            <div style="color: #4a9eff; font-size: 18px; align-self: center;">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+        
+        <!-- Botón eliminar (solo visible al hacer hover) -->
+        <button class="delete-repo-btn" style="
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: white;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        " title="Eliminar repositorio">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+
+    // Event listeners
+    card.onmouseover = () => {
+        card.style.transform = 'translateY(-3px)';
+        card.style.boxShadow = '0 12px 30px rgba(74, 158, 255, 0.25)';
+        card.style.borderColor = '#4a9eff';
+        
+        // Mostrar botón eliminar
+        const deleteBtn = card.querySelector('.delete-repo-btn');
+        if (deleteBtn && ['owner', 'admin'].includes(currentUserRole)) {
+            deleteBtn.style.opacity = '1';
+        }
+    };
+
+    card.onmouseout = () => {
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = 'none';
+        card.style.borderColor = 'rgba(74, 158, 255, 0.2)';
+        
+        // Ocultar botón eliminar
+        const deleteBtn = card.querySelector('.delete-repo-btn');
+        if (deleteBtn) {
+            deleteBtn.style.opacity = '0';
+        }
+    };
+
+    // Click para abrir repositorio
+    card.onclick = (e) => {
+        // No abrir si se hizo clic en el botón eliminar
+        if (e.target.closest('.delete-repo-btn')) {
+            return;
+        }
+        openRepository(repository);
+    };
+
+    // Click para eliminar repositorio
+    const deleteBtn = card.querySelector('.delete-repo-btn');
+    if (deleteBtn) {
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            showDeleteRepositoryModal(repository);
+        };
+    }
+
+    return card;
+}
+
+
+function showDeleteRepositoryModal(repository) {
+    // Solo owner y admin pueden eliminar
+    if (!['owner', 'admin'].includes(currentUserRole)) {
+        showToast('No tienes permisos para eliminar repositorios', 'error');
+        return;
+    }
+
+    // Remover modal existente si hay uno
+    const existingModal = document.querySelector('.delete-repo-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay delete-repo-modal';
+    modal.innerHTML = `
+        <div class="modal" style="border-color: rgba(239, 68, 68, 0.3);">
+            <h3 style="color: #ef4444; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Eliminar Repositorio
+            </h3>
+            <div class="modal-content">
+                <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
+                    Esta acción <strong>eliminará permanentemente</strong> el repositorio 
+                    <strong>"${repository.name}"</strong> y todos sus archivos.
+                </p>
+                <p style="color: #ef4444; margin-bottom: 20px; font-size: 14px;">
+                    Esta acción NO se puede deshacer.
+                </p>
+                <div class="form-group">
+                    <label style="color: #ffffff;">
+                        Para confirmar, escribe <strong>eliminar</strong> en el campo:
+                    </label>
+                    <input type="text" id="delete-confirmation" placeholder="eliminar" 
+                           style="margin-top: 8px;" autocomplete="off">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="cancel-delete-btn">Cancelar</button>
+                <button class="delete-btn" id="confirm-delete-btn" disabled style="
+                    background: rgba(239, 68, 68, 0.5);
+                    color: white;
+                    cursor: not-allowed;
+                ">
+                    <i class="fas fa-trash"></i> Eliminar Repositorio
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Referencias a elementos
+    const confirmationInput = document.getElementById('delete-confirmation');
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+    const cancelBtn = document.getElementById('cancel-delete-btn');
+    
+    // Validar texto de confirmación
+    confirmationInput.oninput = () => {
+        const isValid = confirmationInput.value.toLowerCase().trim() === 'eliminar';
+        
+        if (isValid) {
+            confirmBtn.disabled = false;
+            confirmBtn.style.background = '#ef4444';
+            confirmBtn.style.cursor = 'pointer';
+        } else {
+            confirmBtn.disabled = true;
+            confirmBtn.style.background = 'rgba(239, 68, 68, 0.5)';
+            confirmBtn.style.cursor = 'not-allowed';
+        }
+    };
+    
+    // Event listeners
+    cancelBtn.onclick = () => modal.remove();
+    
+    confirmBtn.onclick = async () => {
+        if (confirmationInput.value.toLowerCase().trim() === 'eliminar') {
+            await deleteRepository(repository);
+            modal.remove();
+        }
+    };
+    
+    // Focus en el input
+    confirmationInput.focus();
+    
+    // Cerrar con Escape
+    document.addEventListener('keydown', function escapeHandler(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    });
+}
+
+async function deleteRepository(repository) {
+    try {
+        showToast('Eliminando repositorio...', 'info');
+        
+        // 1. Primero eliminar todos los archivos del repositorio
+        const { data: repositoryFiles, error: filesError } = await supabaseClient
+            .from('project_files')
+            .select('id')
+            .eq('repository_id', repository.id);
+            
+        if (filesError) throw filesError;
+        
+        if (repositoryFiles && repositoryFiles.length > 0) {
+            // Cerrar tabs de archivos que pertenecen a este repositorio
+            repositoryFiles.forEach(file => {
+                const openTab = openTabs.find(tab => tab.id === file.id);
+                if (openTab) {
+                    closeTab(openTab.id);
+                }
+            });
+            
+            // Eliminar archivos de la base de datos
+            const fileIds = repositoryFiles.map(f => f.id);
+            const { error: deleteFilesError } = await supabaseClient
+                .from('project_files')
+                .delete()
+                .in('id', fileIds);
+                
+            if (deleteFilesError) throw deleteFilesError;
+        }
+        
+        // 2. Eliminar el repositorio
+        const { error: deleteRepoError } = await supabaseClient
+            .from('repositories')
+            .delete()
+            .eq('id', repository.id);
+            
+        if (deleteRepoError) throw deleteRepoError;
+        
+        // 3. Si estábamos dentro del repositorio eliminado, volver a la vista de repositorios
+        if (selectedRepository && selectedRepository.id === repository.id) {
+            currentViewMode = 'repositories';
+            selectedRepository = null;
+            clearEditor();
+        }
+        
+        // 4. Recargar la lista de repositorios
+        await loadProjectRepositories(currentProject.id);
+        
+        showToast(`Repositorio "${repository.name}" eliminado correctamente`, 'success');
+        
+    } catch (error) {
+        console.error('Error deleting repository:', error);
+        showToast('Error eliminando el repositorio', 'error');
+    }
+}
+
 
 function buildFileTree(files) {
     const tree = { children: {}, files: [] };
@@ -2396,10 +2881,16 @@ function createFileElement(file, depth = 0) {
     return div;
 }
 
+
 function showContextMenu(event, file) {
     const existingMenu = document.querySelector('.context-menu');
     if (existingMenu) {
         existingMenu.remove();
+    }
+
+    // CAMBIO: Solo mostrar menú contextual a owner y admin
+    if (!['owner', 'admin'].includes(currentUserRole)) {
+        return;
     }
 
     const menu = document.createElement('div');
@@ -2465,6 +2956,7 @@ function showContextMenu(event, file) {
         });
     }, 100);
 }
+
 
 async function deleteFile(file) {
     const isFolder = file.is_folder;
@@ -2742,7 +3234,12 @@ function setActiveTab(tab) {
         const language = getMonacoLanguage(tab.type);
         const model = monaco.editor.createModel(tab.content, language);
         monacoEditor.setModel(model);
-        monacoEditor.updateOptions({ readOnly: currentUserRole === 'inspector' });
+        
+        // CAMBIO: Solo members no pueden editar
+        const canEdit = currentUserRole !== 'member';
+        monacoEditor.updateOptions({ readOnly: !canEdit });
+        
+        console.log(`Usuario con rol '${currentUserRole}' ${canEdit ? 'puede' : 'no puede'} editar`);
     }
     
     // Actualizar UI
@@ -2804,7 +3301,12 @@ function debounceAutoSave() {
 
 async function autoSave() {
     if (!activeTab || !activeTab.modified) return;
-    if (currentUserRole === 'inspector') return;
+    
+    // CAMBIO: Permitir a owner Y admin auto-guardar
+    if (currentUserRole === 'member') {
+        console.log('Member no puede auto-guardar');
+        return;
+    }
 
     try {
         if (monacoEditor) {
@@ -2894,6 +3396,7 @@ async function openPreviewInNewTab() {
 }
 
 function showNewFileModal() {
+    // CAMBIO: Permitir a owner Y admin crear archivos
     if (!['owner', 'admin'].includes(currentUserRole)) {
         showToast('No tienes permisos para crear archivos', 'error');
         return;
@@ -2948,6 +3451,12 @@ async function createNewFile() {
         return;
     }
 
+    // VERIFICAR QUE ESTAMOS EN UN REPOSITORIO
+    if (!selectedRepository) {
+        showToast('Debes estar dentro de un repositorio para crear archivos', 'error');
+        return;
+    }
+
     if (!/^[\w\-. ]+$/.test(fileName)) {
         showToast('El nombre solo puede contener letras, números, espacios, puntos y guiones', 'error');
         return;
@@ -2973,6 +3482,7 @@ async function createNewFile() {
             .from('project_files')
             .insert([{
                 project_id: currentProject.id,
+                repository_id: selectedRepository.id, // ESTO ES CLAVE
                 file_name: fileName,
                 file_path: fullPath,
                 file_type: fileType,
@@ -2988,7 +3498,8 @@ async function createNewFile() {
         showToast(`${isFolder ? 'Carpeta' : 'Archivo'} creado correctamente`);
         closeNewFileModal();
         
-        await loadProjectFiles(currentProject.id);
+        // RECARGAR ARCHIVOS DEL REPOSITORIO ACTUAL
+        await loadRepositoryFiles(selectedRepository.id);
         
         if (!isFolder) {
             openFile(data);
@@ -2999,7 +3510,6 @@ async function createNewFile() {
         showToast('Error creando el archivo', 'error');
     }
 }
-
 function getDefaultContent(fileType) {
     const templates = {
         'html': `<!DOCTYPE html>
@@ -3050,6 +3560,7 @@ Este es un archivo de documentación.`,
 }
 
 function triggerFolderUpload() {
+    // CAMBIO: Permitir a owner Y admin subir carpetas
     if (!['owner', 'admin'].includes(currentUserRole)) {
         showToast('No tienes permisos para subir carpetas', 'error');
         return;
@@ -3061,10 +3572,17 @@ function triggerFolderUpload() {
     }
 }
 
+
 async function handleFolderUpload(event) {
     const files = Array.from(event.target.files);
     
     if (files.length === 0) return;
+    
+    // VERIFICAR QUE ESTAMOS EN UN REPOSITORIO
+    if (!selectedRepository) {
+        showToast('Debes estar dentro de un repositorio para subir carpetas', 'error');
+        return;
+    }
 
     showToast('Subiendo carpeta...', 'success');
     
@@ -3080,7 +3598,8 @@ async function handleFolderUpload(event) {
         }
 
         showToast(`Carpeta subida correctamente (${files.length} archivos)`, 'success');
-        await loadProjectFiles(currentProject.id);
+        // RECARGAR ARCHIVOS DEL REPOSITORIO ACTUAL
+        await loadRepositoryFiles(selectedRepository.id);
         
     } catch (error) {
         console.error('Error uploading folder:', error);
@@ -3089,6 +3608,7 @@ async function handleFolderUpload(event) {
 
     event.target.value = '';
 }
+
 
 async function processUploadedFile(file, progressInfo) {
     try {
@@ -3110,6 +3630,7 @@ async function processUploadedFile(file, progressInfo) {
             .from('project_files')
             .insert([{
                 project_id: currentProject.id,
+                repository_id: selectedRepository?.id, // AGREGAR ESTO
                 file_name: file.name,
                 file_path: fullPath,
                 file_type: fileType,
@@ -3130,6 +3651,7 @@ async function processUploadedFile(file, progressInfo) {
         progressInfo.completed++;
     }
 }
+
 
 function readFileContent(file) {
     return new Promise((resolve, reject) => {
@@ -3393,7 +3915,114 @@ window.addEventListener('focus', () => {
     }
 });
 
-// Exponer funciones globales
+async function loadProjectRepositories(projectId) {
+    try {
+        const { data: repositories, error } = await supabaseClient
+            .from('repositories')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('updated_at', { ascending: false });
+
+        if (error) throw error;
+
+        projectRepositories = repositories || [];
+        renderRepositories();
+
+    } catch (error) {
+        console.error('Error loading repositories:', error);
+    }
+}
+
+function showCreateRepositoryModal() {
+    // Verificar si ya existe un modal
+    const existingModal = document.querySelector('.modal-overlay');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Crear modal dinámicamente
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal">
+            <h3>Crear Nuevo Repositorio</h3>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label>Nombre del repositorio:</label>
+                    <input type="text" id="repo-name" placeholder="mi-proyecto-web">
+                </div>
+                <div class="form-group">
+                    <label>Descripción (opcional):</label>
+                    <input type="text" id="repo-description" placeholder="Descripción del repositorio">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="cancel-repo-btn">Cancelar</button>
+                <button class="create-btn" id="create-repo-btn">Crear</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Event listeners únicos
+    document.getElementById('cancel-repo-btn').onclick = () => {
+        modal.remove();
+    };
+    
+    document.getElementById('create-repo-btn').onclick = async () => {
+        await createRepository();
+        modal.remove();
+    };
+    
+    document.getElementById('repo-name').focus();
+}
+
+
+async function createRepository() {
+    const name = document.getElementById('repo-name').value.trim();
+    const description = document.getElementById('repo-description').value.trim();
+
+    if (!name) {
+        showToast('Ingresa un nombre para el repositorio', 'error');
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('repositories')
+            .insert([{
+                name: name,
+                description: description,
+                project_id: currentProject.id,
+                created_by: currentUser.id
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        showToast('Repositorio creado correctamente');
+        closeRepositoryModal();
+        await loadProjectRepositories(currentProject.id);
+
+    } catch (error) {
+        console.error('Error creating repository:', error);
+        showToast('Error creando el repositorio', 'error');
+    }
+}
+
+function openRepository(repository) {
+    selectedRepository = repository;
+    currentViewMode = 'files';
+    loadRepositoryFiles(repository.id);
+}
+window.showDeleteRepositoryModal = showDeleteRepositoryModal;
+window.showCreateRepositoryModal = showCreateRepositoryModal;
+window.createRepository = createRepository;
+window.closeRepositoryModal = () => {
+    document.querySelector('.modal-overlay')?.remove();
+};
 window.closeTab = closeTab;
 window.closeNewFileModal = closeNewFileModal;
 window.createNewFile = createNewFile;
