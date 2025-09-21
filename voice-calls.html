@@ -18,307 +18,480 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
             color: #ffffff;
             height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        .loading-spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* SIDEBAR CON EL DISEÑO QUE USAS */
+        /* === SIDEBAR CON HOVER === */
         .sidebar {
-            width: 260px;
-            background-color: rgba(15, 20, 25, 0.95);;
-            border-right: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 100vh;
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(74, 158, 255, 0.2);
+            padding: 20px 12px;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
 
-        .sidebar-header {
-            padding: 17px 20px;
-            border-bottom: 1px solid #334155;
-            background: rgba(15, 20, 25, 0.95);
+        .sidebar:hover {
+            width: 260px;
+            padding: 20px;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
             color: #4a9eff;
-            text-decoration: none;
-            font-size: 19px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            justify-content: center;
         }
 
-        .logo i {
-            width: 29px;
-            height: 29px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        .sidebar:hover .logo {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            justify-content: flex-start;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            margin-right: 0;
+            background: linear-gradient(45deg, #4a9eff, #00d4ff);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 16px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
-        .sidebar-nav {
-            flex: 1;
-            padding: 17px;
-            overflow-y: auto;
+        .sidebar:hover .logo-icon {
+            margin-right: 12px;
+            width: 32px;
+            height: 32px;
         }
 
-        .nav-section {
-            margin-bottom: 32px;
+        .logo-text {
+            width: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        .nav-section-title {
-            padding: 0 20px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .sidebar:hover .logo-text {
+            width: auto;
+            opacity: 1;
+        }
+
+        .nav-menu {
+            list-style: none;
         }
 
         .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
             display: flex;
             align-items: center;
-            padding: 12px 20px;
-            color: #cbd5e1;
+            padding: 14px 8px;
+            color: #8892a6;
             text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
             font-size: 14px;
-            transition: all 0.2s ease;
             position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+            justify-content: center;
         }
 
-        .nav-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
+        .sidebar:hover .nav-link {
+            justify-content: flex-start;
+            padding: 14px 16px;
         }
 
-        .nav-item.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-            border-radius: 10px;
+        .nav-link:hover, .nav-link.active {
+            background: rgba(74, 158, 255, 0.15);
+            color: #4a9eff;
         }
 
-        .nav-item i {
+        .sidebar:hover .nav-link:hover, 
+        .sidebar:hover .nav-link.active {
+            transform: translateX(4px);
+        }
+
+        .nav-link i {
+            margin-right: 0;
             width: 20px;
-            margin-right: 12px;
+            text-align: center;
             font-size: 16px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
-        .channels-section {
-            margin-top: 8px;
+        .sidebar:hover .nav-link i {
+            margin-right: 14px;
         }
 
-        .channels-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px 12px;
-        }
-
-        .channels-header h4 {
-            font-size: 12px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .create-channel-btn-sidebar {
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #3b82f6;
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .create-channel-btn-sidebar:hover {
-            background: rgba(59, 130, 246, 0.3);
-            border-color: #3b82f6;
-            color: #ffffff;
-        }
-
-        .channels-list-sidebar {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .channel-item-sidebar {
-            display: flex;
-            align-items: center;
-            padding: 8px 20px;
-            color: #cbd5e1;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .channel-item-sidebar:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-
-        .channel-item-sidebar.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-            border-right: 3px solid #3b82f6;
-        }
-
-        .channel-item-sidebar i {
-            width: 20px;
-            margin-right: 12px;
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .channel-item-sidebar.active i {
-            color: #3b82f6;
-        }
-
-        .channel-name-sidebar {
-            flex: 1;
-            white-space: nowrap;
+        .nav-link-text {
+            width: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
             overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 500;
         }
 
-        .participants-count-sidebar {
-            font-size: 11px;
-            color: #64748b;
-            background: rgba(100, 116, 139, 0.2);
-            padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 16px;
-            text-align: center;
+        .sidebar:hover .nav-link-text {
+            width: auto;
+            opacity: 1;
         }
 
-        .no-channels-sidebar {
-            text-align: center;
-            padding: 20px;
-            color: #64748b;
-            font-size: 12px;
-            font-style: italic;
-        }
-
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid #334155;
-            background: rgba(15, 20, 25, 0.95);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #cbd5e1;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
+        /* Tooltips */
+        .nav-link::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-        }
-
-        .user-details {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-status {
+            padding: 8px 12px;
+            border-radius: 6px;
             font-size: 12px;
-            color: #64748b;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
         }
 
-        /* MAIN PANEL */
-        .main-panel {
-            flex: 1;
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 62px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-right-color: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .nav-link:hover::after,
+        .nav-link:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar:hover .nav-link:hover::after,
+        .sidebar:hover .nav-link:hover::before {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* === MAIN CONTENT === */
+        .main-content {
+            margin-left: 80px;
+            width: calc(100% - 80px);
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            background: #0f172a;
+            background: transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .call-header {
+        .main-content.expanded {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        /* === HEADER === */
+        .header {
             background: rgba(255, 255, 255, 0.02);
-            padding: 16px 24px;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 21px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #334155;
+            flex-shrink: 0;
+            z-index: 50;
         }
 
-        .call-info {
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
         }
 
-        .call-title {
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #8892a6;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #4a9eff;
+        }
+
+        .page-title {
             font-size: 18px;
             font-weight: 600;
             color: #ffffff;
         }
 
-        .call-stats {
+        .header-controls {
             display: flex;
             align-items: center;
-            gap: 20px;
-            font-size: 14px;
-            color: #64748b;
+            gap: 15px;
         }
 
-        .stat-item {
+        .control-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8892a6;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .control-btn:hover {
+            background: rgba(74, 158, 255, 0.1);
+            border-color: #4a9eff;
+            color: #4a9eff;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-text {
+            color: #8892a6;
+            font-size: 13px;
+        }
+
+        .user-name {
+            color: #4a9eff;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* === MAIN PANEL (LAYOUT HORIZONTAL) === */
+        .main-panel {
+            flex: 1;
+            display: flex;
+            height: calc(100vh - 65px);
+            overflow: hidden;
+        }
+
+        /* === CHANNELS SIDEBAR (LATERAL) === */
+        .channels-sidebar {
+            width: 300px;
+            background: rgba(15, 20, 25, 0.7);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .channels-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .channels-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .channels-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .channels-title i {
+            color: #4a9eff;
+        }
+
+        .create-channel-btn {
+            background: linear-gradient(135deg, #4a9eff, #2563eb);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* PARTICIPANTES ESTILO ZOOM */
+        .create-channel-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+        }
+
+        .channels-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .channel-item:hover {
+            background: rgba(74, 158, 255, 0.1);
+            border-color: rgba(74, 158, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .channel-item.active {
+            background: rgba(74, 158, 255, 0.2);
+            border-color: #4a9eff;
+        }
+
+        .channel-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4a9eff, #2563eb);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            margin-right: 12px;
+        }
+
+        .channel-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .channel-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .channel-participants {
+            font-size: 12px;
+            color: #8892a6;
+        }
+
+        .participants-count {
+            background: rgba(74, 158, 255, 0.2);
+            color: #4a9eff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .empty-channels {
+            padding: 40px 20px;
+            text-align: center;
+            color: #8892a6;
+        }
+
+        .empty-channels i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-channels h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        /* === CALL CONTENT === */
+        .call-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: transparent;
+            position: relative;
+        }
+
         .participants-view {
             flex: 1;
             padding: 20px;
@@ -326,15 +499,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
-            background: #0f172a;
+            overflow: hidden;
         }
 
         .participants-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
-            max-width: 1400px;
+            max-width: 1200px;
             width: 100%;
             max-height: calc(100vh - 200px);
             overflow-y: auto;
@@ -358,13 +530,13 @@
         }
 
         .participant-video.current-user {
-            border-color: #3b82f6;
+            border-color: #4a9eff;
         }
 
         .participant-avatar {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(135deg, #4a9eff, #2563eb);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -419,23 +591,53 @@
         .mic-on { 
             background: #10b981; 
             color: white;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
         }
+        
         .mic-off { 
             background: #ef4444; 
             color: white;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
         }
 
-        /* CONTROLES DE LLAMADA ESTILO ZOOM */
+        .empty-state {
+            text-align: center;
+            color: #8892a6;
+            max-width: 400px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* === CALL CONTROLS === */
         .call-controls {
-            background: #1e293b;
+            background: rgba(15, 20, 25, 0.9);
+            backdrop-filter: blur(10px);
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 12px;
-            border-top: 1px solid #334155;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
         }
 
         .control-button {
@@ -451,7 +653,6 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            backdrop-filter: blur(10px);
         }
 
         .control-button:hover:not(:disabled) {
@@ -486,11 +687,11 @@
         }
 
         .participants-btn {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            background: linear-gradient(135deg, #4a9eff, #2563eb);
             position: relative;
         }
 
-        .participants-count {
+        .participants-badge {
             position: absolute;
             top: -8px;
             right: -8px;
@@ -506,66 +707,151 @@
             font-weight: bold;
         }
 
-        .empty-state {
-            text-align: center;
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+                padding: 20px;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .main-panel {
+                flex-direction: column;
+            }
+            
+            .channels-sidebar {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .participants-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .call-controls {
+                padding: 16px;
+            }
+            
+            .control-button {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+            }
+            
+            .leave-btn {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        /* === LIGHT THEME === */
+        [data-theme="light"] body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+            color: #1e293b;
+        }
+
+        [data-theme="light"] .sidebar {
+            background: rgba(248, 250, 252, 0.95);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .logo {
+            color: #3b82f6;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .nav-link {
             color: #64748b;
-            max-width: 400px;
         }
 
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-            opacity: 0.5;
-            animation: float 3s ease-in-out infinite;
+        [data-theme="light"] .nav-link:hover,
+        [data-theme="light"] .nav-link.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        [data-theme="light"] .header {
+            background: rgba(248, 250, 252, 0.95);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .empty-state h3 {
-            font-size: 24px;
-            margin-bottom: 12px;
-            color: #ffffff;
+        [data-theme="light"] .page-title {
+            color: #1e293b;
         }
 
-        .empty-state p {
-            font-size: 16px;
-            line-height: 1.5;
+        [data-theme="light"] .channels-sidebar {
+            background: rgba(255, 255, 255, 0.9);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .connection-status {
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            padding: 8px 16px;
-            background: rgba(30, 41, 59, 0.9);
-            border-radius: 20px;
-            font-size: 12px;
-            backdrop-filter: blur(10px);
-            border: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+        [data-theme="light"] .channels-title h3 {
+            color: #1e293b;
         }
 
-        .connection-status.connected {
-            color: #10b981;
-            border-color: rgba(16, 185, 129, 0.3);
+        [data-theme="light"] .channel-item {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .connection-status.connecting {
-            color: #f59e0b;
-            border-color: rgba(245, 158, 11, 0.3);
+        [data-theme="light"] .channel-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
         }
 
-        .connection-status.disconnected {
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.3);
+        [data-theme="light"] .channel-name {
+            color: #1e293b;
         }
 
+        [data-theme="light"] .participant-video {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+        }
+
+        [data-theme="light"] .call-controls {
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="light"] .empty-state h3 {
+            color: #1e293b;
+        }
+
+        /* === LOADING SPINNER === */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* === TOAST === */
         .toast {
             position: fixed;
             top: 24px;
@@ -599,229 +885,68 @@
             border-left: 4px solid #3b82f6;
         }
 
-        .toast.warning {
-            border-left: 4px solid #f59e0b;
-        }
-
-        /* MODAL STYLES */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal {
-            background: #1e293b;
-            border-radius: 16px;
-            overflow: hidden;
-            max-width: 450px;
-            width: 90%;
-            border: 1px solid #334155;
-        }
-
-        .modal-header {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 20px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-        }
-
-        .modal-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #64748b;
-            font-size: 18px;
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .modal-close:hover {
-            background: rgba(100, 116, 139, 0.2);
-            color: #ffffff;
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #cbd5e1;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 6px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            background: #0f172a;
-            color: #ffffff;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: #64748b;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-
-        .btn-secondary {
-            background: rgba(100, 116, 139, 0.2);
-            color: #cbd5e1;
-            border: 1px solid #334155;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(100, 116, 139, 0.3);
-            color: #ffffff;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 200px;
-                overflow-y: auto;
-            }
-
-            .participants-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .call-controls {
-                padding: 16px;
-            }
-
-            .control-button {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
-            }
-
-            .leave-btn {
-                width: 60px;
-                height: 60px;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Sidebar controls */
-/* Header controls */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.control-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #cbd5e1;
-    padding: 8px 12px;
-    border-radius: 8px;
+        .connection-status {
+    position: fixed;
+    bottom: 24px;
+    right: 24px; /* magia para que no se mueva */
+    padding: 8px 16px;
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 20px;
     font-size: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid #334155;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    transition: all 0.3s ease;
 }
 
-.control-btn:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: #3b82f6;
-    color: #3b82f6;
-}
+        .connection-status.connected {
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
 
-/* Language Selector */
+        .connection-status.connecting {
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .connection-status.disconnected {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Language Selector */
 .language-selector {
     position: relative;
-    z-index: 200;
+    z-index: 999;
 }
 
 .language-dropdown {
-    position: fixed;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 12px;
     padding: 8px 0;
-    min-width: 180px;
+    min-width: 200px;
     display: none;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    z-index: 99999;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    animation: dropdownShow 0.2s ease-out;
+}
+
+@keyframes dropdownShow {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .language-dropdown.show {
@@ -829,174 +954,47 @@
 }
 
 .language-option {
-    padding: 8px 16px;
+    padding: 10px 16px;
     cursor: pointer;
-    font-size: 12px;
-    color: #cbd5e1;
+    font-size: 14px;
+    color: #8892a6;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
 }
 
 .language-option:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
 }
 
 .language-option.active {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+    font-weight: 500;
+}
+
+.language-flag {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.7;
+    min-width: 20px;
+}
+
+.language-name {
+    flex: 1;
 }
 
 /* Light theme */
-[data-theme="light"] body {
-    background: #f8fafc;
-    color: #1e293b;
-}
-
-[data-theme="light"] .sidebar {
-    background: #ffffff;
-    border-right: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .sidebar-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .logo {
-    color: #1e293b;
-}
-
-[data-theme="light"] .logo i {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-}
-
-[data-theme="light"] .nav-section-title {
-    color: #64748b;
-}
-
-[data-theme="light"] .nav-item {
-    color: #64748b;
-}
-
-[data-theme="light"] .nav-item:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-}
-
-[data-theme="light"] .nav-item.active {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
-    border-right: 3px solid #3b82f6;
-}
-
-[data-theme="light"] .create-channel-btn-sidebar {
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    color: #3b82f6;
-}
-
-[data-theme="light"] .channel-item-sidebar {
-    color: #64748b;
-}
-
-[data-theme="light"] .channel-item-sidebar:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-}
-
-[data-theme="light"] .channel-item-sidebar.active {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
-    border-right: 3px solid #3b82f6;
-}
-
-[data-theme="light"] .sidebar-footer {
-    background: #ffffff;
-    border-top: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .user-info {
-    color: #64748b;
-}
-
-[data-theme="light"] .user-name {
-    color: #1e293b;
-}
-
-[data-theme="light"] .main-panel {
-    background: #f8fafc;
-}
-
-[data-theme="light"] .call-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .call-title {
-    color: #1e293b;
-}
-
-[data-theme="light"] .call-stats {
-    color: #64748b;
-}
-
-[data-theme="light"] .participants-view {
-    background: #f8fafc;
-}
-
-[data-theme="light"] .participant-video {
-    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-    border: 2px solid #e2e8f0;
-}
-
-[data-theme="light"] .participant-video.speaking {
-    border-color: #10b981;
-}
-
-[data-theme="light"] .participant-video.current-user {
-    border-color: #3b82f6;
-}
-
-[data-theme="light"] .participant-info {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .participant-name {
-    color: #1e293b;
-}
-
-[data-theme="light"] .call-controls {
-    background: #ffffff;
-    border-top: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .empty-state h3 {
-    color: #1e293b;
-}
-
-[data-theme="light"] .empty-state {
-    color: #64748b;
-}
-
-[data-theme="light"] .control-btn {
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #64748b;
-}
-
-[data-theme="light"] .control-btn:hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: #3b82f6;
-    color: #3b82f6;
-}
-
 [data-theme="light"] .language-dropdown {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="light"] .language-option {
@@ -1013,617 +1011,646 @@
     color: #3b82f6;
 }
 
-[data-theme="light"] .connection-status {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .connection-status.connected {
-    color: #10b981;
-    border-color: rgba(16, 185, 129, 0.3);
-}
-
-[data-theme="light"] .connection-status.connecting {
-    color: #f59e0b;
-    border-color: rgba(245, 158, 11, 0.3);
-}
-
-[data-theme="light"] .connection-status.disconnected {
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.3);
-}
-
-[data-theme="light"] .toast {
-    background: rgba(255, 255, 255, 0.95);
-    color: #1e293b;
-    border: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .modal {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .modal-header {
-    background: rgba(59, 130, 246, 0.05);
-    border-bottom: 1px solid #e2e8f0;
-}
-
-[data-theme="light"] .modal-header h3 {
-    color: #1e293b;
-}
-
-[data-theme="light"] .modal-close {
-    color: #64748b;
-}
-
-[data-theme="light"] .modal-close:hover {
-    background: rgba(100, 116, 139, 0.1);
-    color: #1e293b;
-}
-
-[data-theme="light"] .form-group label {
-    color: #374151;
-}
-
-[data-theme="light"] .form-group input {
-    border: 1px solid #d1d5db;
-    background: #ffffff;
-    color: #1e293b;
-}
-
-[data-theme="light"] .form-group input:focus {
-    border-color: #3b82f6;
-}
-
-[data-theme="light"] .form-group input::placeholder {
-    color: #9ca3af;
-}
-
-[data-theme="light"] .btn-secondary {
-    background: rgba(100, 116, 139, 0.1);
-    color: #64748b;
-    border: 1px solid #d1d5db;
-}
-
-[data-theme="light"] .btn-secondary:hover {
-    background: rgba(100, 116, 139, 0.2);
-    color: #1e293b;
-}
-
-/* Responsive */
+/* Cerrar dropdown al hacer click fuera */
 @media (max-width: 768px) {
-    .header-controls {
-        gap: 8px;
-    }
-    
-    .control-btn span {
-        display: none;
-    }
-    
-    .control-btn {
-        padding: 6px 8px;
+    .language-dropdown {
+        position: fixed;
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        min-width: auto;
     }
 }
-/* User info in header */
-.user-info-header {
+
+/* Agregar estos estilos en tu sección <style> */
+.call-header {
+    padding: 20px;
+    background: rgba(15, 20, 25, 0.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.call-info h2 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    color: #ffffff;
+}
+
+#call-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #8892a6;
+}
+
+#call-stats span {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-left: 8px;
-    padding-left: 12px;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 5px;
 }
 
-.welcome-text {
-    color: #cbd5e1;
-    font-size: 13px;
+/* Agregar estos estilos en tu sección <style> */
+
+/* Vista principal de canales */
+.channels-main-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    overflow-y: auto;
 }
 
-.user-name {
-    color: #3b82f6;
+.channels-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.channels-title-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.channels-title-main i {
+    font-size: 28px;
+    color: #4a9eff;
+}
+
+.channels-title-main h2 {
+    font-size: 24px;
     font-weight: 600;
+    color: #ffffff;
+    margin: 0;
 }
 
-.logout-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #cbd5e1;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 12px;
+.create-channel-btn-main {
+    background: linear-gradient(135deg, #4a9eff, #2563eb);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
-.logout-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
-    color: #ef4444;
+.create-channel-btn-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 158, 255, 0.4);
 }
 
-/* Light theme para user info */
-[data-theme="light"] .user-info-header {
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .welcome-text {
-    color: #64748b;
-}
-
-[data-theme="light"] .user-name {
-    color: #3b82f6;
-}
-
-[data-theme="light"] .logout-btn {
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #64748b;
-}
-
-[data-theme="light"] .logout-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
-    color: #ef4444;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .header-controls {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
+/* Grid de canales */
+.channels-list-main {
     
-    .user-info-header {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
-        padding-left: 0;
-        border-left: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 8px;
-    }
-    
-    [data-theme="light"] .user-info-header {
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
-    }
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
 }
 
+/* Tarjetas de canal */
+.channel-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 100px;
+}
 
-/* PERMISSION MODAL STYLES */
-.permission-modal-overlay {
+.channel-card:hover {
+    background: rgba(74, 158, 255, 0.1);
+    border-color: rgba(74, 158, 255, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.channel-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.channel-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #4a9eff, #2563eb);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+}
+
+.channel-details h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+}
+
+.channel-details p {
+    font-size: 13px;
+    color: #8892a6;
+    margin: 0;
+}
+
+.join-btn {
+    background: rgba(74, 158, 255, 0.2);
+    border: 1px solid #4a9eff;
+    color: #4a9eff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.join-btn:hover {
+    background: #4a9eff;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Estado vacío */
+.empty-channels-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.empty-channels-icon {
+    font-size: 64px;
+    color: #4a9eff;
+    opacity: 0.5;
+    margin-bottom: 20px;
+}
+
+.empty-channels-state h3 {
+    font-size: 20px;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+}
+
+.empty-channels-state p {
+    font-size: 14px;
+    color: #8892a6;
+    margin: 0 0 20px 0;
+}
+
+/* Lista de canales en sidebar */
+.channels-list-sidebar {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.channel-item-sidebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.channel-item-sidebar:hover {
+    background: rgba(74, 158, 255, 0.1);
+    border-color: rgba(74, 158, 255, 0.3);
+}
+
+.channel-name-sidebar {
+    flex: 1;
+    margin: 0 10px;
+    font-size: 14px;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.participants-count-sidebar {
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.no-channels-sidebar {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8892a6;
+}
+
+.no-channels-sidebar i {
+    font-size: 36px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.no-channels-sidebar h4 {
+    font-size: 14px;
+    margin: 10px 0;
+    color: #ffffff;
+}
+
+.no-channels-sidebar p {
+    font-size: 12px;
+    margin: 0;
+}
+
+/* Modal de crear canal */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 5000;
-    backdrop-filter: blur(10px);
+    z-index: 3000;
+    animation: fadeIn 0.3s ease;
 }
 
-.permission-modal {
-    background: #1e293b;
-    border-radius: 20px;
-    max-width: 480px;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-radius: 16px;
     width: 90%;
-    border: 1px solid #334155;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    transform: scale(0.9);
-    animation: modalShow 0.3s ease forwards;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease;
 }
 
-@keyframes modalShow {
-    to { transform: scale(1); }
+@keyframes slideUp {
+    from { 
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
-.permission-modal-header {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    padding: 24px;
-    border-radius: 20px 20px 0 0;
-    text-align: center;
-}
-
-.permission-modal-header .icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+.modal-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-    font-size: 24px;
-    color: white;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.permission-modal-header h3 {
-    font-size: 20px;
+.modal-header h3 {
+    font-size: 18px;
     font-weight: 600;
     color: #ffffff;
-    margin-bottom: 8px;
+    margin: 0;
 }
 
-.permission-modal-header p {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-}
-
-.permission-modal-body {
-    padding: 24px;
-}
-
-.permission-item {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 12px;
-    margin-bottom: 12px;
+.modal-close {
+    background: none;
+    border: none;
+    color: #8892a6;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
     transition: all 0.3s ease;
 }
 
-.permission-item.granted {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.3);
-}
-
-.permission-item.denied {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-}
-
-.permission-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 16px;
-    font-size: 18px;
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
-}
-
-.permission-item.granted .permission-icon {
-    background: rgba(16, 185, 129, 0.2);
-    color: #10b981;
-}
-
-.permission-item.denied .permission-icon {
-    background: rgba(239, 68, 68, 0.2);
+.modal-close:hover {
     color: #ef4444;
 }
 
-.permission-info {
-    flex: 1;
+.modal-body {
+    padding: 20px;
 }
 
-.permission-title {
-    font-weight: 600;
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #8892a6;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
     color: #ffffff;
-    margin-bottom: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
 }
 
-.permission-description {
-    font-size: 12px;
-    color: #64748b;
+.form-group input:focus {
+    outline: none;
+    border-color: #4a9eff;
+    background: rgba(255, 255, 255, 0.08);
 }
 
-.permission-status {
+.modal-actions {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.permission-item.granted .permission-status {
-    color: #10b981;
-}
-
-.permission-item.denied .permission-status {
-    color: #ef4444;
-}
-
-.permission-modal-actions {
-    display: flex;
+    justify-content: flex-end;
     gap: 12px;
     margin-top: 24px;
 }
 
-.btn-permission {
-    flex: 1;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
+.btn-primary, .btn-secondary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 14px;
 }
 
-.btn-permission-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+.btn-primary {
+    background: linear-gradient(135deg, #4a9eff, #2563eb);
+    border: none;
     color: white;
 }
 
-.btn-permission-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
 }
 
-.btn-permission-primary:disabled {
-    background: #64748b;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #8892a6;
 }
 
-.btn-permission-secondary {
-    background: rgba(100, 116, 139, 0.2);
-    color: #cbd5e1;
-    border: 1px solid #334155;
-}
-
-.btn-permission-secondary:hover {
-    background: rgba(100, 116, 139, 0.3);
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
-}
-
-.compatibility-warning {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.compatibility-warning .icon {
-    color: #f59e0b;
-    font-size: 20px;
-    margin-top: 2px;
-}
-
-.compatibility-warning-content h4 {
-    color: #f59e0b;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.compatibility-warning-content p {
-    color: #64748b;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-.device-info {
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 10px;
-    padding: 12px;
-    margin-top: 16px;
-}
-
-.device-info h4 {
-    color: #3b82f6;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.device-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    font-size: 11px;
-}
-
-.device-info-item {
-    color: #64748b;
-}
-
-.device-info-value {
-    color: #cbd5e1;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .permission-modal {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .permission-modal-actions {
-        flex-direction: column;
-    }
 }
     </style>
 </head>
 <body>
-    <div class="sidebar fade-in">
-        <div class="sidebar-header">
-    <a href="#" class="logo">
-        <i class="fas fa-brain"></i>
-        <span>OpenMind AI</span>
-    </a>
-</div>
-       
+ <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="logo-text">OpenMind AI</div>
+        </div>
         
-        <nav class="sidebar-nav">
-            <div class="nav-section">
-                <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Inicio</span>
-                </a>
-                <a href="discussions.html" class="nav-item">
-                    <i class="fas fa-comments"></i>
-                    <span>Foros</span>
-                </a>
-                <a href="code-editor.html" class="nav-item">
-                    <i class="fas fa-code"></i>
-                    <span>Editor de Código</span>
-                </a>
-                <a href="ai-chat.html" class="nav-item">
-                    <i class="fas fa-robot"></i>
-                    <span>MindAssist IA</span>
-                </a>
-                <a href="members.html" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    <span>Miembros</span>
-                </a>
-                <a href="voice-calls.html" class="nav-item active">
-                    <i class="fas fa-phone"></i>
-                    <span>Llamadas</span>
-                </a>
-                <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Configuración</span>
-                </a>
+        <nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link" data-tooltip="Inicio">
+                        <i class="fas fa-home"></i>
+                        <span class="nav-link-text">Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="discussions.html" class="nav-link" data-tooltip="Foros">
+                        <i class="fas fa-comments"></i>
+                        <span class="nav-link-text">Foros</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="code-editor.html" class="nav-link" data-tooltip="Editor de Código">
+                        <i class="fas fa-code"></i>
+                        <span class="nav-link-text">Editor de Código</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="ai-chat.html" class="nav-link" data-tooltip="MindAssist IA">
+                        <i class="fas fa-robot"></i>
+                        <span class="nav-link-text">MindAssist IA</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="members.html" class="nav-link" data-tooltip="Miembros">
+                        <i class="fas fa-users"></i>
+                        <span class="nav-link-text">Miembros</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="voice-calls.html" class="nav-link active" data-tooltip="Llamadas">
+                        <i class="fas fa-phone"></i>
+                        <span class="nav-link-text">Llamadas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.html" class="nav-link" data-tooltip="Configuración">
+                        <i class="fas fa-cog"></i>
+                        <span class="nav-link-text">Configuración</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+<!-- Agregar dentro del body, puede ser oculto -->
+<div style="display: none;">
+    <div id="user-name"></div>
+    <div id="user-avatar"></div>
+</div>
+  <!-- Main Content -->
+<main class="main-content" id="main-content">
+    <!-- Header -->
+    <header class="header">
+    
+        <div class="header-left">
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="page-title">Canales de Voz</div>
+        </div>
+        
+        <div class="header-controls">
+            <button class="control-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+                <span>Tema</span>
+            </button>
+            
+            <div class="language-selector">
+                <button class="control-btn" onclick="toggleLanguageDropdown()">
+                    <i class="fas fa-globe"></i>
+                    <span>Idioma</span>
+                </button>
+                <div class="language-dropdown" id="languageDropdown">
+                    <!-- Se genera dinámicamente -->
+                </div>
             </div>
             
-            <div class="nav-section channels-section">
-                <div class="channels-header">
-                    <h4>Canales de Voz</h4>
-                    <button class="create-channel-btn-sidebar" onclick="showCreateChannelModal()" title="Crear Canal">
+            <div class="notifications-container">
+                <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+                </button>
+                <div class="notifications-dropdown" id="notificationsDropdown">
+                    <div class="notifications-header">
+                        <h4>Notificaciones</h4>
+                    </div>
+                    <div class="notifications-list" id="notificationsList">
+                        <div class="notification-item loading">
+                            Cargando...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <div class="welcome-text">
+                    <span class="user-name" id="user-name-header">Usuario</span>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> 
+                    <span>Salir</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Panel (Layout Horizontal) -->
+    <div class="main-panel">
+        <!-- Channels Sidebar (Lateral) -->
+        <div class="channels-sidebar">
+            <div class="channels-header">
+                <div class="channels-title">
+                    <h3>
+                        <i class="fas fa-headphones"></i>
+                        Canales de Voz
+                    </h3>
+                    <button class="create-channel-btn" onclick="showCreateChannelModal()">
                         <i class="fas fa-plus"></i>
+                        Crear
                     </button>
                 </div>
-                <div id="channels-list-sidebar" class="channels-list-sidebar">
-                    <!-- Los canales se cargarán aquí dinámicamente -->
-                </div>
             </div>
-        </nav>
-        
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div class="user-details">
-                    <div class="user-name" id="user-name">Usuario</div>
-                    <div class="user-status">En línea</div>
+            
+            <div class="channels-list-sidebar" id="channels-list-sidebar">
+                <!-- Aquí van los canales del sidebar -->
+                <div class="no-channels-sidebar" id="empty-channels">
+                    <i class="fas fa-headphones"></i>
+                    <h4>Sin canales</h4>
+                    <p>Crea el primer canal para comenzar</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="main-panel fade-in">
-   <div class="call-header">
-    <div class="call-info">
-        <div class="call-title" id="current-channel-name">Selecciona un Canal de Voz</div>
-    </div>
-    
-    <div class="header-controls">
-        <button class="control-btn" onclick="toggleTheme()">
-            <i class="fas fa-moon"></i>
-            <span data-i18n="common.themeToggle">Cambiar Tema</span>
-        </button>
-        
-        <div class="language-selector">
-            <button class="control-btn" onclick="toggleLanguageDropdown()">
-                <i class="fas fa-globe"></i>
-                <span data-i18n="common.language">Idioma</span>
-            </button>
-            <div class="language-dropdown" id="languageDropdown">
-                <!-- Se genera dinámicamente -->
-            </div>
-        </div>
-        <div class="notifications-container">
-    <button class="control-btn notifications-btn" onclick="toggleNotifications()">
-        <i class="fas fa-bell"></i>
-        <span class="notification-count" id="notificationCount" style="display: none;">0</span>
-    </button>
-    <div class="notifications-dropdown" id="notificationsDropdown">
-        <div class="notifications-header">
-            <h4>Notificaciones</h4>
-        </div>
-        <div class="notifications-list" id="notificationsList">
-            <div class="notification-item loading">
-                Cargando...
-            </div>
-        </div>
-    </div>
-</div>
-        
-        <div class="user-info-header">
-            <div class="welcome-text">
-                <span class="user-name" id="user-name-header">Usuario</span>
-            </div>
-            <button class="logout-btn" onclick="handleLogout()">
-                <i class="fas fa-sign-out-alt"></i> 
-                <span data-i18n="common.logout">Salir</span>
-            </button>
-        </div>
-    </div>
-    
-    <div class="call-stats" id="call-stats" style="display: none;">
-        <div class="stat-item">
-            <i class="fas fa-users"></i>
-            <span id="participants-count">0</span>
-        </div>
-        <div class="stat-item">
-            <i class="fas fa-clock"></i>
-            <span id="call-duration">00:00</span>
-        </div>
-    </div>
-</div>
-
-        <div class="participants-view">
-            <div id="participants-container">
-                <div class="empty-state">
-                    <div class="empty-icon">
+        <!-- Call Content Area -->
+        <div class="call-content">
+            <!-- CHANNELS MAIN VIEW (para tu función showChannelsInMainView) -->
+            <div class="channels-main-view" id="channels-main-view">
+                <div class="channels-header-main">
+                    <div class="channels-title-main">
                         <i class="fas fa-headphones"></i>
+                        <h2>Canales de Voz</h2>
                     </div>
-                    <h3>Cargando canales...</h3>
-                    <p>Preparando los canales de voz del proyecto</p>
+                    <button class="create-channel-btn-main" onclick="showCreateChannelModal()">
+                        <i class="fas fa-plus"></i>
+                        <span>Nuevo Canal</span>
+                    </button>
+                </div>
+                
+                <div class="channels-list-main" id="channels-list-main">
+                    <!-- Los canales se cargarán aquí con showChannelsInMainView -->
+                </div>
+            </div>
+
+            <!-- CALL VIEW (para cuando se une a un canal) -->
+            <div class="call-view" id="call-view" style="display: none;">
+
+                 <div class="call-header">
+        <div class="call-info">
+            <h2 id="current-channel-name">Canal</h2>
+            <div id="call-stats" style="display: none;">
+                <span>Duración: <span id="call-duration">00:00</span></span>
+                <span>Participantes: <span id="participants-count">0</span></span>
+                <span>Calidad: <span id="connection-quality">Buena</span></span>
+            </div>
+        </div>
+    </div>
+    
+                <div class="participants-view">
+                    <div id="participants-container">
+                        <!-- participantes se cargan aquí -->
+                    </div>
+                </div>
+                
+                <!-- Controles de llamada -->
+                <div class="call-controls" id="call-controls">
+                    <button class="control-button mute-btn" id="mute-btn" onclick="toggleMute()" title="Silenciar/Activar micrófono">
+                        <i class="fas fa-microphone"></i>
+                        <div class="loading-spinner"></div>
+                    </button>
+                    
+                    <button class="control-button settings-btn" onclick="openSettings()" title="Configuración">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    
+                    <button class="control-button participants-btn" onclick="toggleParticipants()" title="Participantes">
+                        <i class="fas fa-users"></i>
+                        <span class="participants-badge" id="participants-badge">0</span>
+                    </button>
+                    
+                    <button class="control-button leave-btn" id="leave-btn" onclick="leaveChannel()" title="Salir de la llamada">
+                        <i class="fas fa-phone"></i>
+                        <div class="loading-spinner"></div>
+                    </button>
                 </div>
             </div>
         </div>
-
-        <div class="call-controls" id="call-controls" style="display: none;">
-            <button class="control-button mute-btn" id="mute-btn" onclick="toggleMute()" title="Silenciar/Activar micrófono">
-                <i class="fas fa-microphone"></i>
-                <div class="loading-spinner"></div>
-            </button>
-            
-            <button class="control-button settings-btn" onclick="openSettings()" title="Configuración">
-                <i class="fas fa-cog"></i>
-            </button>
-            
-            <button class="control-button participants-btn" onclick="toggleParticipants()" title="Participantes">
-                <i class="fas fa-users"></i>
-                <span class="participants-count" id="participants-badge">0</span>
-            </button>
-            
-            <button class="control-button leave-btn" id="leave-btn" onclick="leaveChannel()" title="Salir de la llamada">
-                <i class="fas fa-phone"></i>
-                <div class="loading-spinner"></div>
-            </button>
-        </div>
     </div>
+</main>
 
+    <!-- Connection Status -->
     <div class="connection-status" id="connection-status">
         <i class="fas fa-circle"></i>
         <span>Conectando...</span>
     </div>
 
+    <!-- Toast Container -->
+    <div class="toast" id="toast">
+        <span id="toast-message"></span>
+    </div>
+
+
     <script src="js/project-session.js"></script>
    
-    <script>
+   <script>
         // Configuración
         const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
@@ -1785,23 +1812,28 @@ async function initializeApp() {
         }
 
         // FUNCIÓN CORREGIDA PARA CARGAR Y MOSTRAR CANALES
-        async function loadAndShowChannels() {
-            try {
-                const channels = await loadVoiceChannels();
-                showChannelsInSidebar(channels);
-                
-                // Actualizar estado vacío si no hay canales
-                if (channels.length === 0) {
-                    showEmptyChannelState();
-                } else {
-                    showChannelSelectionState();
-                }
-            } catch (error) {
-                console.error('Error cargando canales:', error);
-                showToast('Error al cargar los canales', 'error');
-            }
-        }
+       async function loadAndShowChannels() {
+    try {
+        const channels = await loadVoiceChannels();
+        showChannelsInMainView(channels); // Cambio aquí
+        
+        // Mostrar la vista de canales por defecto
+        showChannelsView();
+        
+    } catch (error) {
+        console.error('Error cargando canales:', error);
+        showToast('Error al cargar los canales', 'error');
+    }
+}
 
+function showChannelsView() {
+    document.getElementById('channels-main-view').style.display = 'flex';
+    document.getElementById('call-view').style.display = 'none';
+}
+function showCallView() {
+    document.getElementById('channels-main-view').style.display = 'none';
+    document.getElementById('call-view').style.display = 'flex';
+}
         async function createVoiceChannel(channelName, description = '') {
             try {
                 const { data, error } = await supabase
@@ -1975,54 +2007,77 @@ async function initializeApp() {
         }
 
         async function joinSpecificChannel(channelId, channelName) {
-            try {
-                // Si ya estamos en un canal, salir primero
-                if (isInChannel && currentChannelId !== channelId) {
-                    await leaveChannelInternal();
-                }
-                
-                currentChannelId = channelId;
-                currentChannelName = channelName;
-                
-                // Actualizar UI
-                document.getElementById('current-channel-name').textContent = channelName;
-                
-                // Marcar canal activo en sidebar
-                document.querySelectorAll('.channel-item-sidebar').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector(`[data-channel-id="${channelId}"]`)?.classList.add('active');
-                
-                document.getElementById('call-stats').style.display = 'flex';
-                document.getElementById('call-controls').style.display = 'flex';
-                
-                // Mostrar estado de carga
-                const container = document.getElementById('participants-container');
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-circle-notch fa-spin"></i>
-                        </div>
-                        <h3>Conectando...</h3>
-                        <p>Uniéndote al canal "${channelName}"</p>
-                    </div>
-                `;
-                
-                updateConnectionStatus('connecting', 'Conectando al canal...');
-                
-                await joinVoiceChannel();
-                
-            } catch (error) {
-                console.error('Error al unirse al canal:', error);
-                showToast('Error al unirse al canal', 'error');
-                await resetToChannelSelection();
-            }
+    try {
+        // Si ya estamos en un canal, salir primero
+        if (isInChannel && currentChannelId !== channelId) {
+            await leaveChannelInternal();
         }
+        
+        currentChannelId = channelId;
+        currentChannelName = channelName;
+        
+        // Cambiar a vista de llamada
+        showCallView();
+        
+        // Actualizar UI
+        document.getElementById('current-channel-name').textContent = channelName;
+        document.getElementById('call-stats').style.display = 'flex';
+        document.getElementById('call-controls').style.display = 'flex';
+        
+        // Mostrar estado de carga en la vista de llamada
+        const container = document.getElementById('participants-container');
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                </div>
+                <h3>Conectando...</h3>
+                <p>Uniéndote al canal "${channelName}"</p>
+            </div>
+        `;
+        
+        updateConnectionStatus('connecting', 'Conectando al canal...');
+        
+        await joinVoiceChannel();
+        
+    } catch (error) {
+        console.error('Error al unirse al canal:', error);
+        showToast('Error al unirse al canal', 'error');
+        await backToChannelsList();
+    }
+}
 
+async function backToChannelsList() {
+    try {
+        // Si estamos en un canal, salir
+        if (isInChannel) {
+            await leaveChannelInternal();
+        }
+        
+        // Limpiar variables de canal actual
+        currentChannelId = null;
+        currentChannelName = null;
+        
+        // Volver a vista de canales
+        showChannelsView();
+        
+        updateConnectionStatus('connected', 'Conectado');
+        showToast('Has salido del canal', 'info');
+        
+    } catch (error) {
+        console.error('Error al volver a canales:', error);
+        showToast('Error al salir del canal', 'error');
+    }
+}
+
+        // FUNCIÓN CORREGIDA PARA UNIRSE AL CANAL DE VOZ
         async function joinVoiceChannel() {
             try {
                 // Obtener token y UID desde el backend
                 const { token, uid } = await getAgoraToken();
+                
+                // Verificar si estamos en móvil para usar configuración optimizada
+                const isMobile = detectDeviceInfo().isMobile;
                 
                 // Unirse al canal de Agora usando el channelId como nombre del canal
                 await agoraClient.join(AGORA_APP_ID, currentChannelId, token, uid);
@@ -2030,13 +2085,27 @@ async function initializeApp() {
                 // Guardar el UID numérico para uso posterior
                 window.currentUserNumericUid = uid;
                 
-                // Crear y publicar track de audio local
-                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({
-                    encoderConfig: 'high_quality',
-                    AEC: true,
-                    ANS: true,
-                    AGC: true
-                });
+                // Crear track de audio con configuración optimizada según dispositivo
+                let audioConfig;
+                if (isMobile) {
+                    audioConfig = {
+                        encoderConfig: 'music_standard', // Mejor compatibilidad móvil
+                        AEC: true,
+                        ANS: true,
+                        AGC: true,
+                        sampleRate: 44100,
+                        channelCount: 1
+                    };
+                } else {
+                    audioConfig = {
+                        encoderConfig: 'high_quality',
+                        AEC: true,
+                        ANS: true,
+                        AGC: true
+                    };
+                }
+                
+                localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(audioConfig);
                 
                 await agoraClient.publish([localAudioTrack]);
                 
@@ -2063,6 +2132,12 @@ async function initializeApp() {
                     errorMessage = 'Permisos de micrófono denegados';
                 } else if (error.code === 'DEVICE_NOT_FOUND') {
                     errorMessage = 'No se encontró ningún micrófono';
+                } else if (error.name === 'NotAllowedError') {
+                    errorMessage = 'Permisos de micrófono denegados. Intenta recargar la página y dar permisos nuevamente.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage = 'No se encontró micrófono en tu dispositivo';
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage = 'El micrófono está siendo usado por otra aplicación';
                 }
                 
                 showToast(errorMessage, 'error');
@@ -2321,49 +2396,15 @@ async function initializeApp() {
         }
 
         // FUNCIÓN PÚBLICA PARA SALIR DEL CANAL
-        async function leaveChannel() {
-            const leaveBtn = document.getElementById('leave-btn');
-            leaveBtn.classList.add('leaving');
-            showLoadingSpinner(leaveBtn);
-
-            try {
-                await leaveChannelInternal();
-                
-                showToast('Has salido del canal', 'info');
-                
-                // CORREGIDO: Volver al estado de selección de canal
-                await resetToChannelSelection();
-                
-            } catch (error) {
-                console.error('Error al salir del canal:', error);
-                showToast('Error al salir del canal', 'error');
-            } finally {
-                leaveBtn.classList.remove('leaving');
-                hideLoadingSpinner(leaveBtn);
-            }
-        }
+       async function leaveChannel() {
+    await backToChannelsList();
+}
 
         // FUNCIÓN CORREGIDA PARA RESETEAR AL ESTADO DE SELECCIÓN
-        async function resetToChannelSelection() {
-            // Limpiar variables de canal actual
-            currentChannelId = null;
-            currentChannelName = null;
-            
-            // Quitar marca activa del sidebar
-            document.querySelectorAll('.channel-item-sidebar').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Actualizar UI
-            document.getElementById('current-channel-name').textContent = 'Selecciona un Canal de Voz';
-            document.getElementById('call-stats').style.display = 'none';
-            document.getElementById('call-controls').style.display = 'none';
-            
-            // Mostrar estado de selección
-            showChannelSelectionState();
-            
-            updateConnectionStatus('connected', 'Conectado');
-        }
+    async function resetToChannelSelection() {
+    await backToChannelsList();
+}
+
 
         function showParticipants(participants) {
             const container = document.getElementById('participants-container');
@@ -2607,7 +2648,489 @@ async function initializeApp() {
             }
         });
 
+        // Función para detectar información del dispositivo MEJORADA
+        function detectDeviceInfo() {
+            const ua = navigator.userAgent;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const isIOS = /iPad|iPhone|iPod/.test(ua);
+            const isAndroid = /Android/.test(ua);
+            const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
+            const isFirefox = /Firefox/.test(ua);
+            const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+            const isEdge = /Edge/.test(ua);
+            
+            // Detectar navegadores móviles específicos
+            const isMobileChrome = isAndroid && isChrome;
+            const isMobileSafari = isIOS && isSafari;
+            const isSamsung = /SamsungBrowser/.test(ua);
+            
+            deviceInfo = {
+                isMobile,
+                isIOS,
+                isAndroid,
+                isChrome,
+                isFirefox,
+                isSafari,
+                isEdge,
+                isMobileChrome,
+                isMobileSafari,
+                isSamsung,
+                userAgent: ua,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                // Agregar más info útil
+                screen: {
+                    width: screen.width,
+                    height: screen.height,
+                    orientation: screen.orientation?.type || 'unknown'
+                }
+            };
+            
+            return deviceInfo;
+        }
 
+        // FUNCIÓN CORREGIDA PARA VERIFICAR COMPATIBILIDAD
+        function checkDeviceCompatibility() {
+            const info = detectDeviceInfo();
+            const issues = [];
+            
+            // Verificar soporte básico
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                issues.push('Tu navegador no soporta acceso a micrófono');
+            }
+            
+            // Verificar WebRTC
+            if (!window.RTCPeerConnection) {
+                issues.push('Tu navegador no soporta WebRTC');
+            }
+            
+            // CORREGIDO: Condiciones más permisivas para móviles
+            
+            // Para iOS - Solo bloquear versiones muy antiguas
+            if (info.isIOS && info.isSafari) {
+                const iosVersion = parseInt(info.userAgent.match(/OS (\d+)/)?.[1]);
+                if (iosVersion && iosVersion < 12) { // Cambiar de 14 a 12
+                    issues.push('Safari en iOS requiere versión 12.0 o superior');
+                }
+            }
+            
+            // Para Android - Solo advertir, no bloquear WebView
+            if (info.isAndroid && info.userAgent.includes('wv')) {
+                console.warn('Android WebView detectado - puede tener limitaciones');
+                // NO agregar a issues, solo log
+            }
+            
+            // Verificar HTTPS (requerido para getUserMedia en producción)
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                issues.push('Se requiere HTTPS para acceso al micrófono');
+            }
+            
+            return {
+                isCompatible: issues.length === 0,
+                issues,
+                deviceInfo: info
+            };
+        }
+
+        // Función para verificar si los permisos ya fueron concedidos antes
+        function hasGrantedPermissionsBefore() {
+            try {
+                const stored = localStorage.getItem(PERMISSIONS_STORAGE_KEY);
+                return stored === 'true';
+            } catch (error) {
+                console.error('Error leyendo permisos guardados:', error);
+                return false;
+            }
+        }
+
+        // Función para marcar permisos como concedidos permanentemente
+        function markPermissionsAsGranted() {
+            try {
+                localStorage.setItem(PERMISSIONS_STORAGE_KEY, 'true');
+            } catch (error) {
+                console.error('Error guardando permisos:', error);
+            }
+        }
+
+        // Función para verificar permisos actuales sin mostrar modal
+        async function checkCurrentPermissions() {
+            try {
+                // Verificar micrófono
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { 
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    } 
+                });
+                stream.getTracks().forEach(track => track.stop());
+                permissionsGranted.microphone = true;
+                
+                // Verificar notificaciones
+                if ('Notification' in window) {
+                    permissionsGranted.notifications = Notification.permission === 'granted';
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error verificando permisos actuales:', error);
+                permissionsGranted.microphone = false;
+                return false;
+            }
+        }
+
+        // FUNCIÓN MEJORADA PARA MOSTRAR MODAL DE PERMISOS
+        async function showPermissionsModal() {
+            const modal = document.createElement('div');
+            modal.className = 'permission-modal-overlay';
+            
+            const compatibility = checkDeviceCompatibility();
+            const deviceInfo = compatibility.deviceInfo;
+            
+            // Mensaje específico para móviles
+            const isMobile = deviceInfo.isMobile;
+            const mobileMessage = isMobile ? 
+                'En dispositivos móviles, asegúrate de dar permisos cuando el navegador lo solicite.' : 
+                'Para usar el chat de voz necesitamos acceso a tu micrófono';
+            
+            modal.innerHTML = `
+                <div class="permission-modal">
+                    <div class="permission-modal-header">
+                        <div class="icon">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <h3>Permisos Requeridos</h3>
+                        <p>${mobileMessage}</p>
+                    </div>
+                    <div class="permission-modal-body">
+                        ${!compatibility.isCompatible ? `
+                            <div class="compatibility-warning">
+                                <div class="icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="compatibility-warning-content">
+                                    <h4>Problemas de Compatibilidad Detectados</h4>
+                                    <p>${compatibility.issues.join('. ')}</p>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="permission-item" id="microphone-permission">
+                            <div class="permission-icon">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="permission-info">
+                                <div class="permission-title">Micrófono</div>
+                                <div class="permission-description">
+                                    ${isMobile ? 'Toca "Permitir" cuando aparezca la solicitud' : 'Necesario para participar en llamadas de voz'}
+                                </div>
+                            </div>
+                            <div class="permission-status">
+                                <i class="fas fa-clock"></i>
+                                <span>Pendiente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="permission-item" id="notifications-permission">
+                            <div class="permission-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="permission-info">
+                                <div class="permission-title">Notificaciones</div>
+                                <div class="permission-description">Para recibir avisos de llamadas (opcional)</div>
+                            </div>
+                            <div class="permission-status">
+                                <i class="fas fa-clock"></i>
+                                <span>Pendiente</span>
+                            </div>
+                        </div>
+                        
+                        ${isMobile ? `
+                            <div class="mobile-tips">
+                                <h4>Consejos para móvil:</h4>
+                                <ul>
+                                    <li>Asegúrate de estar en una página HTTPS</li>
+                                    <li>Da permisos cuando el navegador lo solicite</li>
+                                    <li>Si no funciona, recarga la página e intenta de nuevo</li>
+                                    <li>Usa Chrome o Safari para mejor compatibilidad</li>
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="permission-modal-actions">
+                            <button class="btn-permission btn-permission-secondary" onclick="handlePermissionDenial()">
+                                ${isMobile ? 'Saltar permisos' : 'Continuar sin permisos'}
+                            </button>
+                            <button class="btn-permission btn-permission-primary" onclick="requestPermissions()" ${!compatibility.isCompatible ? 'disabled' : ''}>
+                                ${!compatibility.isCompatible ? 'Dispositivo no compatible' : (isMobile ? 'Dar Permisos' : 'Solicitar Permisos')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            return modal;
+        }
+
+        // FUNCIÓN MEJORADA PARA SOLICITAR PERMISOS EN MÓVIL
+        async function requestPermissions() {
+            const micItem = document.getElementById('microphone-permission');
+            const notifItem = document.getElementById('notifications-permission');
+            const isMobile = detectDeviceInfo().isMobile;
+            
+            try {
+                // Solicitar permisos de micrófono con configuración optimizada para móvil
+                updatePermissionStatus(micItem, 'checking', isMobile ? 'Esperando respuesta...' : 'Verificando...');
+                
+                try {
+                    let constraints;
+                    
+                    if (isMobile) {
+                        // Configuración específica para móviles
+                        constraints = {
+                            audio: {
+                                echoCancellation: true,
+                                noiseSuppression: true,
+                                autoGainControl: true,
+                                sampleRate: 44100,
+                                channelCount: 1,
+                                // Configuraciones adicionales para móvil
+                                latency: 0.1,
+                                volume: 1.0
+                            }
+                        };
+                    } else {
+                        // Configuración para escritorio
+                        constraints = {
+                            audio: {
+                                echoCancellation: true,
+                                noiseSuppression: true,
+                                autoGainControl: true
+                            }
+                        };
+                    }
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    
+                    // Verificar que el stream es válido
+                    if (stream.getAudioTracks().length === 0) {
+                        throw new Error('No se pudo acceder al micrófono');
+                    }
+                    
+                    // En móvil, verificar que el audio funciona
+                    if (isMobile) {
+                        const audioTrack = stream.getAudioTracks()[0];
+                        if (!audioTrack || audioTrack.readyState !== 'live') {
+                            throw new Error('El micrófono no está funcionando correctamente');
+                        }
+                    }
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    permissionsGranted.microphone = true;
+                    updatePermissionStatus(micItem, 'granted', 'Concedido');
+                    
+                } catch (micError) {
+                    console.error('Error con micrófono:', micError);
+                    permissionsGranted.microphone = false;
+                    
+                    let errorMsg = 'Denegado';
+                    if (micError.name === 'NotFoundError') {
+                        errorMsg = isMobile ? 'Sin micrófono' : 'No se encontró micrófono';
+                    } else if (micError.name === 'NotAllowedError') {
+                        errorMsg = isMobile ? 'Permisos denegados - Ve a configuración' : 'Permisos denegados';
+                    } else if (micError.name === 'NotReadableError') {
+                        errorMsg = isMobile ? 'Micrófono ocupado' : 'Micrófono en uso';
+                    } else if (micError.name === 'OverconstrainedError') {
+                        errorMsg = isMobile ? 'Configuración no soportada' : 'Error de configuración';
+                    }
+                    
+                    updatePermissionStatus(micItem, 'denied', errorMsg);
+                }
+                
+                // Solicitar notificaciones (con timeout para móvil)
+                updatePermissionStatus(notifItem, 'checking', 'Verificando...');
+                
+                try {
+                    if ('Notification' in window) {
+                        // En móvil, usar timeout para evitar bloqueos
+                        const permission = isMobile ? 
+                            await Promise.race([
+                                Notification.requestPermission(),
+                                new Promise(resolve => setTimeout(() => resolve('default'), 5000))
+                            ]) :
+                            await Notification.requestPermission();
+                            
+                        if (permission === 'granted') {
+                            permissionsGranted.notifications = true;
+                            updatePermissionStatus(notifItem, 'granted', 'Concedido');
+                        } else {
+                            permissionsGranted.notifications = false;
+                            updatePermissionStatus(notifItem, 'denied', permission === 'default' ? 'Sin respuesta' : 'Denegado');
+                        }
+                    } else {
+                        permissionsGranted.notifications = false;
+                        updatePermissionStatus(notifItem, 'denied', 'No soportado');
+                    }
+                } catch (notifError) {
+                    console.error('Error con notificaciones:', notifError);
+                    permissionsGranted.notifications = false;
+                    updatePermissionStatus(notifItem, 'denied', 'Error');
+                }
+                
+                // Evaluar resultados
+                setTimeout(() => {
+                    handlePermissionResults();
+                }, isMobile ? 2000 : 1500); // Más tiempo en móvil
+                
+            } catch (error) {
+                console.error('Error general en permisos:', error);
+                showToast(isMobile ? 'Error con permisos. Reinicia el navegador.' : 'Error al solicitar permisos', 'error');
+            }
+        }
+
+        // Función para actualizar estado visual de permisos
+        function updatePermissionStatus(element, status, message) {
+            element.className = `permission-item ${status}`;
+            
+            const statusElement = element.querySelector('.permission-status');
+            const icon = statusElement.querySelector('i');
+            const text = statusElement.querySelector('span');
+            
+            switch (status) {
+                case 'checking':
+                    icon.className = 'fas fa-circle-notch fa-spin';
+                    element.classList.add('checking');
+                    break;
+                case 'granted':
+                    icon.className = 'fas fa-check';
+                    break;
+                case 'denied':
+                    icon.className = 'fas fa-times';
+                    break;
+            }
+            
+            text.textContent = message;
+        }
+
+        function handlePermissionResults() {
+            const modal = document.querySelector('.permission-modal-overlay');
+            
+            if (permissionsGranted.microphone) {
+                // Marcar como concedidos para siempre
+                markPermissionsAsGranted();
+                
+                modal.remove();
+                showToast('Permisos concedidos. Iniciando aplicación...', 'success');
+                setTimeout(continueInitialization, 1000);
+            } else {
+                // Mostrar opciones si no hay micrófono
+                showPermissionDenialOptions();
+            }
+        }
+
+        // Función para manejar denegación de permisos
+        function handlePermissionDenial() {
+            const modal = document.querySelector('.permission-modal-overlay');
+            modal.remove();
+            
+            showPermissionDenialOptions();
+        }
+
+        // Función para mostrar opciones cuando se deniegan permisos
+        function showPermissionDenialOptions() {
+            const container = document.getElementById('participants-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-microphone-slash"></i>
+                    </div>
+                    <h3>Sin Acceso al Micrófono</h3>
+                    <p>Para usar las llamadas de voz necesitas dar permisos de micrófono</p>
+                    <div style="margin-top: 20px;">
+                        <button class="btn-primary" onclick="showPermissionsModal()" style="margin-right: 10px;">
+                            Intentar de Nuevo
+                        </button>
+                        <button class="btn-secondary" onclick="goToDashboard()">
+                            Volver al Dashboard
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            updateConnectionStatus('disconnected', 'Sin permisos de micrófono');
+        }
+
+        // Función para continuar inicialización después de permisos
+        async function continueInitialization() {
+            try {
+                await initializeApp();
+            } catch (error) {
+                console.error('Error en inicialización:', error);
+                showToast('Error al inicializar la aplicación', 'error');
+            }
+        }
+
+        // Función para ir al dashboard
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Función para manejar mejor el layout en móvil
+        function adjustMobileLayout() {
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Ajustar altura de la aplicación para móvil
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+                
+                // Agregar clase para móvil
+                document.body.classList.add('mobile-layout');
+                
+                // Manejar orientación
+                function handleOrientationChange() {
+                    setTimeout(() => {
+                        const vh = window.innerHeight * 0.01;
+                        document.documentElement.style.setProperty('--vh', `${vh}px`);
+                    }, 300);
+                }
+                
+                window.addEventListener('orientationchange', handleOrientationChange);
+                window.addEventListener('resize', handleOrientationChange);
+            } else {
+                document.body.classList.remove('mobile-layout');
+            }
+        }
+
+        // Función para mejorar el toque en móvil
+        function improveMobileInteractions() {
+            const isMobile = detectDeviceInfo().isMobile;
+            
+            if (isMobile) {
+                // Prevenir zoom accidental en inputs
+                const metaViewport = document.querySelector('meta[name="viewport"]');
+                if (metaViewport) {
+                    metaViewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+                }
+                
+                // Mejorar toques en botones
+                document.addEventListener('touchstart', function(e) {
+                    if (e.target.matches('.control-button, .join-btn, .channel-card, .btn-primary, .btn-secondary')) {
+                        e.target.classList.add('touching');
+                    }
+                }, { passive: true });
+                
+                document.addEventListener('touchend', function(e) {
+                    document.querySelectorAll('.touching').forEach(el => {
+                        el.classList.remove('touching');
+                    });
+                }, { passive: true });
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -2659,8 +3182,10 @@ async function initializeApp() {
             return;
         }
 
-        // Detectar dispositivo
+        // Detectar dispositivo y ajustar layout
         detectDeviceInfo();
+        adjustMobileLayout();
+        improveMobileInteractions();
         
         // Verificar si ya concedió permisos antes
         if (hasGrantedPermissionsBefore()) {
@@ -2704,7 +3229,7 @@ function toggleTheme() {
 }
 
 function updateThemeIcon() {
-    const themeIcon = document.querySelector('.control-btn-small i.fa-moon, .control-btn-small i.fa-sun');
+    const themeIcon = document.querySelector('.control-btn i.fa-moon, .control-btn i.fa-sun');
     if (themeIcon) {
         themeIcon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
     }
@@ -2737,17 +3262,18 @@ function changeLanguage(lang) {
 
 function toggleLanguageDropdown() {
     const dropdown = document.getElementById('languageDropdown');
-    const button = dropdown.parentElement.querySelector('.control-btn-small');
+    const button = dropdown?.parentElement?.querySelector('.control-btn');
     
     if (dropdown) {
         dropdown.classList.toggle('show');
-        if (dropdown.classList.contains('show')) {
+        if (dropdown.classList.contains('show') && button) {
             const rect = button.getBoundingClientRect();
             dropdown.style.top = (rect.bottom + 5) + 'px';
             dropdown.style.right = (window.innerWidth - rect.right) + 'px';
         }
     }
 }
+
 async function handleLogout() {
     try {
         // Salir del canal si estamos en uno
@@ -2766,389 +3292,426 @@ async function handleLogout() {
     }
 }
 
-
-
-//permiss//
-
-// Función para detectar información del dispositivo
-function detectDeviceInfo() {
-    const ua = navigator.userAgent;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    const isAndroid = /Android/.test(ua);
-    const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
-    const isFirefox = /Firefox/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
-    
-    deviceInfo = {
-        isMobile,
-        isIOS,
-        isAndroid,
-        isChrome,
-        isFirefox,
-        isSafari,
-        userAgent: ua,
-        platform: navigator.platform,
-        language: navigator.language,
-        cookieEnabled: navigator.cookieEnabled,
-        onLine: navigator.onLine
-    };
-    
-    return deviceInfo;
-}
-
-
-// Función para verificar si los permisos ya fueron concedidos antes
-function hasGrantedPermissionsBefore() {
-    try {
-        const stored = localStorage.getItem(PERMISSIONS_STORAGE_KEY);
-        return stored === 'true';
-    } catch (error) {
-        console.error('Error leyendo permisos guardados:', error);
-        return false;
-    }
-}
-
-// Función para marcar permisos como concedidos permanentemente
-function markPermissionsAsGranted() {
-    try {
-        localStorage.setItem(PERMISSIONS_STORAGE_KEY, 'true');
-    } catch (error) {
-        console.error('Error guardando permisos:', error);
-    }
-}
-
-// Función para verificar permisos actuales sin mostrar modal
-async function checkCurrentPermissions() {
-    try {
-        // Verificar micrófono
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: { 
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: true
-            } 
-        });
-        stream.getTracks().forEach(track => track.stop());
-        permissionsGranted.microphone = true;
-        
-        // Verificar notificaciones
-        if ('Notification' in window) {
-            permissionsGranted.notifications = Notification.permission === 'granted';
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('Error verificando permisos actuales:', error);
-        permissionsGranted.microphone = false;
-        return false;
-    }
-}
-
-// Función para verificar compatibilidad del dispositivo
-function checkDeviceCompatibility() {
-    const info = detectDeviceInfo();
-    const issues = [];
-    
-    // Verificar soporte básico
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        issues.push('Tu navegador no soporta acceso a micrófono');
-    }
-    
-    // Verificar WebRTC
-    if (!window.RTCPeerConnection) {
-        issues.push('Tu navegador no soporta WebRTC');
-    }
-    
-    // Verificar navegadores problemáticos
-    if (info.isIOS && info.isSafari && parseInt(info.userAgent.match(/OS (\d+)/)?.[1]) < 14) {
-        issues.push('Safari en iOS requiere versión 14.0 o superior');
-    }
-    
-    // Verificar Android WebView
-    if (info.isAndroid && info.userAgent.includes('wv')) {
-        issues.push('Android WebView puede tener problemas con audio');
-    }
-    
-    return {
-        isCompatible: issues.length === 0,
-        issues,
-        deviceInfo: info
-    };
-}
-
-// Función para mostrar modal de permisos
-async function showPermissionsModal() {
-    const modal = document.createElement('div');
-    modal.className = 'permission-modal-overlay';
-    
-    const compatibility = checkDeviceCompatibility();
-    const deviceInfo = compatibility.deviceInfo;
-    
-    modal.innerHTML = `
-        <div class="permission-modal">
-            <div class="permission-modal-header">
-                <div class="icon">
-                    <i class="fas fa-microphone"></i>
-                </div>
-                <h3>Permisos Requeridos</h3>
-                <p>Para usar el chat de voz necesitamos acceso a tu micrófono</p>
-            </div>
-            <div class="permission-modal-body">
-                ${!compatibility.isCompatible ? `
-                    <div class="compatibility-warning">
-                        <div class="icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="compatibility-warning-content">
-                            <h4>Problemas de Compatibilidad Detectados</h4>
-                            <p>${compatibility.issues.join('. ')}</p>
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <div class="permission-item" id="microphone-permission">
-                    <div class="permission-icon">
-                        <i class="fas fa-microphone"></i>
-                    </div>
-                    <div class="permission-info">
-                        <div class="permission-title">Micrófono</div>
-                        <div class="permission-description">Necesario para participar en llamadas de voz</div>
-                    </div>
-                    <div class="permission-status">
-                        <i class="fas fa-clock"></i>
-                        <span>Pendiente</span>
-                    </div>
-                </div>
-                
-                <div class="permission-item" id="notifications-permission">
-                    <div class="permission-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="permission-info">
-                        <div class="permission-title">Notificaciones</div>
-                        <div class="permission-description">Para recibir avisos de llamadas (opcional)</div>
-                    </div>
-                    <div class="permission-status">
-                        <i class="fas fa-clock"></i>
-                        <span>Pendiente</span>
-                    </div>
-                </div>
-                
-                <div class="device-info">
-                    <h4>Información del Dispositivo</h4>
-                    <div class="device-info-grid">
-                        <div class="device-info-item">Dispositivo:</div>
-                        <div class="device-info-value">${deviceInfo.isMobile ? 'Móvil' : 'Escritorio'}</div>
-                        <div class="device-info-item">Plataforma:</div>
-                        <div class="device-info-value">${deviceInfo.platform}</div>
-                        <div class="device-info-item">Navegador:</div>
-                        <div class="device-info-value">${deviceInfo.isChrome ? 'Chrome' : deviceInfo.isFirefox ? 'Firefox' : deviceInfo.isSafari ? 'Safari' : 'Otro'}</div>
-                        <div class="device-info-item">Idioma:</div>
-                        <div class="device-info-value">${deviceInfo.language}</div>
-                    </div>
-                </div>
-                
-                <div class="permission-modal-actions">
-                    <button class="btn-permission btn-permission-secondary" onclick="handlePermissionDenial()">
-                        Continuar sin permisos
-                    </button>
-                    <button class="btn-permission btn-permission-primary" onclick="requestPermissions()" ${!compatibility.isCompatible ? 'disabled' : ''}>
-                        ${!compatibility.isCompatible ? 'Dispositivo no compatible' : 'Solicitar Permisos'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    return modal;
-}
-
-// Función para solicitar permisos uno por uno
-async function requestPermissions() {
-    const micItem = document.getElementById('microphone-permission');
-    const notifItem = document.getElementById('notifications-permission');
-    
-    try {
-        // Solicitar permisos de micrófono
-        updatePermissionStatus(micItem, 'checking', 'Verificando...');
-        
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop()); // Detener inmediatamente
-            
-            permissionsGranted.microphone = true;
-            updatePermissionStatus(micItem, 'granted', 'Concedido');
-            
-        } catch (micError) {
-            console.error('Error con micrófono:', micError);
-            permissionsGranted.microphone = false;
-            
-            let errorMsg = 'Denegado';
-            if (micError.name === 'NotFoundError') {
-                errorMsg = 'No se encontró micrófono';
-            } else if (micError.name === 'NotAllowedError') {
-                errorMsg = 'Permisos denegados';
-            } else if (micError.name === 'NotReadableError') {
-                errorMsg = 'Micrófono en uso';
-            }
-            
-            updatePermissionStatus(micItem, 'denied', errorMsg);
-        }
-        
-        // Solicitar permisos de notificaciones (opcional)
-        updatePermissionStatus(notifItem, 'checking', 'Verificando...');
-        
-        try {
-            if ('Notification' in window) {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    permissionsGranted.notifications = true;
-                    updatePermissionStatus(notifItem, 'granted', 'Concedido');
-                } else {
-                    permissionsGranted.notifications = false;
-                    updatePermissionStatus(notifItem, 'denied', 'Denegado');
-                }
-            } else {
-                permissionsGranted.notifications = false;
-                updatePermissionStatus(notifItem, 'denied', 'No soportado');
-            }
-        } catch (notifError) {
-            console.error('Error con notificaciones:', notifError);
-            permissionsGranted.notifications = false;
-            updatePermissionStatus(notifItem, 'denied', 'Error');
-        }
-        
-        // Evaluar resultados
-        setTimeout(() => {
-            handlePermissionResults();
-        }, 1500);
-        
-    } catch (error) {
-        console.error('Error general en permisos:', error);
-        showToast('Error al solicitar permisos', 'error');
-    }
-}
-
-// Función para actualizar estado visual de permisos
-function updatePermissionStatus(element, status, message) {
-    element.className = `permission-item ${status}`;
-    
-    const statusElement = element.querySelector('.permission-status');
-    const icon = statusElement.querySelector('i');
-    const text = statusElement.querySelector('span');
-    
-    switch (status) {
-        case 'checking':
-            icon.className = 'fas fa-circle-notch fa-spin';
-            element.classList.add('checking');
-            break;
-        case 'granted':
-            icon.className = 'fas fa-check';
-            break;
-        case 'denied':
-            icon.className = 'fas fa-times';
-            break;
-    }
-    
-    text.textContent = message;
-}
-
-function handlePermissionResults() {
-    const modal = document.querySelector('.permission-modal-overlay');
-    
-    if (permissionsGranted.microphone) {
-        // Marcar como concedidos para siempre
-        markPermissionsAsGranted();
-        
-        modal.remove();
-        showToast('Permisos concedidos. Iniciando aplicación...', 'success');
-        setTimeout(continueInitialization, 1000);
-    } else {
-        // Mostrar opciones si no hay micrófono
-        showPermissionDenialOptions();
-    }
-}
-
-// Función para manejar denegación de permisos
-function handlePermissionDenial() {
-    const modal = document.querySelector('.permission-modal-overlay');
-    modal.remove();
-    
-    showPermissionDenialOptions();
-}
-
-// Función para mostrar opciones cuando se deniegan permisos
-function showPermissionDenialOptions() {
-    const container = document.getElementById('participants-container');
-    container.innerHTML = `
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="fas fa-microphone-slash"></i>
-            </div>
-            <h3>Sin Acceso al Micrófono</h3>
-            <p>Para usar las llamadas de voz necesitas dar permisos de micrófono</p>
-            <div style="margin-top: 20px;">
-                <button class="btn-primary" onclick="showPermissionsModal()" style="margin-right: 10px;">
-                    Intentar de Nuevo
-                </button>
-                <button class="btn-secondary" onclick="goToDashboard()">
-                    Volver al Dashboard
-                </button>
-            </div>
-        </div>
-    `;
-    
-    updateConnectionStatus('disconnected', 'Sin permisos de micrófono');
-}
-
-// Función para continuar inicialización después de permisos
-async function continueInitialization() {
-    try {
-        await initializeApp();
-    } catch (error) {
-        console.error('Error en inicialización:', error);
-        showToast('Error al inicializar la aplicación', 'error');
-    }
-}
-
-// Función para ir al dashboard
-function goToDashboard() {
-    window.location.href = 'dashboard.html';
-}
-
 // Cerrar dropdown al hacer clic fuera
 document.addEventListener('click', function(event) {
     const languageSelector = document.querySelector('.language-selector');
     const dropdown = document.getElementById('languageDropdown');
-    document.getElementById('user-name-header').textContent = currentUserName;
+    
     if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
         dropdown.classList.remove('show');
     }
 });
+
+function showChannelInfo(channelId) {
+    // Implementar modal con información del canal
+    showToast('Información del canal próximamente', 'info');
+}
+
+function createChannelCard(channel) {
+    const participantsCount = 0; // Aquí puedes agregar lógica para contar participantes reales
+    
+    return `
+        <div class="channel-card" onclick="joinSpecificChannel('${channel.id}', '${channel.name}')">
+            <div class="channel-card-header">
+                <div class="channel-info">
+                    <div class="channel-icon">
+                        <i class="fas fa-volume-up"></i>
+                    </div>
+                    <div class="channel-details">
+                        <h3>${channel.name}</h3>
+                        <p class="channel-description">${channel.description || 'Canal de voz del equipo'}</p>
+                    </div>
+                </div>
+                <div class="channel-status">
+                    <div class="participants-indicator">
+                        <i class="fas fa-users"></i>
+                        <span>${participantsCount}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="channel-actions">
+                <button class="join-btn" onclick="event.stopPropagation(); joinSpecificChannel('${channel.id}', '${channel.name}')">
+                    <i class="fas fa-phone"></i>
+                    Unirse
+                </button>
+                <button class="info-btn" onclick="event.stopPropagation(); showChannelInfo('${channel.id}')">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function showChannelsInMainView(channels) {
+    const channelsList = document.getElementById('channels-list-main');
+    
+    if (!channels || channels.length === 0) {
+        channelsList.innerHTML = `
+            <div class="empty-channels-state">
+                <div class="empty-channels-icon">
+                    <i class="fas fa-headphones"></i>
+                </div>
+                <h3>No hay canales de voz</h3>
+                <p>Crea el primer canal</p>
+                <button class="create-channel-btn-main" onclick="showCreateChannelModal()">
+                    <i class="fas fa-plus"></i>
+                    Crear Canal
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    channelsList.innerHTML = channels.map(channel => `
+        <div class="channel-card" onclick="joinSpecificChannel('${channel.id}', '${channel.name}')">
+            <div class="channel-info">
+                <div class="channel-icon">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+                <div class="channel-details">
+                    <h3>${channel.name}</h3>
+                    <p>${channel.description || 'Canal de voz'}</p>
+                </div>
+            </div>
+            <button class="join-btn" onclick="event.stopPropagation(); joinSpecificChannel('${channel.id}', '${channel.name}')">
+                Unirse
+            </button>
+        </div>
+    `).join('');
+}
+
+// Agregar estilos móviles dinámicamente
+function addMobileStyles() {
+    if (detectDeviceInfo().isMobile) {
+        const mobileStyles = document.createElement('style');
+        mobileStyles.innerHTML = `
+            .mobile-layout {
+                height: calc(var(--vh, 1vh) * 100);
+            }
+
+            .touching {
+                opacity: 0.7 !important;
+                transform: scale(0.95) !important;
+            }
+
+            .mobile-tips {
+                background: rgba(74, 158, 255, 0.1);
+                border: 1px solid rgba(74, 158, 255, 0.2);
+                border-radius: 8px;
+                padding: 15px;
+                margin-top: 15px;
+            }
+
+            .mobile-tips h4 {
+                color: #4a9eff;
+                margin: 0 0 10px 0;
+                font-size: 14px;
+            }
+
+            .mobile-tips ul {
+                margin: 0;
+                padding-left: 20px;
+                font-size: 12px;
+                color: #8892a6;
+            }
+
+            .mobile-tips li {
+                margin-bottom: 5px;
+            }
+
+            /* === CORRECCIONES ADICIONALES PARA MÓVIL === */
+            @media (max-width: 768px) {
+                .main-panel {
+                    flex-direction: column;
+                    height: calc(100vh - 65px);
+                }
+                
+                /* Sidebar de canales en móvil */
+                .channels-sidebar {
+                    width: 100%;
+                    height: auto;
+                    max-height: 200px;
+                    border-right: none;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    flex-shrink: 0;
+                }
+                
+                /* Contenido de llamada móvil */
+                .call-content {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 0;
+                }
+                
+                /* Vista de participantes móvil */
+                .participants-view {
+                    flex: 1;
+                    padding: 10px;
+                    overflow-y: auto;
+                    padding-bottom: 100px; 
+                }
+                
+                /* Controles de llamada FIJOS en móvil */
+                .call-controls {
+                    position: fixed !important;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: rgba(15, 20, 25, 0.95);
+                    backdrop-filter: blur(10px);
+                    padding: 15px 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 15px;
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    z-index: 1000;
+                    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+                }
+                
+                /* Botones de control más pequeños en móvil */
+                .control-button {
+                    width: 50px !important;
+                    height: 50px !important;
+                    font-size: 18px !important;
+                    border-radius: 50% !important;
+                }
+                
+                .leave-btn {
+                    width: 60px !important;
+                    height: 60px !important;
+                    font-size: 22px !important;
+                }
+                
+                /* Header de llamada más compacto */
+                .call-header {
+                    padding: 15px 20px;
+                    flex-shrink: 0;
+                }
+                
+                .call-header h2 {
+                    font-size: 18px;
+                    margin-bottom: 5px;
+                }
+                
+                #call-stats {
+                    font-size: 12px;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                }
+                
+                /* Grid de participantes móvil */
+                .participants-grid {
+                    grid-template-columns: 1fr !important;
+                    gap: 12px;
+                    max-height: none;
+                    padding-bottom: 20px;
+                }
+                
+                /* Tarjetas de participantes más compactas */
+                .participant-video {
+                    aspect-ratio: 16/9;
+                    min-height: 120px;
+                }
+                
+                .participant-avatar {
+                    width: 60px !important;
+                    height: 60px !important;
+                    font-size: 24px !important;
+                }
+                
+                .participant-info {
+                    padding: 8px 10px;
+                }
+                
+                .participant-name {
+                    font-size: 13px !important;
+                }
+                
+                /* Vista principal de canales móvil */
+                .channels-main-view {
+                    padding: 20px 15px;
+                    padding-bottom: 20px;
+                }
+                
+                .channels-header-main {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+                
+                .channels-title-main h2 {
+                    font-size: 20px;
+                }
+                
+                /* Lista de canales móvil */
+                .channels-list-main {
+                    display: flex !important;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                
+                /* Tarjetas de canal móvil */
+                .channel-card {
+                    padding: 15px;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 12px;
+                    min-height: auto;
+                }
+                
+                .channel-info {
+                    width: 100%;
+                }
+                
+                .channel-details h3 {
+                    font-size: 15px;
+                }
+                
+                .channel-details p {
+                    font-size: 12px;
+                }
+                
+                .join-btn {
+                    width: 100% !important;
+                    padding: 12px;
+                    justify-content: center;
+                    gap: 8px;
+                }
+                
+                /* Estados vacíos móvil */
+                .empty-state {
+                    padding: 40px 20px;
+                    text-align: center;
+                }
+                
+                .empty-icon {
+                    font-size: 48px !important;
+                    margin-bottom: 16px;
+                }
+                
+                .empty-state h3 {
+                    font-size: 18px !important;
+                    margin-bottom: 8px;
+                }
+                
+                .empty-state p {
+                    font-size: 14px !important;
+                    margin-bottom: 16px;
+                }
+                
+                /* Modal en móvil */
+                .modal {
+                    width: 95% !important;
+                    max-width: none !important;
+                    margin: 10px;
+                }
+                
+                .modal-actions {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                
+                .btn-primary, .btn-secondary {
+                    width: 100% !important;
+                    padding: 12px;
+                }
+                
+                /* Status de conexión móvil */
+                .connection-status {
+                    bottom: 90px !important;
+                    right: 15px;
+                    font-size: 11px;
+                    padding: 6px 12px;
+                }
+                
+                /* Toast móvil */
+                .toast {
+                    right: 15px;
+                    left: 15px;
+                    max-width: none;
+                    top: 80px;
+                }
+            }
+
+            /* === LANDSCAPE EN MÓVIL === */
+            @media (max-width: 768px) and (orientation: landscape) {
+                .channels-sidebar {
+                    height: 150px !important;
+                }
+                
+                .participants-view {
+                    padding-bottom: 90px !important;
+                }
+                
+                .call-controls {
+                    padding: 10px 20px !important;
+                }
+                
+                .control-button {
+                    width: 45px !important;
+                    height: 45px !important;
+                    font-size: 16px !important;
+                }
+                
+                .leave-btn {
+                    width: 55px !important;
+                    height: 55px !important;
+                    font-size: 20px !important;
+                }
+            }
+        `;
+        document.head.appendChild(mobileStyles);
+    }
+}
 
 // Exponer funciones globales
 window.handleLogout = handleLogout;
 window.toggleTheme = toggleTheme;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 window.changeLanguage = changeLanguage;
+window.backToChannelsList = backToChannelsList;
+window.showChannelInfo = showChannelInfo;
+window.joinSpecificChannel = joinSpecificChannel;
+window.showCreateChannelModal = showCreateChannelModal;
+window.handleCreateChannel = handleCreateChannel;
+window.toggleMute = toggleMute;
+window.leaveChannel = leaveChannel;
+window.openSettings = openSettings;
+window.toggleParticipants = toggleParticipants;
+window.showPermissionsModal = showPermissionsModal;
+window.requestPermissions = requestPermissions;
+window.handlePermissionDenial = handlePermissionDenial;
+window.goToDashboard = goToDashboard;
 
-        // Función para debug
-        window.debugVoiceChat = function() {
-            console.log('=== DEBUG VOICE CHAT ===');
-            console.log('Usuario actual:', currentUserId, currentUserName);
-            console.log('UID numérico:', window.currentUserNumericUid);
-            console.log('Proyecto actual:', currentProjectId);
-            console.log('Canal actual:', currentChannelId, currentChannelName);
-            console.log('Estado Agora:', agoraClient?.connectionState);
-            console.log('Usuarios remotos:', Object.keys(remoteUsers));
-            console.log('Audio local:', localAudioTrack?.enabled);
-            console.log('Muted:', isMuted);
-            console.log('En canal:', isInChannel);
-            console.log('Backend URL:', 'https://backend-voice-agora.vercel.app');
-            console.log('========================');
-        };
+// Función para debug
+window.debugVoiceChat = function() {
+    console.log('=== DEBUG VOICE CHAT ===');
+    console.log('Usuario actual:', currentUserId, currentUserName);
+    console.log('UID numérico:', window.currentUserNumericUid);
+    console.log('Proyecto actual:', currentProjectId);
+    console.log('Canal actual:', currentChannelId, currentChannelName);
+    console.log('Estado Agora:', agoraClient?.connectionState);
+    console.log('Usuarios remotos:', Object.keys(remoteUsers));
+    console.log('Audio local:', localAudioTrack?.enabled);
+    console.log('Muted:', isMuted);
+    console.log('En canal:', isInChannel);
+    console.log('Dispositivo:', deviceInfo);
+    console.log('Permisos:', permissionsGranted);
+    console.log('Backend URL:', 'https://backend-voice-agora.vercel.app');
+    console.log('========================');
+};
+
+// Agregar estilos móviles cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addMobileStyles);
+} else {
+    addMobileStyles();
+}
+
     </script>
 </body>
 </html> 
