@@ -189,6 +189,55 @@ function updateLanguageContent() {
     updateSpecificTexts();
 }
 
+
+
+async function checkUserProjectsAndRedirect() {
+    try {
+        // Obtener el usuario actual
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+        
+        if (userError || !user) {
+            console.log('Usuario no autenticado');
+            return false;
+        }
+
+        // Verificar si el usuario tiene proyectos como propietario
+        const { data: ownedProjects, error: ownedError } = await supabaseClient
+            .from('projects')
+            .select('id, name')
+            .eq('owner_id', user.id);
+
+        // Verificar si el usuario es miembro de algún proyecto
+        const { data: memberProjects, error: memberError } = await supabaseClient
+            .from('project_members')
+            .select('project_id, projects(id, name)')
+            .eq('user_id', user.id);
+
+        if (ownedError && memberError) {
+            console.error('Error al verificar proyectos:', ownedError || memberError);
+            return false;
+        }
+
+        const totalProjects = (ownedProjects?.length || 0) + (memberProjects?.length || 0);
+
+        // Si el usuario tiene al menos un proyecto, redirigir a profile.html
+        if (totalProjects > 0) {
+            console.log(`Usuario tiene ${totalProjects} proyecto(s). Redirigiendo a profile.html`);
+            window.location.href = './perfil/profile.html';
+            return true;
+        }
+
+        // Si no tiene proyectos, retornar false para continuar flujo normal
+        console.log('Usuario no tiene proyectos. Continuando con flujo normal.');
+        return false;
+
+    } catch (error) {
+        console.error('Error en verificación de proyectos:', error);
+        // En caso de error, continuar con flujo normal
+        return false;
+    }
+}
+
 function updateSpecificTexts() {
     // Actualizar título y subtítulo
     const authTitle = document.querySelector('.auth-title');
@@ -254,9 +303,12 @@ async function checkExistingSession() {
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         
-        if (session) {
+           if (session) {
+           const hasProjects = await checkUserProjectsAndRedirect();
+           if (!hasProjects) {
             window.location.href = 'enter.html';
         }
+   }
     } catch (error) {
         console.error('Error checking session:', error);
     }
@@ -387,9 +439,12 @@ async function handleLogin(e) {
         
         showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
         
-        setTimeout(() => {
-            window.location.href = 'enter.html';
-        }, 1500);
+        setTimeout(async () => {
+          const hasProjects = await checkUserProjectsAndRedirect();
+          if (!hasProjects) {
+          window.location.href = 'enter.html';
+        }
+       }, 1500);
         
     } catch (error) {
         console.error('Login error:', error);
@@ -448,8 +503,11 @@ async function handleRegister(e) {
         
         if (data?.user?.email_confirmed_at) {
             showSuccess('¡Cuenta creada! Redirigiendo...');
-            setTimeout(() => {
+            setTimeout(async () => {
+              const hasProjects = await checkUserProjectsAndRedirect();
+              if (!hasProjects) {
                 window.location.href = 'enter.html';
+              }
             }, 1500);
         } else {
             showSuccess('¡Cuenta creada! Revisa tu email para confirmar tu cuenta.');

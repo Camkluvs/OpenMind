@@ -1192,267 +1192,6 @@
         border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 }
-
-
-/* PERMISSION MODAL STYLES */
-.permission-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5000;
-    backdrop-filter: blur(10px);
-}
-
-.permission-modal {
-    background: #1e293b;
-    border-radius: 20px;
-    max-width: 480px;
-    width: 90%;
-    border: 1px solid #334155;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    transform: scale(0.9);
-    animation: modalShow 0.3s ease forwards;
-}
-
-@keyframes modalShow {
-    to { transform: scale(1); }
-}
-
-.permission-modal-header {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    padding: 24px;
-    border-radius: 20px 20px 0 0;
-    text-align: center;
-}
-
-.permission-modal-header .icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-    font-size: 24px;
-    color: white;
-}
-
-.permission-modal-header h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 8px;
-}
-
-.permission-modal-header p {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-}
-
-.permission-modal-body {
-    padding: 24px;
-}
-
-.permission-item {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 12px;
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
-}
-
-.permission-item.granted {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.3);
-}
-
-.permission-item.denied {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: rgba(239, 68, 68, 0.3);
-}
-
-.permission-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 16px;
-    font-size: 18px;
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
-}
-
-.permission-item.granted .permission-icon {
-    background: rgba(16, 185, 129, 0.2);
-    color: #10b981;
-}
-
-.permission-item.denied .permission-icon {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-}
-
-.permission-info {
-    flex: 1;
-}
-
-.permission-title {
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 4px;
-}
-
-.permission-description {
-    font-size: 12px;
-    color: #64748b;
-}
-
-.permission-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.permission-item.granted .permission-status {
-    color: #10b981;
-}
-
-.permission-item.denied .permission-status {
-    color: #ef4444;
-}
-
-.permission-modal-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.btn-permission {
-    flex: 1;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-}
-
-.btn-permission-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-}
-
-.btn-permission-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-}
-
-.btn-permission-primary:disabled {
-    background: #64748b;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.btn-permission-secondary {
-    background: rgba(100, 116, 139, 0.2);
-    color: #cbd5e1;
-    border: 1px solid #334155;
-}
-
-.btn-permission-secondary:hover {
-    background: rgba(100, 116, 139, 0.3);
-    color: #ffffff;
-}
-
-.compatibility-warning {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.compatibility-warning .icon {
-    color: #f59e0b;
-    font-size: 20px;
-    margin-top: 2px;
-}
-
-.compatibility-warning-content h4 {
-    color: #f59e0b;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.compatibility-warning-content p {
-    color: #64748b;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-.device-info {
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 10px;
-    padding: 12px;
-    margin-top: 16px;
-}
-
-.device-info h4 {
-    color: #3b82f6;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.device-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    font-size: 11px;
-}
-
-.device-info-item {
-    color: #64748b;
-}
-
-.device-info-value {
-    color: #cbd5e1;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
-    .permission-modal {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .permission-modal-actions {
-        flex-direction: column;
-    }
-}
     </style>
 </head>
 <body>
@@ -1478,10 +1217,6 @@
                 <a href="code-editor.html" class="nav-item">
                     <i class="fas fa-code"></i>
                     <span>Editor de Código</span>
-                </a>
-                <a href="ai-chat.html" class="nav-item">
-                    <i class="fas fa-robot"></i>
-                    <span>MindAssist IA</span>
                 </a>
                 <a href="members.html" class="nav-item">
                     <i class="fas fa-users"></i>
@@ -1628,8 +1363,6 @@
         const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
         const AGORA_APP_ID = 'c74bac3459c14a88ab92f0c4c78401cc'; 
-        const PERMISSIONS_STORAGE_KEY = 'voice_chat_permissions_granted';
-
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1651,11 +1384,6 @@
         // Variables para tema e idioma
 let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentLanguage = localStorage.getItem('language') || 'es';
-let permissionsGranted = {
-    microphone: false,
-    notifications: false
-};
-let deviceInfo = {};
 
 // Idiomas soportados
 const supportedLanguages = {
@@ -1696,77 +1424,69 @@ function t(key) {
         // Inicializar Agora
         AgoraRTC.setLogLevel(1);
 
-
-async function initializeApp() {
-    updateConnectionStatus('connecting', 'Conectando...');
-    
-    try {
-        // Verificar que tenemos las credenciales necesarias
-        if (!AGORA_APP_ID) {
-            throw new Error('Falta configuración de Agora App ID');
-        }
-        
-        // Verificar compatibilidad del dispositivo
-        const compatibility = checkDeviceCompatibility();
-        if (!compatibility.isCompatible) {
-            console.warn('Dispositivo con problemas de compatibilidad:', compatibility.issues);
-        }
-        
-        // Crear cliente de Agora
-        agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
-        
-        // Configurar event listeners de Agora
-        agoraClient.on('user-published', handleUserPublished);
-        agoraClient.on('user-unpublished', handleUserUnpublished);
-        agoraClient.on('user-joined', handleUserJoined);
-        agoraClient.on('user-left', handleUserLeft);
-        agoraClient.on('connection-state-change', handleConnectionStateChange);
-        agoraClient.on('network-quality', handleNetworkQuality);
-        
-        // Token listeners
-        agoraClient.on('token-privilege-will-expire', async () => {
-            console.log('Token por expirar, renovando...');
+        async function initializeApp() {
+            updateConnectionStatus('connecting', 'Conectando...');
+            
             try {
-                const { token } = await getAgoraToken();
-                await agoraClient.renewToken(token);
-                showToast('Sesión renovada', 'info');
+                // Verificar que tenemos las credenciales necesarias
+                if (!AGORA_APP_ID) {
+                    throw new Error('Falta configuración de Agora App ID');
+                }
+                
+                // Crear cliente de Agora
+                agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+                
+                // Configurar event listeners de Agora
+                agoraClient.on('user-published', handleUserPublished);
+                agoraClient.on('user-unpublished', handleUserUnpublished);
+                agoraClient.on('user-joined', handleUserJoined);
+                agoraClient.on('user-left', handleUserLeft);
+                agoraClient.on('connection-state-change', handleConnectionStateChange);
+                agoraClient.on('network-quality', handleNetworkQuality);
+                
+                // Token listeners
+                agoraClient.on('token-privilege-will-expire', async () => {
+                    console.log('Token por expirar, renovando...');
+                    try {
+                        const { token } = await getAgoraToken();
+                        await agoraClient.renewToken(token);
+                        showToast('Sesión renovada', 'info');
+                    } catch (error) {
+                        console.error('Error renovando token:', error);
+                        showToast('Error al renovar sesión', 'error');
+                    }
+                });
+                
+                agoraClient.on('token-privilege-did-expire', async () => {
+                    console.error('Token expirado');
+                    showToast('Sesión expirada, reconectando...', 'warning');
+                    await leaveChannel();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                });
+                
+                await loadProjectInfo();
+                await loadAndShowChannels(); // CORREGIDO: Nueva función que carga y muestra
+                
+                updateConnectionStatus('connected', 'Conectado');
+                
             } catch (error) {
-                console.error('Error renovando token:', error);
-                showToast('Error al renovar sesión', 'error');
+                console.error('Error al inicializar:', error);
+                updateConnectionStatus('disconnected', 'Error de conexión');
+                
+                let errorMessage = 'Error al conectar con el servidor';
+                if (error.message?.includes('token')) {
+                    errorMessage = 'Error de autenticación. Verifica la configuración del servidor.';
+                } else if (error.message?.includes('network')) {
+                    errorMessage = 'Error de red. Verifica tu conexión a internet.';
+                } else if (error.message?.includes('Agora')) {
+                    errorMessage = 'Error de configuración. Contacta al administrador.';
+                }
+                
+                showToast(errorMessage, 'error');
             }
-        });
-        
-        agoraClient.on('token-privilege-did-expire', async () => {
-            console.error('Token expirado');
-            showToast('Sesión expirada, reconectando...', 'warning');
-            await leaveChannel();
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        });
-        
-        await loadProjectInfo();
-        await loadAndShowChannels();
-        
-        updateConnectionStatus('connected', 'Conectado');
-        
-    } catch (error) {
-        console.error('Error al inicializar:', error);
-        updateConnectionStatus('disconnected', 'Error de conexión');
-        
-        let errorMessage = 'Error al conectar con el servidor';
-        if (error.message?.includes('token')) {
-            errorMessage = 'Error de autenticación. Verifica la configuración del servidor.';
-        } else if (error.message?.includes('network')) {
-            errorMessage = 'Error de red. Verifica tu conexión a internet.';
-        } else if (error.message?.includes('Agora')) {
-            errorMessage = 'Error de configuración. Contacta al administrador.';
         }
-        
-        showToast(errorMessage, 'error');
-    }
-}
-
 
         async function loadProjectInfo() {
             try {
@@ -2607,88 +2327,97 @@ async function initializeApp() {
             }
         });
 
-
-
+        // Inicialización
         document.addEventListener('DOMContentLoaded', async function() {
-    try {
-        updateConnectionStatus('connecting', 'Conectando...');
-        
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error || !session) {
-            console.log('No hay sesión, redirigiendo al login');
-            window.location.href = 'login.html';
-            return;
-        }
+            try {
+                updateConnectionStatus('connecting', 'Conectando...');
+                
+                // Verificar soporte del navegador (método más confiable)
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Tu navegador no es compatible con las llamadas de voz');
+                }
+                
+                // Verificación opcional de Agora (puede dar falsos negativos)
+                try {
+                    const agoraSupport = AgoraRTC.checkSystemRequirements();
+                    console.log('Agora compatibility check:', agoraSupport);
+                } catch (e) {
+                    console.warn('Agora compatibility check failed, pero continuando:', e);
+                }
+                
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (error || !session) {
+                    console.log('No hay sesión, redirigiendo al login');
+                    window.location.href = 'login.html';
+                    return;
+                }
 
-        currentUser = session.user;
-        currentUserId = currentUser.id;
-        currentUserName = currentUser.user_metadata?.full_name || 
-                        currentUser.user_metadata?.name || 
-                        currentUser.email?.split('@')[0] || 
-                        'Usuario';
+                currentUser = session.user;
+                currentUserId = currentUser.id;
+                currentUserName = currentUser.user_metadata?.full_name || 
+                                currentUser.user_metadata?.name || 
+                                currentUser.email?.split('@')[0] || 
+                                'Usuario';
 
-        console.log('Usuario autenticado:', currentUserName, currentUserId);
-        initializeThemeAndLanguage();
+                console.log('Usuario autenticado:', currentUserName, currentUserId);
+                initializeThemeAndLanguage();
 
-        // Actualizar info del usuario
-        document.getElementById('user-name').textContent = currentUserName;
-        document.getElementById('user-avatar').textContent = currentUserName.charAt(0).toUpperCase();
-        document.getElementById('user-name-header').textContent = currentUserName;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        currentProjectId = urlParams.get('project');
+                // Actualizar info del usuario en el sidebar
+                document.getElementById('user-name').textContent = currentUserName;
+                document.getElementById('user-avatar').textContent = currentUserName.charAt(0).toUpperCase();
 
-        if (!currentProjectId) {
-            console.error('No se proporcionó project ID');
-            window.location.href = 'dashboard.html';
-            return;
-        }
+                const urlParams = new URLSearchParams(window.location.search);
+                currentProjectId = urlParams.get('project');
 
-        // Verificar membresía del proyecto
-        const { data: membership } = await supabase
-            .from('project_members')
-            .select('id, role')
-            .eq('project_id', currentProjectId)
-            .eq('user_id', currentUserId)
-            .maybeSingle();
+                if (!currentProjectId) {
+                    console.error('No se proporcionó project ID');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
 
-        if (!membership) {
-            showToast('No tienes acceso a este proyecto', 'error');
-            setTimeout(() => window.location.href = 'dashboard.html', 2000);
-            return;
-        }
+                // Verificar membresía del proyecto
+                const { data: membership } = await supabase
+                    .from('project_members')
+                    .select('id, role')
+                    .eq('project_id', currentProjectId)
+                    .eq('user_id', currentUserId)
+                    .maybeSingle();
 
-        // Detectar dispositivo
-        detectDeviceInfo();
-        
-        // Verificar si ya concedió permisos antes
-        if (hasGrantedPermissionsBefore()) {
-            console.log('Usuario ya concedió permisos antes, verificando...');
-            
-            // Verificar permisos actuales silenciosamente
-            const permissionsOk = await checkCurrentPermissions();
-            
-            if (permissionsOk && permissionsGranted.microphone) {
-                console.log('Permisos verificados, iniciando aplicación directamente...');
-                await continueInitialization();
-            } else {
-                console.log('Permisos ya no están disponibles, solicitando nuevamente...');
-                await showPermissionsModal();
+                if (!membership) {
+                    showToast('No tienes acceso a este proyecto', 'error');
+                    setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                    return;
+                }
+
+                // Solicitar permisos de micrófono antes de inicializar
+                try {
+                    await navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            // Detener el stream temporal
+                            stream.getTracks().forEach(track => track.stop());
+                        });
+                } catch (err) {
+                    showToast('Se requieren permisos de micrófono para usar el chat de voz', 'error');
+                    updateConnectionStatus('disconnected', 'Sin permisos');
+                    return;
+                }
+
+                await initializeApp();
+
+            } catch (error) {
+                console.error('Error en inicialización:', error);
+                let errorMessage = 'Error al inicializar la aplicación';
+                
+                if (error.message.includes('compatible')) {
+                    errorMessage = 'Tu navegador no es compatible. Usa Chrome, Firefox, Safari o Edge actualizados.';
+                }
+                
+                showToast(errorMessage, 'error');
+                updateConnectionStatus('disconnected', 'Error de conexión');
             }
-        } else {
-            // Primera vez, mostrar modal
-            console.log('Primera vez, solicitando permisos...');
-            await showPermissionsModal();
-        }
-
-    } catch (error) {
-        console.error('Error en inicialización:', error);
-        showToast('Error al inicializar la aplicación', 'error');
-        updateConnectionStatus('disconnected', 'Error de conexión');
-    }
-});
-
+        });
         // Funciones de tema e idioma
 function initializeThemeAndLanguage() {
     document.body.setAttribute('data-theme', currentTheme);
@@ -2764,358 +2493,6 @@ async function handleLogout() {
         console.error('Error cerrando sesión:', error);
         showToast('Error al cerrar sesión', 'error');
     }
-}
-
-
-
-//permiss//
-
-// Función para detectar información del dispositivo
-function detectDeviceInfo() {
-    const ua = navigator.userAgent;
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    const isAndroid = /Android/.test(ua);
-    const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
-    const isFirefox = /Firefox/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
-    
-    deviceInfo = {
-        isMobile,
-        isIOS,
-        isAndroid,
-        isChrome,
-        isFirefox,
-        isSafari,
-        userAgent: ua,
-        platform: navigator.platform,
-        language: navigator.language,
-        cookieEnabled: navigator.cookieEnabled,
-        onLine: navigator.onLine
-    };
-    
-    return deviceInfo;
-}
-
-
-// Función para verificar si los permisos ya fueron concedidos antes
-function hasGrantedPermissionsBefore() {
-    try {
-        const stored = localStorage.getItem(PERMISSIONS_STORAGE_KEY);
-        return stored === 'true';
-    } catch (error) {
-        console.error('Error leyendo permisos guardados:', error);
-        return false;
-    }
-}
-
-// Función para marcar permisos como concedidos permanentemente
-function markPermissionsAsGranted() {
-    try {
-        localStorage.setItem(PERMISSIONS_STORAGE_KEY, 'true');
-    } catch (error) {
-        console.error('Error guardando permisos:', error);
-    }
-}
-
-// Función para verificar permisos actuales sin mostrar modal
-async function checkCurrentPermissions() {
-    try {
-        // Verificar micrófono
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: { 
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: true
-            } 
-        });
-        stream.getTracks().forEach(track => track.stop());
-        permissionsGranted.microphone = true;
-        
-        // Verificar notificaciones
-        if ('Notification' in window) {
-            permissionsGranted.notifications = Notification.permission === 'granted';
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('Error verificando permisos actuales:', error);
-        permissionsGranted.microphone = false;
-        return false;
-    }
-}
-
-// Función para verificar compatibilidad del dispositivo
-function checkDeviceCompatibility() {
-    const info = detectDeviceInfo();
-    const issues = [];
-    
-    // Verificar soporte básico
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        issues.push('Tu navegador no soporta acceso a micrófono');
-    }
-    
-    // Verificar WebRTC
-    if (!window.RTCPeerConnection) {
-        issues.push('Tu navegador no soporta WebRTC');
-    }
-    
-    // Verificar navegadores problemáticos
-    if (info.isIOS && info.isSafari && parseInt(info.userAgent.match(/OS (\d+)/)?.[1]) < 14) {
-        issues.push('Safari en iOS requiere versión 14.0 o superior');
-    }
-    
-    // Verificar Android WebView
-    if (info.isAndroid && info.userAgent.includes('wv')) {
-        issues.push('Android WebView puede tener problemas con audio');
-    }
-    
-    return {
-        isCompatible: issues.length === 0,
-        issues,
-        deviceInfo: info
-    };
-}
-
-// Función para mostrar modal de permisos
-async function showPermissionsModal() {
-    const modal = document.createElement('div');
-    modal.className = 'permission-modal-overlay';
-    
-    const compatibility = checkDeviceCompatibility();
-    const deviceInfo = compatibility.deviceInfo;
-    
-    modal.innerHTML = `
-        <div class="permission-modal">
-            <div class="permission-modal-header">
-                <div class="icon">
-                    <i class="fas fa-microphone"></i>
-                </div>
-                <h3>Permisos Requeridos</h3>
-                <p>Para usar el chat de voz necesitamos acceso a tu micrófono</p>
-            </div>
-            <div class="permission-modal-body">
-                ${!compatibility.isCompatible ? `
-                    <div class="compatibility-warning">
-                        <div class="icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="compatibility-warning-content">
-                            <h4>Problemas de Compatibilidad Detectados</h4>
-                            <p>${compatibility.issues.join('. ')}</p>
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <div class="permission-item" id="microphone-permission">
-                    <div class="permission-icon">
-                        <i class="fas fa-microphone"></i>
-                    </div>
-                    <div class="permission-info">
-                        <div class="permission-title">Micrófono</div>
-                        <div class="permission-description">Necesario para participar en llamadas de voz</div>
-                    </div>
-                    <div class="permission-status">
-                        <i class="fas fa-clock"></i>
-                        <span>Pendiente</span>
-                    </div>
-                </div>
-                
-                <div class="permission-item" id="notifications-permission">
-                    <div class="permission-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="permission-info">
-                        <div class="permission-title">Notificaciones</div>
-                        <div class="permission-description">Para recibir avisos de llamadas (opcional)</div>
-                    </div>
-                    <div class="permission-status">
-                        <i class="fas fa-clock"></i>
-                        <span>Pendiente</span>
-                    </div>
-                </div>
-                
-                <div class="device-info">
-                    <h4>Información del Dispositivo</h4>
-                    <div class="device-info-grid">
-                        <div class="device-info-item">Dispositivo:</div>
-                        <div class="device-info-value">${deviceInfo.isMobile ? 'Móvil' : 'Escritorio'}</div>
-                        <div class="device-info-item">Plataforma:</div>
-                        <div class="device-info-value">${deviceInfo.platform}</div>
-                        <div class="device-info-item">Navegador:</div>
-                        <div class="device-info-value">${deviceInfo.isChrome ? 'Chrome' : deviceInfo.isFirefox ? 'Firefox' : deviceInfo.isSafari ? 'Safari' : 'Otro'}</div>
-                        <div class="device-info-item">Idioma:</div>
-                        <div class="device-info-value">${deviceInfo.language}</div>
-                    </div>
-                </div>
-                
-                <div class="permission-modal-actions">
-                    <button class="btn-permission btn-permission-secondary" onclick="handlePermissionDenial()">
-                        Continuar sin permisos
-                    </button>
-                    <button class="btn-permission btn-permission-primary" onclick="requestPermissions()" ${!compatibility.isCompatible ? 'disabled' : ''}>
-                        ${!compatibility.isCompatible ? 'Dispositivo no compatible' : 'Solicitar Permisos'}
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    return modal;
-}
-
-// Función para solicitar permisos uno por uno
-async function requestPermissions() {
-    const micItem = document.getElementById('microphone-permission');
-    const notifItem = document.getElementById('notifications-permission');
-    
-    try {
-        // Solicitar permisos de micrófono
-        updatePermissionStatus(micItem, 'checking', 'Verificando...');
-        
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop()); // Detener inmediatamente
-            
-            permissionsGranted.microphone = true;
-            updatePermissionStatus(micItem, 'granted', 'Concedido');
-            
-        } catch (micError) {
-            console.error('Error con micrófono:', micError);
-            permissionsGranted.microphone = false;
-            
-            let errorMsg = 'Denegado';
-            if (micError.name === 'NotFoundError') {
-                errorMsg = 'No se encontró micrófono';
-            } else if (micError.name === 'NotAllowedError') {
-                errorMsg = 'Permisos denegados';
-            } else if (micError.name === 'NotReadableError') {
-                errorMsg = 'Micrófono en uso';
-            }
-            
-            updatePermissionStatus(micItem, 'denied', errorMsg);
-        }
-        
-        // Solicitar permisos de notificaciones (opcional)
-        updatePermissionStatus(notifItem, 'checking', 'Verificando...');
-        
-        try {
-            if ('Notification' in window) {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    permissionsGranted.notifications = true;
-                    updatePermissionStatus(notifItem, 'granted', 'Concedido');
-                } else {
-                    permissionsGranted.notifications = false;
-                    updatePermissionStatus(notifItem, 'denied', 'Denegado');
-                }
-            } else {
-                permissionsGranted.notifications = false;
-                updatePermissionStatus(notifItem, 'denied', 'No soportado');
-            }
-        } catch (notifError) {
-            console.error('Error con notificaciones:', notifError);
-            permissionsGranted.notifications = false;
-            updatePermissionStatus(notifItem, 'denied', 'Error');
-        }
-        
-        // Evaluar resultados
-        setTimeout(() => {
-            handlePermissionResults();
-        }, 1500);
-        
-    } catch (error) {
-        console.error('Error general en permisos:', error);
-        showToast('Error al solicitar permisos', 'error');
-    }
-}
-
-// Función para actualizar estado visual de permisos
-function updatePermissionStatus(element, status, message) {
-    element.className = `permission-item ${status}`;
-    
-    const statusElement = element.querySelector('.permission-status');
-    const icon = statusElement.querySelector('i');
-    const text = statusElement.querySelector('span');
-    
-    switch (status) {
-        case 'checking':
-            icon.className = 'fas fa-circle-notch fa-spin';
-            element.classList.add('checking');
-            break;
-        case 'granted':
-            icon.className = 'fas fa-check';
-            break;
-        case 'denied':
-            icon.className = 'fas fa-times';
-            break;
-    }
-    
-    text.textContent = message;
-}
-
-function handlePermissionResults() {
-    const modal = document.querySelector('.permission-modal-overlay');
-    
-    if (permissionsGranted.microphone) {
-        // Marcar como concedidos para siempre
-        markPermissionsAsGranted();
-        
-        modal.remove();
-        showToast('Permisos concedidos. Iniciando aplicación...', 'success');
-        setTimeout(continueInitialization, 1000);
-    } else {
-        // Mostrar opciones si no hay micrófono
-        showPermissionDenialOptions();
-    }
-}
-
-// Función para manejar denegación de permisos
-function handlePermissionDenial() {
-    const modal = document.querySelector('.permission-modal-overlay');
-    modal.remove();
-    
-    showPermissionDenialOptions();
-}
-
-// Función para mostrar opciones cuando se deniegan permisos
-function showPermissionDenialOptions() {
-    const container = document.getElementById('participants-container');
-    container.innerHTML = `
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="fas fa-microphone-slash"></i>
-            </div>
-            <h3>Sin Acceso al Micrófono</h3>
-            <p>Para usar las llamadas de voz necesitas dar permisos de micrófono</p>
-            <div style="margin-top: 20px;">
-                <button class="btn-primary" onclick="showPermissionsModal()" style="margin-right: 10px;">
-                    Intentar de Nuevo
-                </button>
-                <button class="btn-secondary" onclick="goToDashboard()">
-                    Volver al Dashboard
-                </button>
-            </div>
-        </div>
-    `;
-    
-    updateConnectionStatus('disconnected', 'Sin permisos de micrófono');
-}
-
-// Función para continuar inicialización después de permisos
-async function continueInitialization() {
-    try {
-        await initializeApp();
-    } catch (error) {
-        console.error('Error en inicialización:', error);
-        showToast('Error al inicializar la aplicación', 'error');
-    }
-}
-
-// Función para ir al dashboard
-function goToDashboard() {
-    window.location.href = 'dashboard.html';
 }
 
 // Cerrar dropdown al hacer clic fuera

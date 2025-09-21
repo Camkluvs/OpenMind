@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio - OpenMind AI</title>
+    <title>Dashboard - OpenMind AI</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/noti.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -839,6 +839,12 @@ html {
                         Editor de Código
                     </a>
                 </li>
+                <li class="nav-item">
+    <a href="ai-chat.html" class="nav-link">
+        <i class="fas fa-robot"></i>
+        MindAssist IA
+    </a>
+</li>
                 <li class="nav-item">
                     <a href="members.html" class="nav-link">
                         <i class="fas fa-users"></i>
@@ -2077,14 +2083,7 @@ function dismissGlobalMention(button) {
     }
 }
 
-// Auto-inicializar notificaciones de menciones
-const initMentionNotificationsChecker = setInterval(() => {
-    if (typeof currentUser !== 'undefined' && currentUser && 
-        typeof supabaseClient !== 'undefined') {
-        initializeMentionNotifications();
-        clearInterval(initMentionNotificationsChecker);
-    }
-}, 1000);
+
 
 // También inicializar cuando se detecte que currentUser está disponible
 if (typeof window !== 'undefined') {
