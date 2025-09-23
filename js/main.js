@@ -23,6 +23,7 @@ function initializeApp() {
     // Inicializar animaciones y efectos
     initSmoothScroll();
     initScrollAnimations();
+    initAllAnimations();
     
     // Iniciar efecto de escritura después de un delay
     setTimeout(initTypingEffect, 2000);
