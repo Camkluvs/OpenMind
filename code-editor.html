@@ -8,6 +8,8 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" href="css/noti.css">
 
 
@@ -365,58 +367,22 @@ body {
 }
 
 .editor-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important; /* CLAVE: Permite que se contraiga */
+    min-width: 0 !important;  /* CLAVE: Permite que se contraiga horizontalmente */
+    max-width: 100% !important;
+    overflow: hidden !important; /* Evita desbordamientos */
+    position: relative !important;
+    background: rgba(15, 20, 25, 0.95) !important;
+    border-left: 1px solid rgba(74, 158, 255, 0.1) !important;
 }
+
 
 /* === PESTAÑAS CORREGIDAS === */
-.editor-tabs {
-    display: flex !important;
-    background: rgba(15, 20, 25, 0.6) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding: 0 10px !important;
-    gap: 5px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    height: 50px !important;
-    max-height: 50px !important;
-    min-height: 50px !important;
-    flex-shrink: 0 !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-    align-items: flex-start !important;
-    scrollbar-width: thin !important;
-    max-width: 1158px;
-    scrollbar-color: #4a9eff rgba(255, 255, 255, 0.05) !important;
-}
 
-.editor-tab {
-    position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    padding: 8px 12px !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 8px 8px 0 0 !important;
-    font-size: 12px !important;
-    color: #8892a6 !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    white-space: nowrap !important;
-    margin-top: 8px !important;
-    border: 1px solid transparent !important;
-    width: 140px !important;
-    min-width: 140px !important;
-    max-width: 140px !important;
-    height: 34px !important;
-    max-height: 34px !important;
-    min-height: 34px !important;
-    flex-shrink: 0 !important;
-    flex-grow: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-}
+
 
 .editor-tab i {
     flex-shrink: 0 !important;
@@ -430,17 +396,18 @@ body {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
-    max-width: 90px !important;
+    max-width: 70px !important; /* Reducido para dar más espacio al botón cerrar */
     line-height: 1.2 !important;
     display: block !important;
 }
 
+
 .editor-tab .close-tab {
     position: absolute !important;
-    right: 8px !important;
+    right: 6px !important; /* Reducido de 8px a 6px */
     top: 50% !important;
     transform: translateY(-50%) !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
     font-weight: bold !important;
     opacity: 0.7 !important;
     padding: 0 !important;
@@ -491,13 +458,13 @@ body {
 
 .editor-tabs::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 3px !important;
+    
 }
 
 .editor-tabs::-webkit-scrollbar-thumb {
     background: linear-gradient(90deg, #4a9eff 0%, #00d4ff 100%) !important;
     border-radius: 3px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  
 }
 
 .editor-tabs::-webkit-scrollbar-thumb:hover {
@@ -507,8 +474,7 @@ body {
 .editor-workspace {
     flex: 1 !important;
     display: flex !important;
-    height: calc(100vh - 140px) !important;
-    min-height: 500px !important;
+    min-height: 0 !important; /* CLAVE: Permite que el contenedor se reduzca */
     overflow: hidden !important;
 }
 
@@ -516,11 +482,17 @@ body {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
     min-height: 0 !important;
     overflow: hidden !important;
 }
 
+.editor-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* CLAVE: Permite que el contenedor se reduzca */
+    overflow: hidden; /* Evita desbordamientos */
+}
 .editor-toolbar {
     display: flex;
     justify-content: space-between;
@@ -585,7 +557,8 @@ body {
 
 /* === MONACO EDITOR CORREGIDO === */
 #monaco-editor-container {
-    height: calc(100% - 0px) !important;
+    flex: 1 !important;
+    min-height: 0 !important; /* CLAVE: Permite redimensionamiento */
     width: 100% !important;
     position: relative !important;
     overflow: hidden !important;
@@ -599,15 +572,17 @@ body {
 }
 
 #monaco-editor-container .monaco-editor .view-lines {
-    padding-bottom: 60px !important;
-    padding-right: 20px !important;
+    padding-bottom: 20px !important;
+   
 }
 
 #monaco-editor-container .monaco-editor .lines-content {
-    padding-bottom: 80px !important;
-    height: calc(100% + 80px) !important;
+    padding-bottom: 40px !important;
+  
 }
-
+#monaco-editor-container .monaco-editor .overflow-guard::after {
+    display: none !important;
+}
 #monaco-editor-container .monaco-scrollable-element .scrollbar.vertical {
     right: 0px !important;
     width: 14px !important;
@@ -631,6 +606,88 @@ body {
 
 #monaco-editor-container .monaco-editor .overflow-guard {
     height: calc(100% + 60px) !important;
+}
+
+
+@media (max-width: 1200px) {
+    .editor-tab {
+        width: 110px !important;
+        min-width: 110px !important;
+        max-width: 110px !important;
+        padding: 8px 8px !important;
+    }
+    
+    .editor-tab > span:not(.close-tab) {
+        max-width: 65px !important;
+    }
+    
+    .editor-tab .close-tab {
+        right: 5px !important;
+    }
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 768px) {
+    .editor-tab {
+        width: 100px !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
+        padding: 6px 6px !important;
+        font-size: 11px !important;
+    }
+    
+    .editor-tab > span:not(.close-tab) {
+        max-width: 60px !important;
+    }
+    
+    .editor-tab .close-tab {
+        right: 4px !important;
+        font-size: 12px !important;
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    .editor-tabs {
+        gap: 1px !important;
+    }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .editor-tab {
+        width: 90px !important;
+        min-width: 90px !important;
+        max-width: 90px !important;
+        padding: 6px 4px !important;
+    }
+    
+    .editor-tab > span:not(.close-tab) {
+        max-width: 55px !important;
+    }
+    
+    .editor-tab i {
+        width: 12px !important;
+        font-size: 10px !important;
+    }
+}
+
+
+.editor-tabs::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 6px; /* Espacio para scrollbar */
+    width: 20px;
+    background: linear-gradient(to left, rgba(15, 20, 25, 0.8) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.editor-tabs:hover::before {
+    opacity: 1;
 }
 
 .empty-editor {
@@ -662,8 +719,10 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    /* AGREGAR ESTAS LÍNEAS */
+    overflow-y: auto;
+    padding: 20px;
 }
-
 .modal {
     background: rgba(15, 20, 25, 0.95);
     backdrop-filter: blur(20px);
@@ -672,7 +731,12 @@ body {
     padding: 30px;
     width: 90%;
     max-width: 500px;
+    /* AGREGAR ESTAS LÍNEAS */
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: auto;
 }
+
 
 .modal h3 {
     color: #ffffff;
@@ -1230,6 +1294,35 @@ body {
     color: #ef4444;
     z-index: 1000;
 }
+.editor-tab {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 10px !important; /* Reducir padding */
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 8px 8px 0 0 !important;
+    font-size: 12px !important;
+    color: #8892a6 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    white-space: nowrap !important;
+    margin-top: 6px !important;
+    border: 1px solid transparent !important;
+    
+    /* CLAVE: Ancho fijo más pequeño y flexible */
+    width: 120px !important; /* Reducido de 140px a 120px */
+    min-width: 120px !important;
+    max-width: 120px !important;
+    height: 34px !important;
+    max-height: 34px !important;
+    min-height: 34px !important;
+    
+    flex-shrink: 0 !important; /* NO permitir que se contraigan */
+    flex-grow: 0 !important;   /* NO permitir que crezcan */
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
 
 /* LIGHT THEME */
 [data-theme="light"] body {
@@ -1478,6 +1571,34 @@ body {
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
 }
 
+
+
+.editor-tabs {
+    display: flex !important;
+    background: rgba(15, 20, 25, 0.8) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    height: 45px !important;
+    min-height: 45px !important;
+    max-height: 45px !important;
+    flex-shrink: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 2px !important; /* Reducir gap para ahorrar espacio */
+    
+    /* CLAVE: Limitar el ancho máximo del contenedor */
+    max-width: 100% !important;
+    width: 100% !important;
+    
+    /* Scrollbar personalizada mejorada */
+    scrollbar-width: 1px;
+    scrollbar-color: rgba(0, 0, 0, 0);
+}
+
+
+
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
 
@@ -1520,13 +1641,7 @@ body {
         font-size: 11px;
     }
 
-    .editor-tab {
-        width: 120px !important;
-        min-width: 120px !important;
-        max-width: 120px !important;
-        padding: 6px 10px !important;
-        font-size: 11px !important;
-    }
+
     
     .editor-tab > span:not(.close-tab) {
         max-width: 75px !important;
@@ -1851,6 +1966,242 @@ body {
 .sidebar:hover .logo-text {
     animation: fadeInText 0.3s ease-out;
 }
+
+/* AI Tools */
+.ai-tools {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ai-btn, .export-btn {
+    background: linear-gradient(45deg, #10b981, #059669);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ai-btn:hover {
+    background: linear-gradient(45deg, #059669, #047857);
+    transform: translateY(-1px);
+}
+
+.export-btn {
+    background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+}
+
+.export-btn:hover {
+    background: linear-gradient(45deg, #1d4ed8, #1e3a8a);
+    transform: translateY(-1px);
+}
+
+/* AI Modal */
+.ai-companion-modal-content {
+    max-width: 800px;
+    width: 90%;
+}
+
+.ai-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.ai-action-btn {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #8892a6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.ai-action-btn.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.ai-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.ai-action-btn i {
+    font-size: 20px;
+}
+
+#ai-prompt {
+    width: 100%;
+    min-height: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    padding: 12px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.ai-response {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    border-left: 4px solid #10b981;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.response-header h4 {
+    color: #10b981;
+    margin: 0;
+}
+
+.apply-code-btn {
+    background: #10b981;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.response-content {
+    background: #1e1e1e;
+    border-radius: 6px;
+    padding: 15px;
+    overflow-x: auto;
+}
+
+.response-content pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.response-content code {
+    color: #d4d4d4;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Error Inspector */
+.error-inspector {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    background: rgba(239, 68, 68, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid #ef4444;
+    border-radius: 12px;
+    z-index: 1000;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.error-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px 12px 0 0;
+    color: white;
+    font-weight: 600;
+}
+
+.close-error-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.error-message {
+    padding: 15px;
+    color: white;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.fix-error-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    margin: 0 15px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.fix-error-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Typing Effect */
+.typing-effect {
+    border-right: 2px solid #10b981;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { border-color: transparent; }
+    51%, 100% { border-color: #10b981; }
+}
+
+.code-response {
+    white-space: pre-line; /* Preserva saltos de línea */
+    line-height: 1.6;
+}
+
+/* O si quieres más control */
+.code-response {
+    white-space: pre-wrap; /* Preserva espacios y saltos */
+}
+
         </style>
 </head>
 <body>
@@ -2008,6 +2359,16 @@ body {
                                 <i class="fas fa-eye"></i>
                                 Vista Previa
                             </button>
+                            <div class="ai-tools">
+    <button class="ai-btn" id="ai-companion-btn" title="IA Code Companion">
+        <i class="fas fa-robot"></i>
+        IA Companion
+    </button>
+    <button class="export-btn" id="export-project-btn" title="Exportar Archivo Actual">
+        <i class="fas fa-download"></i>
+        Exportar Archivo
+    </button>
+</div>
                         </div>
                         
                         <div id="monaco-editor-container">
@@ -2059,6 +2420,75 @@ body {
             </div>
         </div>
     </div>
+
+
+    <!-- Modal IA Code Companion -->
+<div class="modal-overlay" id="ai-companion-modal" style="display: none;">
+    <div class="modal ai-companion-modal-content">
+        <h3>🤖 IA Code Companion</h3>
+        <div class="modal-content">
+            <div class="ai-actions">
+                <button class="ai-action-btn active" data-action="generate" style="display: none;">
+                    <i class="fas fa-code"></i>
+                    Generar Código
+                </button>
+                <button class="ai-action-btn" data-action="review">
+                    <i class="fas fa-search"></i>
+                    Revisar Código
+                </button>
+                <button class="ai-action-btn" data-action="fix">
+                    <i class="fas fa-wrench"></i>
+                    Corregir Error
+                </button>
+                <button class="ai-action-btn" data-action="explain">
+                    <i class="fas fa-graduation-cap"></i>
+                    Explicar Código
+                </button>
+            </div>
+            
+            <div class="form-group">
+                <label>Describe qué necesitas:</label>
+                <textarea id="ai-prompt" rows="4" 
+                    placeholder="Ej: Crea una función para validar emails, genera un componente React para login, explica este algoritmo..."></textarea>
+            </div>
+            
+            <div class="ai-response" id="ai-response" style="display: none;">
+                <div class="response-header">
+                    <h4>Respuesta de IA:</h4>
+                    <button class="apply-code-btn" id="apply-code-btn" style="display: none;">
+                        <i class="fas fa-check"></i>
+                        Aplicar al Editor
+                    </button>
+                </div>
+                <div class="response-content" id="ai-response-content"></div>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeAIModal()">Cancelar</button>
+            <button class="create-btn" id="ask-ai-btn">
+                <i class="fas fa-paper-plane"></i>
+                Consultar IA
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Error Inspector -->
+<div class="error-inspector" id="error-inspector" style="display: none;">
+    <div class="error-content">
+        <div class="error-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Error Detectado</span>
+            <button class="close-error-btn" onclick="closeErrorInspector()">×</button>
+        </div>
+        <div class="error-message" id="error-message"></div>
+        <button class="fix-error-btn" id="fix-error-btn">
+            <i class="fas fa-magic"></i>
+            Corregir con IA
+        </button>
+    </div>
+</div>
     <script src="js/project-session.js"></script>
    <script src="js/noti.js"></script>
 
@@ -2067,7 +2497,12 @@ body {
 const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
 
-const BACKEND_URL = 'https://bakd-pvd8.vercel.app';
+// Para preview/visualización
+const PREVIEW_BACKEND_URL = 'https://bakd-pvd8.vercel.app';
+
+// Para IA y análisis
+const AI_BACKEND_URL = 'https://open-analy.vercel.app';
+
 
 let supabaseClient;
 let projectRepositories = [];
@@ -2079,7 +2514,8 @@ let openTabs = [];
 let activeTab = null;
 let saveTimeout = null;
 let expandedFolders = new Set();
-
+let currentAIAction = 'generate';
+let isGeneratingCode = false;
 let currentViewMode = 'repositories'; // 'repositories' o 'files'
 let selectedRepository = null;
 // Variables para sincronización simplificada
@@ -2087,8 +2523,6 @@ let syncInterval = null;
 let lastSyncTime = 0;
 let isEditing = false;
 let allProjectFiles = []; // Nueva variable para todos los archivos
-
-
 // Monaco Editor variables
 let monacoEditor = null;
 let monacoInitialized = false;
@@ -2178,6 +2612,31 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     checkAuthenticationAndLoadData();
     initializeThemeAndLanguage();
+
+     const aiCompanionBtn = document.getElementById('ai-companion-btn');
+    if (aiCompanionBtn) aiCompanionBtn.addEventListener('click', showAICompanionModal);
+    
+    const exportBtn = document.getElementById('export-project-btn');
+    if (exportBtn) exportBtn.addEventListener('click', exportCurrentFile);
+    
+    const askAIBtn = document.getElementById('ask-ai-btn');
+    if (askAIBtn) askAIBtn.addEventListener('click', askAI);
+    
+   const applyCodeBtn = document.getElementById('apply-code-btn');
+if (applyCodeBtn) applyCodeBtn.addEventListener('click', applyCodePatch);
+    
+    // Action buttons
+    document.querySelectorAll('.ai-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.ai-action-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentAIAction = btn.dataset.action;
+        });
+    });
+    
+    // Error detection setup
+    setupErrorDetection();
+
 });
 
 function setupEventListeners() {
@@ -2800,8 +3259,8 @@ function createRepositoryCard(repository) {
         background: linear-gradient(135deg, rgba(74, 158, 255, 0.1) 0%, rgba(74, 158, 255, 0.05) 100%);
         border: 1px solid rgba(74, 158, 255, 0.2);
         border-radius: 12px;
-        padding: 20px;
-        margin: 0 15px 15px 15px;
+        padding: 9px;
+        margin-top: 8px;
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
@@ -3667,7 +4126,7 @@ async function openPreviewInNewTab() {
     try {
         showToast('Generando preview...', 'info');
         
-        const response = await fetch(`${BACKEND_URL}/api/preview`, {
+        const response = await fetch(`${PREVIEW_BACKEND_URL}/api/preview`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -4445,10 +4904,1191 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// LLAMAR ESTAS FUNCIONES EN TU checkAuthenticationAndLoadData() AL FINAL:
-/*
 
-*/
+
+
+
+
+function getFileTypeDescription(fileType) {
+    const descriptions = {
+        'html': 'página web completa',
+        'css': 'hoja de estilos moderna',
+        'js': 'script funcional',
+        'jsx': 'componente React',
+        'py': 'programa Python',
+        'java': 'clase Java'
+    };
+    return descriptions[fileType] || 'archivo de código';
+}
+
+function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') {
+        return String(unsafe);
+    }
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function getContextualSuggestions(code, fileType) {
+    const suggestions = {
+        'html': [
+            'agrega un menú de navegación',
+            'mejora la estructura semántica',
+            'agrega un footer responsive',
+            'incluye meta tags para SEO'
+        ],
+        'css': [
+            'hazlo responsive con media queries',
+            'agrega animaciones hover',
+            'mejora la tipografía y espaciado',
+            'agrega modo oscuro'
+        ],
+        'js': [
+            'agrega validación de formularios',
+            'implementa manejo de errores',
+            'optimiza el performance',
+            'agrega funcionalidad de búsqueda'
+        ],
+        'jsx': [
+            'convierte a componente funcional',
+            'agrega manejo de estado',
+            'implementa loading states',
+            'agrega PropTypes'
+        ]
+    };
+    
+    const options = suggestions[fileType] || ['mejora este código', 'agrega funcionalidad', 'optimiza el código'];
+    return options[Math.floor(Math.random() * options.length)];
+}
+
+
+
+async function askAI() {
+    if (isGeneratingCode) return;
+    
+    const prompt = document.getElementById('ai-prompt').value.trim();
+    if (!prompt) {
+        showToast('Describe qué necesitas que haga la IA', 'error');
+        return;
+    }
+    
+    isGeneratingCode = true;
+    const askBtn = document.getElementById('ask-ai-btn');
+    const responseDiv = document.getElementById('ai-response');
+    const responseContent = document.getElementById('ai-response-content');
+    
+    askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Consultando IA...';
+    askBtn.disabled = true;
+    responseDiv.style.display = 'block';
+    responseContent.innerHTML = '<div class="typing-effect">IA está analizando tu código...</div>';
+    
+    try {
+        const currentCode = (activeTab && monacoEditor) ? monacoEditor.getValue() : '';
+        const language = activeTab ? activeTab.type : 'javascript';
+        
+        console.log('=== DEBUG FRONTEND ===');
+        console.log('Current action:', currentAIAction);
+        console.log('Language:', language);
+        console.log('Has existing code:', !!currentCode);
+        console.log('Code length:', currentCode.length);
+        console.log('Prompt:', prompt);
+        
+      let finalPrompt = prompt;
+
+if (currentAIAction === 'fix' && currentCode && currentCode.trim()) {
+    finalPrompt = `IDENTIFICA Y CORRIGE SOLO LA PARTE PROBLEMÁTICA:
+
+CÓDIGO COMPLETO:
+${currentCode}
+
+ERROR A CORREGIR: ${prompt}
+
+INSTRUCCIONES IMPORTANTES:
+- Identifica SOLO las líneas que necesitan corrección
+- Devuelve ÚNICAMENTE el fragmento de código corregido
+- Incluye 1-2 líneas de contexto antes y después si es necesario
+- NO devuelvas todo el código, solo la parte que cambias
+- NO agregues explicaciones
+- Formato: [líneas de código corregidas]`;
+} else if (currentAIAction === 'generate' && currentCode && currentCode.trim()) {
+    finalPrompt = `MEJORA/AGREGA AL CÓDIGO EXISTENTE: ${prompt}
+
+Instrucciones específicas:
+- Analiza el código actual para mantener consistencia
+- Mantén todo lo que ya funciona
+- Agrega solo lo que solicito
+- Asegúrate de que todo sea compatible`;
+}
+
+const requestBody = {
+    prompt: finalPrompt,
+    code: currentCode,
+    language: language,
+    action: currentAIAction
+};
+
+        
+        console.log('Sending request:', requestBody);
+        
+        const response = await fetch(`${AI_BACKEND_URL}/api/code-companion`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Response received:', {
+            success: data.success,
+            hasExistingCode: data.hasExistingCode,
+            responseLength: data.response ? data.response.length : 0,
+            action: data.action
+        });
+        
+// BUSCA esta parte que empieza con "if (data.success && data.response)" y REEMPLÁZALA:
+if (data.success && data.response) {
+    const aiResponse = data.response.trim();
+    
+    if (!aiResponse) {
+        throw new Error('La IA devolvió una respuesta vacía');
+    }
+    
+    // NUEVO: Manejo específico según la acción
+    if (currentAIAction === 'fix') {
+        // Para correcciones, extraer solo el código sin explicaciones
+        const cleanCode = cleanGeneratedCode(aiResponse);
+        
+        responseContent.innerHTML = `
+            <div style="margin-bottom: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 4px;">
+                <strong>🔧 Errores corregidos</strong>
+                <br><small style="color: #8892a6;">Código con correcciones listo para aplicar</small>
+            </div>
+            <pre><code class="language-${language}">${escapeHtml(cleanCode)}</code></pre>
+        `;
+        
+        // Almacenar código limpio para aplicar
+        responseContent.dataset.fullCode = cleanCode;
+        responseContent.dataset.isContextual = 'false';
+        
+        // Highlight syntax
+        if (typeof hljs !== 'undefined') {
+            hljs.highlightAll();
+        }
+        
+        // Mostrar botón aplicar SOLO para fix
+        const applyBtn = document.getElementById('apply-code-btn');
+        if (applyBtn) {
+            applyBtn.style.display = 'inline-block';
+            applyBtn.innerHTML = '<i class="fas fa-wrench"></i> Aplicar Correcciones';
+        }
+        
+    } else {
+        // Para explicaciones y revisiones, solo texto
+        await typeWriterEffect(responseContent, aiResponse);
+        
+        // Ocultar botón aplicar para otras acciones
+        const applyBtn = document.getElementById('apply-code-btn');
+        if (applyBtn) {
+            applyBtn.style.display = 'none';
+        }
+    }
+    
+} else {
+    throw new Error(data.error || 'Respuesta inválida de la IA');
+}
+ } catch (error) {
+    console.error('Error asking AI:', error);
+    const currentCode = (activeTab && monacoEditor) ? monacoEditor.getValue() : '';
+    
+    responseContent.innerHTML = `
+        <div style="color: #ef4444; padding: 15px; border: 1px solid #ef4444; border-radius: 8px;">
+            <strong>❌ Error:</strong> ${error.message}
+            <br><small style="margin-top: 8px; display: block; opacity: 0.8;">
+                ${currentCode ? 'Intenta reformular tu pregunta sobre el código existente' : 'Verifica tu conexión e intenta de nuevo'}
+            </small>
+        </div>`;
+}
+    
+    askBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Consultar IA';
+    askBtn.disabled = false;
+    isGeneratingCode = false;
+}
+
+
+
+
+
+
+
+
+
+function applyCodePatch() {
+    if (!activeTab || !monacoEditor) {
+        showToast('Abre un archivo primero', 'error');
+        return;
+    }
+    
+    const responseContent = document.getElementById('ai-response-content');
+    let patchCode = responseContent.dataset.fullCode || '';
+    
+    if (!patchCode.trim()) {
+        showToast('No hay corrección para aplicar', 'error');
+        return;
+    }
+    
+    const currentCode = monacoEditor.getValue();
+    const correctedCode = applyIntelligentPatch(currentCode, patchCode);
+    
+    if (correctedCode && correctedCode !== currentCode) {
+        monacoEditor.setValue(correctedCode);
+        
+        if (activeTab) {
+            activeTab.modified = true;
+            activeTab.content = correctedCode;
+            renderTabs();
+            isEditing = true;
+        }
+        
+        showToast('Corrección aplicada correctamente', 'success');
+        closeAIModal();
+    } else {
+        showToast('No se pudo aplicar la corrección automáticamente', 'error');
+    }
+}
+
+function applyIntelligentPatch(originalCode, patchCode) {
+    // Limpiar el código del parche
+    const cleanPatch = cleanGeneratedCode(patchCode);
+    const originalLines = originalCode.split('\n');
+    const patchLines = cleanPatch.split('\n');
+    
+    // Buscar patrones similares para encontrar dónde aplicar el parche
+    for (let i = 0; i <= originalLines.length - patchLines.length; i++) {
+        let matchScore = 0;
+        
+        for (let j = 0; j < patchLines.length; j++) {
+            const originalLine = originalLines[i + j]?.trim() || '';
+            const patchLine = patchLines[j].trim();
+            
+            // Calcular similitud (simple)
+            if (originalLine === patchLine) {
+                matchScore += 1;
+            } else if (originalLine.length > 0 && patchLine.length > 0) {
+                // Similitud parcial para líneas modificadas
+                const similarity = calculateSimilarity(originalLine, patchLine);
+                if (similarity > 0.5) {
+                    matchScore += similarity;
+                }
+            }
+        }
+        
+        // Si hay suficiente similitud, aplicar el parche
+        if (matchScore / patchLines.length > 0.7) {
+            const newLines = [
+                ...originalLines.slice(0, i),
+                ...patchLines,
+                ...originalLines.slice(i + patchLines.length)
+            ];
+            return newLines.join('\n');
+        }
+    }
+    
+    // Si no encuentra coincidencia exacta, intentar reemplazo por palabras clave
+    return applyKeywordBasedPatch(originalCode, cleanPatch);
+}
+
+function applyKeywordBasedPatch(originalCode, patchCode) {
+    // Buscar líneas con errores comunes y reemplazarlas
+    const errorPatterns = [
+        /firebase\.database\);/g,  // Error de Firebase
+        /console\.log\(/g,         // Errores de console
+        /function\s+\w+\(/g,       // Errores de función
+        /var\s+\w+\s*=/g,         // Errores de variables
+    ];
+    
+    let correctedCode = originalCode;
+    
+    errorPatterns.forEach(pattern => {
+        const originalMatches = originalCode.match(pattern);
+        const patchMatches = patchCode.match(pattern);
+        
+        if (originalMatches && patchMatches && originalMatches.length === patchMatches.length) {
+            originalMatches.forEach((match, index) => {
+                if (patchMatches[index] !== match) {
+                    correctedCode = correctedCode.replace(match, patchMatches[index]);
+                }
+            });
+        }
+    });
+    
+    return correctedCode;
+}
+
+function calculateSimilarity(str1, str2) {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const editDistance = levenshteinDistance(longer, shorter);
+    return (longer.length - editDistance) / longer.length;
+}
+
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
+}
+
+async function typeWriterEffect(element, text) {
+    element.innerHTML = '';
+    const words = text.split(' ');
+    
+    for (let i = 0; i < words.length; i++) {
+        element.innerHTML += words[i] + ' ';
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+}
+
+function cleanGeneratedCode(code) {
+    let cleaned = code
+        // Remover markdown
+        .replace(/```[\w]*\n?/g, '')
+        .replace(/```\n?/g, '')
+        .replace(/^\s*```[\w]*$/gm, '')
+        .replace(/^\s*```\s*$/gm, '')
+        
+        // Remover explicaciones típicas de IA (más agresivo)
+        .replace(/^(Aquí tienes|Este código|El siguiente código|Aquí está|He corregido|Los errores han sido|Correcciones aplicadas).*?[:\.]\s*/gi, '')
+        .replace(/^(Errores encontrados|Problemas detectados|Correcciones realizadas).*?\n/gi, '')
+        .replace(/^(Análisis|Explicación|Descripción|Resumen).*?\n/gi, '')
+        .replace(/^(Error \d+:|Corrección \d+:|Línea \d+:).*?\n/gi, '')
+        
+        // Remover líneas que son pura explicación
+        .split('\n')
+        .filter(line => {
+            const trimmedLine = line.trim();
+            // Filtrar líneas explicativas
+            return !trimmedLine.match(/^(El error estaba|El problema era|Ahora el código|La corrección|Se ha corregido)/i) &&
+                   !trimmedLine.match(/^(Cambios realizados|Errores solucionados|Modificaciones)/i);
+        })
+        .join('\n')
+        
+        // Limpiar espacios
+        .replace(/^\s*\n+/, '')
+        .replace(/\n+\s*$/, '')
+        .trim();
+    
+    return cleaned;
+}
+
+function applyCodeToEditor() {
+    if (!activeTab || !monacoEditor) {
+        showToast('Abre un archivo primero', 'error');
+        return;
+    }
+    
+    const responseContent = document.getElementById('ai-response-content');
+    let codeToApply = responseContent.dataset.fullCode || '';
+    const isContextual = responseContent.dataset.isContextual === 'true';
+    
+    if (!codeToApply.trim()) {
+        // Fallback a método anterior
+        const codeElement = responseContent.querySelector('code');
+        codeToApply = codeElement ? codeElement.textContent : responseContent.textContent;
+    }
+    
+    if (!codeToApply.trim()) {
+        showToast('No hay código para aplicar', 'error');
+        return;
+    }
+    
+    // Limpiar código
+    codeToApply = cleanGeneratedCode(codeToApply);
+    
+    // Validar código por tipo de archivo
+    const fileType = activeTab.type.toLowerCase();
+    if (!validateGeneratedCode(codeToApply, fileType)) {
+        showToast(`El código generado no es válido para archivos ${fileType.toUpperCase()}`, 'error');
+        return;
+    }
+    
+    // Mostrar confirmación si es actualización contextual de código grande
+    if (isContextual && activeTab.content.length > 500) {
+        const confirmMsg = `¿Aplicar los cambios sugeridos por la IA al archivo ${activeTab.name}?\n\nEsto reemplazará todo el código actual.`;
+        if (!confirm(confirmMsg)) {
+            return;
+        }
+    }
+    
+    // Aplicar código con animación suave
+    monacoEditor.setValue('');
+    setTimeout(() => {
+        monacoEditor.setValue(codeToApply.trim());
+        
+        if (activeTab) {
+            activeTab.modified = true;
+            activeTab.content = codeToApply.trim();
+            renderTabs();
+            isEditing = true;
+        }
+        
+        const message = isContextual 
+            ? `Código actualizado con las mejoras de la IA`
+            : `Código aplicado correctamente`;
+        showToast(message, 'success');
+        
+        closeAIModal();
+    }, 100);
+}
+
+function validateGeneratedCode(code, fileType) {
+    const trimmed = code.trim();
+    
+    const validators = {
+        'html': () => trimmed.includes('<') && trimmed.includes('>') && trimmed.length > 20,
+        'css': () => trimmed.includes('{') && trimmed.includes('}') && trimmed.includes(':'),
+        'js': () => trimmed.length > 10 && (
+            trimmed.includes('function') || trimmed.includes('=>') || 
+            trimmed.includes('const') || trimmed.includes('let') || 
+            trimmed.includes('var') || trimmed.includes('class')
+        ),
+        'jsx': () => trimmed.includes('React') || trimmed.includes('<') || trimmed.includes('=>'),
+        'ts': () => trimmed.includes('interface') || trimmed.includes('type') || trimmed.includes('function'),
+        'tsx': () => (trimmed.includes('React') || trimmed.includes('<')) && 
+                    (trimmed.includes('interface') || trimmed.includes('type')),
+        'py': () => trimmed.includes('def ') || trimmed.includes('class ') || 
+                   trimmed.includes('import ') || trimmed.includes('from '),
+        'java': () => trimmed.includes('class ') || trimmed.includes('public ') || 
+                     trimmed.includes('private '),
+        'php': () => trimmed.includes('<?php') || trimmed.includes('function ') || 
+                    trimmed.includes('class '),
+        'go': () => trimmed.includes('package ') || trimmed.includes('func '),
+        'rs': () => trimmed.includes('fn ') || trimmed.includes('struct ') || 
+                   trimmed.includes('impl '),
+        'default': () => trimmed.length > 5
+    };
+    
+    const validator = validators[fileType] || validators['default'];
+    return validator();
+}
+
+async function typeCodeIntoEditor(code) {
+    const lines = code.split('\n');
+    let currentContent = '';
+    
+    for (const line of lines) {
+        currentContent += line + '\n';
+        monacoEditor.setValue(currentContent);
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    if (activeTab) {
+        activeTab.modified = true;
+        activeTab.content = code;
+        renderTabs();
+        isEditing = true;
+    }
+}
+
+async function exportCurrentFile() {
+    if (!activeTab || !monacoEditor) {
+        showToast('Abre un archivo para exportar', 'error');
+        return;
+    }
+    
+    try {
+        const currentContent = monacoEditor.getValue();
+        if (!currentContent.trim()) {
+            showToast('El archivo está vacío', 'error');
+            return;
+        }
+        
+        showToast('Preparando exportación del archivo...', 'info');
+        
+        const response = await fetch(`${AI_BACKEND_URL}/api/export-current-file`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fileName: activeTab.name,
+                content: currentContent,
+                fileType: activeTab.type
+            })
+        });
+        
+        if (!response.ok) throw new Error('Error en exportación');
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const blob = new Blob([data.data.content], { 
+                type: getContentType(data.data.type)
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = data.data.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast(`${data.data.name} exportado correctamente`, 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error exporting file:', error);
+        showToast('Error exportando archivo', 'error');
+    }
+}
+function getContentType(fileType) {
+    const contentTypes = {
+        // Web Technologies
+        'html': 'text/html',
+        'htm': 'text/html',
+        'css': 'text/css',
+        'scss': 'text/css',
+        'sass': 'text/css',
+        'less': 'text/css',
+        'stylus': 'text/css',
+        'js': 'text/javascript',
+        'jsx': 'text/javascript',
+        'ts': 'text/typescript',
+        'tsx': 'text/typescript',
+        'xml': 'application/xml',
+        'svg': 'image/svg+xml',
+        'vue': 'text/x-vue',
+        'svelte': 'text/x-svelte',
+        'astro': 'text/x-astro',
+        'solid': 'text/x-solid',
+        
+        // Data Formats
+        'json': 'application/json',
+        'json5': 'application/json5',
+        'jsonl': 'application/jsonl',
+        'ndjson': 'application/x-ndjson',
+        'csv': 'text/csv',
+        'tsv': 'text/tab-separated-values',
+        'yaml': 'text/x-yaml',
+        'yml': 'text/x-yaml',
+        'toml': 'text/x-toml',
+        'ini': 'text/x-ini',
+        'cfg': 'text/x-ini',
+        'properties': 'text/x-properties',
+        'avro': 'application/avro',
+        'parquet': 'application/x-parquet',
+        'orc': 'application/x-orc',
+        
+        // Programming Languages - Popular
+        'py': 'text/x-python',
+        'python': 'text/x-python',
+        'pyw': 'text/x-python',
+        'java': 'text/x-java-source',
+        'class': 'application/java-vm',
+        'c': 'text/x-c',
+        'cpp': 'text/x-c++',
+        'cxx': 'text/x-c++',
+        'cc': 'text/x-c++',
+        'c++': 'text/x-c++',
+        'h': 'text/x-c',
+        'hpp': 'text/x-c++',
+        'hxx': 'text/x-c++',
+        'cs': 'text/x-csharp',
+        'csproj': 'application/xml',
+        'php': 'text/x-php',
+        'php3': 'text/x-php',
+        'php4': 'text/x-php',
+        'php5': 'text/x-php',
+        'phtml': 'text/x-php',
+        'rb': 'text/x-ruby',
+        'ruby': 'text/x-ruby',
+        'go': 'text/x-go',
+        'rs': 'text/x-rust',
+        'swift': 'text/x-swift',
+        'kt': 'text/x-kotlin',
+        'kts': 'text/x-kotlin',
+        'scala': 'text/x-scala',
+        'sc': 'text/x-scala',
+        
+        // Programming Languages - Scripting
+        'pl': 'text/x-perl',
+        'pm': 'text/x-perl',
+        'r': 'text/x-r',
+        'rmd': 'text/x-r-markdown',
+        'matlab': 'text/x-matlab',
+        'm': 'text/x-objectivec',
+        'mm': 'text/x-objectivec',
+        'lua': 'text/x-lua',
+        'tcl': 'text/x-tcl',
+        'tk': 'text/x-tcl',
+        
+        // Shell & Scripts
+        'sh': 'text/x-shellscript',
+        'bash': 'text/x-shellscript',
+        'zsh': 'text/x-shellscript',
+        'fish': 'text/x-shellscript',
+        'csh': 'text/x-shellscript',
+        'ksh': 'text/x-shellscript',
+        'ps1': 'text/x-powershell',
+        'psm1': 'text/x-powershell',
+        'psd1': 'text/x-powershell',
+        'bat': 'text/x-batch',
+        'cmd': 'text/x-batch',
+        
+        // Database & Query Languages
+        'sql': 'text/x-sql',
+        'mysql': 'text/x-sql',
+        'pgsql': 'text/x-sql',
+        'sqlite': 'text/x-sql',
+        'plsql': 'text/x-plsql',
+        'mongodb': 'text/x-mongodb',
+        'redis': 'text/x-redis',
+        'cassandra': 'text/x-cql',
+        'cql': 'text/x-cql',
+        'neo4j': 'text/x-cypher',
+        'cypher': 'text/x-cypher',
+        'sparql': 'application/sparql-query',
+        'xquery': 'application/xquery',
+        'graphql': 'application/graphql',
+        'gql': 'application/graphql',
+        
+        // Functional Languages
+        'hs': 'text/x-haskell',
+        'haskell': 'text/x-haskell',
+        'lhs': 'text/x-haskell',
+        'ml': 'text/x-ocaml',
+        'mli': 'text/x-ocaml',
+        'fs': 'text/x-fsharp',
+        'fsi': 'text/x-fsharp',
+        'fsx': 'text/x-fsharp',
+        'clj': 'text/x-clojure',
+        'cljs': 'text/x-clojure',
+        'cljc': 'text/x-clojure',
+        'elm': 'text/x-elm',
+        'erl': 'text/x-erlang',
+        'hrl': 'text/x-erlang',
+        'ex': 'text/x-elixir',
+        'exs': 'text/x-elixir',
+        'lisp': 'text/x-lisp',
+        'lsp': 'text/x-lisp',
+        'scm': 'text/x-scheme',
+        'scheme': 'text/x-scheme',
+        
+        // Mobile Development
+        'dart': 'text/x-dart',
+        'flutter': 'text/x-dart',
+        'xaml': 'application/xml',
+        
+        // Game Development & Graphics
+        'gdscript': 'text/x-gdscript',
+        'gd': 'text/x-gdscript',
+        'unity': 'text/x-csharp',
+        'hlsl': 'text/x-hlsl',
+        'glsl': 'text/x-glsl',
+        'shader': 'text/x-shader',
+        'vert': 'text/x-glsl',
+        'frag': 'text/x-glsl',
+        
+        // JVM Languages
+        'groovy': 'text/x-groovy',
+        'gradle': 'text/x-gradle',
+        'sbt': 'text/x-sbt',
+        
+        // Configuration & Infrastructure
+        'dockerfile': 'text/x-dockerfile',
+        'docker': 'text/x-dockerfile',
+        'dockerignore': 'text/plain',
+        'terraform': 'text/x-terraform',
+        'tf': 'text/x-terraform',
+        'tfvars': 'text/x-terraform',
+        'hcl': 'text/x-hcl',
+        'nomad': 'text/x-nomad',
+        'consul': 'text/x-consul',
+        'ansible': 'text/x-yaml',
+        'puppet': 'text/x-puppet',
+        'pp': 'text/x-puppet',
+        'chef': 'text/x-ruby',
+        'vagrant': 'text/x-ruby',
+        'vagrantfile': 'text/x-ruby',
+        
+        // Documentation
+        'md': 'text/markdown',
+        'markdown': 'text/markdown',
+        'mdown': 'text/markdown',
+        'mkd': 'text/markdown',
+        'mdx': 'text/x-mdx',
+        'rst': 'text/x-rst',
+        'tex': 'text/x-tex',
+        'latex': 'text/x-tex',
+        'bib': 'text/x-bibtex',
+        'txt': 'text/plain',
+        'text': 'text/plain',
+        'log': 'text/plain',
+        'readme': 'text/plain',
+        'changelog': 'text/plain',
+        'license': 'text/plain',
+        'authors': 'text/plain',
+        'contributors': 'text/plain',
+        'news': 'text/plain',
+        'todo': 'text/plain',
+        
+        // Assembly & Low Level
+        'asm': 'text/x-assembly',
+        's': 'text/x-assembly',
+        'nasm': 'text/x-assembly',
+        'masm': 'text/x-assembly',
+        'gas': 'text/x-assembly',
+        
+        // DSLs & Domain Specific
+        'prisma': 'text/x-prisma',
+        'proto': 'text/x-protobuf',
+        'protobuf': 'text/x-protobuf',
+        'thrift': 'text/x-thrift',
+        'avdl': 'text/x-avro-idl',
+        'capnp': 'text/x-capnp',
+        
+        // Web Frameworks & Templates
+        'jsp': 'text/x-jsp',
+        'jspx': 'text/x-jsp',
+        'asp': 'text/x-asp',
+        'aspx': 'text/x-aspx',
+        'ascx': 'text/x-aspx',
+        'erb': 'text/x-ruby-template',
+        'ejs': 'text/x-ejs',
+        'hbs': 'text/x-handlebars',
+        'handlebars': 'text/x-handlebars',
+        'mustache': 'text/x-mustache',
+        'twig': 'text/x-twig',
+        'smarty': 'text/x-smarty',
+        'tpl': 'text/x-smarty',
+        'blade': 'text/x-blade',
+        'razor': 'text/x-razor',
+        'cshtml': 'text/x-razor',
+        'vbhtml': 'text/x-razor',
+        'pug': 'text/x-pug',
+        'jade': 'text/x-jade',
+        'haml': 'text/x-haml',
+        'slim': 'text/x-slim',
+        
+        // Blockchain & Crypto
+        'solidity': 'text/x-solidity',
+        'sol': 'text/x-solidity',
+        'move': 'text/x-move',
+        'cairo': 'text/x-cairo',
+        'vyper': 'text/x-vyper',
+        'vy': 'text/x-vyper',
+        'clarity': 'text/x-clarity',
+        'clar': 'text/x-clarity',
+        
+        // Scientific & Statistical
+        'sas': 'text/x-sas',
+        'spss': 'text/x-spss',
+        'stata': 'text/x-stata',
+        'do': 'text/x-stata',
+        'ado': 'text/x-stata',
+        'jupyter': 'application/x-ipynb+json',
+        'ipynb': 'application/x-ipynb+json',
+        'mathematica': 'text/x-mathematica',
+        'nb': 'application/mathematica',
+        'wl': 'text/x-wolfram',
+        'wls': 'text/x-wolfram',
+        
+        // Legacy & Specialized
+        'fortran': 'text/x-fortran',
+        'f': 'text/x-fortran',
+        'f77': 'text/x-fortran',
+        'f90': 'text/x-fortran',
+        'f95': 'text/x-fortran',
+        'f03': 'text/x-fortran',
+        'f08': 'text/x-fortran',
+        'for': 'text/x-fortran',
+        'cobol': 'text/x-cobol',
+        'cob': 'text/x-cobol',
+        'cbl': 'text/x-cobol',
+        'pascal': 'text/x-pascal',
+        'pas': 'text/x-pascal',
+        'delphi': 'text/x-pascal',
+        'dfm': 'text/x-pascal',
+        'ada': 'text/x-ada',
+        'adb': 'text/x-ada',
+        'ads': 'text/x-ada',
+        'vb': 'text/x-vb',
+        'vbs': 'text/x-vbscript',
+        'vba': 'text/x-vba',
+        'basic': 'text/x-basic',
+        'bas': 'text/x-basic',
+        
+        // Version Control
+        'gitignore': 'text/plain',
+        'gitattributes': 'text/plain',
+        'gitconfig': 'text/plain',
+        'gitmodules': 'text/plain',
+        'hgignore': 'text/plain',
+        'bzrignore': 'text/plain',
+        'svnignore': 'text/plain',
+        
+        // Package Managers & Dependencies
+        'lock': 'application/json',
+        'sum': 'text/plain',
+        'mod': 'text/plain',
+        'sum': 'text/plain',
+        'requirements': 'text/plain',
+        'pipfile': 'text/x-toml',
+        'gemfile': 'text/x-ruby',
+        'podfile': 'text/x-ruby',
+        'cartfile': 'text/plain',
+        'package': 'application/json',
+        'composer': 'application/json',
+        'cargo': 'text/x-toml',
+        'mix': 'text/x-elixir',
+        'rebar': 'text/x-erlang',
+        
+        // Environment & Secrets
+        'env': 'text/plain',
+        'environment': 'text/plain',
+        'dotenv': 'text/plain',
+        'secrets': 'text/plain',
+        'vault': 'text/plain',
+        
+        // Build Systems
+        'makefile': 'text/x-makefile',
+        'make': 'text/x-makefile',
+        'cmake': 'text/x-cmake',
+        'cmakecache': 'text/x-cmake',
+        'ninja': 'text/x-ninja',
+        'bazel': 'text/x-bazel',
+        'buck': 'text/x-buck',
+        'pants': 'text/x-pants',
+        'scons': 'text/x-scons',
+        'rake': 'text/x-ruby',
+        'rakefile': 'text/x-ruby',
+        'ant': 'application/xml',
+        'maven': 'application/xml',
+        'pom': 'application/xml',
+        'ivy': 'application/xml',
+        
+        // CI/CD
+        'jenkinsfile': 'text/x-groovy',
+        'travis': 'text/x-yaml',
+        'circle': 'text/x-yaml',
+        'appveyor': 'text/x-yaml',
+        'github': 'text/x-yaml',
+        'gitlab': 'text/x-yaml',
+        'azure': 'text/x-yaml',
+        'bitbucket': 'text/x-yaml',
+        
+        // Testing
+        'test': 'text/javascript',
+        'spec': 'text/javascript',
+        'feature': 'text/x-gherkin',
+        'story': 'text/x-gherkin',
+        'cucumber': 'text/x-gherkin',
+        
+        // IDE & Editor
+        'editorconfig': 'text/x-editorconfig',
+        'eslintrc': 'application/json',
+        'prettierrc': 'application/json',
+        'babelrc': 'application/json',
+        'tsconfig': 'application/json',
+        'jsconfig': 'application/json',
+        'webpack': 'text/javascript',
+        'rollup': 'text/javascript',
+        'vite': 'text/javascript',
+        'gulpfile': 'text/javascript',
+        'gruntfile': 'text/javascript',
+        
+        // Documentation Formats
+        'adoc': 'text/x-asciidoc',
+        'asciidoc': 'text/x-asciidoc',
+        'creole': 'text/x-creole',
+        'textile': 'text/x-textile',
+        'pod': 'text/x-pod',
+        'wiki': 'text/x-wiki',
+        'mediawiki': 'text/x-mediawiki',
+        
+        // Binary Formats (for reference, usually not editable)
+        'exe': 'application/octet-stream',
+        'dll': 'application/octet-stream',
+        'so': 'application/octet-stream',
+        'dylib': 'application/octet-stream',
+        'bin': 'application/octet-stream',
+        
+        // Default fallback
+        'default': 'text/plain'
+    };
+    
+    // Clean the file type and make it lowercase
+    const cleanFileType = fileType.toLowerCase().trim();
+    
+    // Return the content type or default to text/plain
+    return contentTypes[cleanFileType] || contentTypes['default'];
+}
+function setupErrorDetection() {
+    if (!monacoEditor) return;
+    
+    monacoEditor.onDidChangeModelContent(() => {
+        if (activeTab) {
+            setTimeout(() => checkForErrors(), 1000);
+        }
+    });
+}
+
+function checkForErrors() {
+    if (!monacoEditor || !activeTab) return;
+    
+    const code = monacoEditor.getValue();
+    const markers = monaco.editor.getModelMarkers({ owner: 'typescript' });
+    
+    if (markers.length > 0) {
+        const firstError = markers[0];
+        showErrorInspector(firstError.message, firstError);
+    }
+}
+
+function showErrorInspector(message, errorDetails) {
+    const inspector = document.getElementById('error-inspector');
+    const messageEl = document.getElementById('error-message');
+    
+    if (inspector && messageEl) {
+        messageEl.textContent = message;
+        inspector.style.display = 'block';
+        
+        setTimeout(() => {
+            inspector.style.display = 'none';
+        }, 10000);
+    }
+    
+    const fixBtn = document.getElementById('fix-error-btn');
+    if (fixBtn) {
+        fixBtn.onclick = () => fixErrorWithAI(message, errorDetails);
+    }
+}
+
+function closeErrorInspector() {
+    const inspector = document.getElementById('error-inspector');
+    if (inspector) inspector.style.display = 'none';
+}
+
+async function fixErrorWithAI(errorMessage, errorDetails) {
+    closeErrorInspector();
+    
+    currentAIAction = 'fix';
+    document.querySelectorAll('.ai-action-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.ai-action-btn[data-action="fix"]').classList.add('active');
+    
+    const prompt = document.getElementById('ai-prompt');
+    prompt.value = `Tengo este error: ${errorMessage}\n\nPor favor corrige el código.`;
+    
+    showAICompanionModal();
+    setTimeout(() => askAI(), 500);
+}
+
+
+// Convertir \n\n a <br><br> o <p>
+function formatResponse(text) {
+    return text
+        .split('\n\n')
+        .map(paragraph => `<p>${paragraph.trim()}</p>`)
+        .join('');
+}
+
+// O simplemente reemplazar saltos
+function formatResponseSimple(text) {
+    return text.replace(/\n\n/g, '<br><br>');
+}
+
+
+// === FUNCIÓN SIMPLE PARA PRESERVAR RESPUESTAS DE IA ===
+
+// Variable global para guardar la última respuesta
+let lastAIResponse = null;
+
+// Función para guardar respuesta cuando la IA responde
+function saveLastAIResponse() {
+    const prompt = document.getElementById('ai-prompt')?.value || '';
+    const responseContent = document.getElementById('ai-response-content')?.innerHTML || '';
+    const fullCode = document.getElementById('ai-response-content')?.dataset.fullCode || '';
+    
+    if (prompt || responseContent) {
+        lastAIResponse = {
+            prompt: prompt,
+            responseHTML: responseContent,
+            fullCode: fullCode,
+            action: currentAIAction,
+            timestamp: new Date().toISOString(),
+            fileName: activeTab?.name || 'Sin archivo'
+        };
+        
+        // Guardar en localStorage para que persista entre sesiones
+        try {
+            localStorage.setItem('lastAIResponse', JSON.stringify(lastAIResponse));
+            console.log('Respuesta IA guardada');
+        } catch (error) {
+            console.error('Error guardando respuesta:', error);
+        }
+    }
+}
+
+// Función para restaurar la última respuesta cuando se abre el modal
+function restoreLastAIResponse() {
+    try {
+        // Primero intentar desde memoria
+        if (!lastAIResponse) {
+            const stored = localStorage.getItem('lastAIResponse');
+            if (stored) {
+                lastAIResponse = JSON.parse(stored);
+            }
+        }
+        
+        if (lastAIResponse) {
+            const prompt = document.getElementById('ai-prompt');
+            const response = document.getElementById('ai-response');
+            const responseContent = document.getElementById('ai-response-content');
+            
+            // Restaurar prompt solo si está vacío
+            if (prompt && !prompt.value.trim()) {
+                prompt.value = lastAIResponse.prompt;
+            }
+            
+            // Restaurar respuesta
+            if (response && responseContent && lastAIResponse.responseHTML) {
+                response.style.display = 'block';
+                responseContent.innerHTML = `
+                    <div style="margin-bottom: 10px; padding: 8px; background: rgba(74, 158, 255, 0.1); border-left: 3px solid #4a9eff; border-radius: 4px; font-size: 12px;">
+                        📝 Última respuesta guardada - ${lastAIResponse.fileName}
+                    </div>
+                    ${lastAIResponse.responseHTML}
+                `;
+                
+                // Restaurar código si existe
+                if (lastAIResponse.fullCode) {
+                    responseContent.dataset.fullCode = lastAIResponse.fullCode;
+                    
+                    const applyBtn = document.getElementById('apply-code-btn');
+                    if (applyBtn && lastAIResponse.action === 'fix') {
+                        applyBtn.style.display = 'inline-block';
+                    }
+                }
+                
+                showToast('Respuesta anterior restaurada', 'info');
+            }
+        }
+    } catch (error) {
+        console.error('Error restaurando respuesta:', error);
+    }
+}
+
+// Modificar la función closeAIModal (REEMPLAZAR la existente)
+function closeAIModal() {
+    // GUARDAR antes de cerrar
+    saveLastAIResponse();
+    
+    const modal = document.getElementById('ai-companion-modal');
+    if (modal) modal.style.display = 'none';
+    
+    // NO limpiar nada, solo ocultar el modal
+    // Resetear solo la acción
+    currentAIAction = 'generate';
+    document.querySelectorAll('.ai-action-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.ai-action-btn[data-action="generate"]')?.classList.add('active');
+}
+
+// Modificar showAICompanionModal (REEMPLAZAR la existente)
+function showAICompanionModal() {
+    if (!['owner', 'admin'].includes(currentUserRole)) {
+        showToast('No tienes permisos para usar IA Companion', 'error');
+        return;
+    }
+    
+    const modal = document.getElementById('ai-companion-modal');
+    if (modal) modal.style.display = 'flex';
+    
+    // Restaurar respuesta anterior
+    setTimeout(() => restoreLastAIResponse(), 100);
+    
+    // Focus en prompt
+    const prompt = document.getElementById('ai-prompt');
+    if (prompt) prompt.focus();
+}
+
+
+function addSaveToAskAI() {
+    // Esta función modifica la askAI existente
+    const originalAskAI = window.askAI;
+    
+    window.askAI = async function() {
+        await originalAskAI();
+        // Guardar después de que la IA responde
+        setTimeout(() => saveLastAIResponse(), 500);
+    };
+}
+
+// Función para limpiar respuestas guardadas (opcional)
+function clearSavedAIResponse() {
+    lastAIResponse = null;
+    localStorage.removeItem('lastAIResponse');
+    showToast('Respuestas guardadas eliminadas', 'success');
+}
+
+// Inicializar al cargar la página 
+document.addEventListener('DOMContentLoaded', function() {
+    
+    addSaveToAskAI();
+    
+    console.log('Sistema de persistencia IA inicializado');
+});
+
+// Función extra: Botón para ver respuesta guardada (opcional)
+function addViewSavedResponseButton() {
+    const aiActions = document.querySelector('.ai-actions');
+    if (aiActions) {
+        const button = document.createElement('button');
+        button.className = 'ai-action-btn';
+        button.innerHTML = '<i class="fas fa-history"></i>Última Respuesta';
+        button.onclick = () => {
+            restoreLastAIResponse();
+        };
+        aiActions.appendChild(button);
+    }
+}
+
+// Hacer funciones globales
+window.closeAIModal = closeAIModal;
+window.closeErrorInspector = closeErrorInspector;
 window.showDeleteRepositoryModal = showDeleteRepositoryModal;
 window.showCreateRepositoryModal = showCreateRepositoryModal;
 window.createRepository = createRepository;
