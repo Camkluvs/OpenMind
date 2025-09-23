@@ -1,0 +1,29 @@
+/* css/variables.css - Variables globales del sitio */
+
+:root {
+    --primary-bg: #0f1419;
+    --header-bg: rgba(15, 20, 25, 0.95);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --accent-primary: #4a9eff;
+    --accent-secondary: #00d4ff;
+    --accent-glow: rgba(74, 158, 255, 0.4);
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --purple-gradient: linear-gradient(135deg, #4a9eff 0%, #00d4ff 100%);
+}
+
+[data-theme="light"] {
+    --primary-bg: #f8fafc;
+    --header-bg: rgba(248, 250, 252, 0.95);
+    --text-primary: #1e293b;
+    --text-secondary: rgba(30, 41, 59, 0.7);
+    --text-muted: rgba(30, 41, 59, 0.5);
+    --accent-primary: #3b82f6;
+    --accent-secondary: #1d4ed8;
+    --accent-glow: rgba(59, 130, 246, 0.4);
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(30, 41, 59, 0.1);
+    --purple-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}

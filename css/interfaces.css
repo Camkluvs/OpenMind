@@ -1,0 +1,242 @@
+/* css/interfaces.css - Estilos para interfaces mock */
+
+/* Forums Interface */
+.forums-interface {
+    padding: 16px;
+}
+
+.forum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.active-badge {
+    background: #00d4aa;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.new-discussion-btn {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.discussion-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.discussion-title {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.discussion-preview {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+.discussion-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.author {
+    color: var(--accent-primary);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.discussion-stats {
+    display: flex;
+    gap: 12px;
+}
+
+.discussion-stats .stat-item {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* AI Chat Interface */
+.ai-chat-interface {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.ai-avatar {
+    margin-bottom: 20px;
+}
+
+.ai-orb {
+    width: 60px;
+    height: 60px;
+    background: conic-gradient(from 0deg, #4a9eff, #00d4ff, #4a9eff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: orbitalRotate 3s linear infinite;
+    position: relative;
+}
+
+.ai-orb::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    background: #0a0a0a;
+    border-radius: 50%;
+}
+
+.ai-content {
+    width: 100%;
+}
+
+.ai-question {
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.ai-description {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+.ai-response-area {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 60px;
+    margin-top: 16px;
+}
+
+.typing-text {
+    color: var(--text-primary);
+    font-size: 13px;
+    line-height: 1.4;
+    width: 100%;
+}
+
+.typing-text .cursor {
+    color: var(--accent-primary);
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+/* Code Editor Interface */
+.code-editor-interface {
+    display: flex;
+    height: 280px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.editor-sidebar {
+    width: 120px;
+    background: #0f0f0f;
+    border-right: 1px solid var(--border-color);
+    padding: 12px 8px;
+}
+
+.file-explorer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.folder-item, .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.file-item.active {
+    background: rgba(74, 158, 255, 0.1);
+    color: var(--accent-primary);
+}
+
+.editor-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-tabs {
+    background: #1f1f1f;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 12px;
+    display: flex;
+}
+
+.tab {
+    padding: 8px 16px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+}
+
+.code-area {
+    flex: 1;
+    padding: 12px 0;
+}
+
+.code-line {
+    display: flex;
+    align-items: center;
+    min-height: 20px;
+    padding: 0 12px;
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+}
+
+.line-number {
+    width: 30px;
+    color: var(--text-muted);
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+    text-align: right;
+    padding-right: 12px;
+}
+
+.comment { color: #6a9955; }
+.keyword { color: #569cd6; }
+.function { color: #dcdcaa; }
+.string { color: #ce9178; }
+.punctuation { color: #d4d4d4; }

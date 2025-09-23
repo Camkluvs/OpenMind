@@ -1,0 +1,128 @@
+/* css/pricing.css - Estilos para la sección de precios */
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+    margin-top: 80px;
+}
+
+.pricing-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+}
+
+.pricing-card.featured {
+    border: 2px solid var(--accent-primary);
+    transform: scale(1.05);
+    background: radial-gradient(circle at top, rgba(74, 158, 255, 0.1), var(--card-bg));
+}
+
+.pricing-card.featured::before {
+    content: attr(data-popular);
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--purple-gradient);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pricing-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 80px rgba(74, 158, 255, 0.3);
+}
+
+.pricing-card.featured:hover {
+    transform: scale(1.05) translateY(-10px);
+}
+
+.plan-name {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.plan-price {
+    font-size: 56px;
+    font-weight: 800;
+    background: var(--purple-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.plan-period {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+}
+
+.plan-features {
+    list-style: none;
+    margin-bottom: 40px;
+}
+
+.plan-features li {
+    padding: 12px 0;
+    font-size: 16px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.plan-features li i {
+    color: var(--accent-primary);
+    font-size: 16px;
+    min-width: 20px;
+}
+
+.plan-btn {
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.plan-btn.primary {
+    background: var(--purple-gradient);
+    color: white;
+    border: none;
+    box-shadow: 0 8px 32px var(--accent-glow);
+}
+
+.plan-btn.primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 48px var(--accent-glow);
+}
+
+.plan-btn.secondary {
+    background: transparent;
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+}
+
+.plan-btn.secondary:hover {
+    background: rgba(74, 158, 255, 0.1);
+    transform: translateY(-2px);
+}
