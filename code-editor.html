@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" href="css/noti.css">
-
-
 <style>
 
 
@@ -714,7 +711,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -727,14 +724,12 @@ body {
     background: rgba(15, 20, 25, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(74, 158, 255, 0.3);
-    border-radius: 16px;
-    padding: 30px;
+    padding: 4px;
     width: 90%;
     max-width: 500px;
-    /* AGREGAR ESTAS LÍNEAS */
-    max-height: 90vh;
     overflow-y: auto;
-    margin: auto;
+    margin-left: 319px;
+
 }
 
 
@@ -749,7 +744,7 @@ body {
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: -21px;
 }
 
 .form-group label {
@@ -791,16 +786,13 @@ body {
 
 .modal-actions {
     display: flex;
-    gap: 15px;
+    gap: 4px;
     justify-content: flex-end;
 }
 
-.cancel-btn,
-.create-btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
+.cancel-btn, .create-btn {
+    padding: 7px 10px;
+
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
@@ -2203,6 +2195,8 @@ body {
 }
 
         </style>
+
+
 </head>
 <body>
     <aside class="sidebar" id="sidebar">
@@ -2326,13 +2320,8 @@ body {
             <div class="file-explorer">
                 <div class="explorer-header">
                     <div class="explorer-title">Archivos</div>
-                    <div style="display: flex; gap: 5px;">
-                        <button class="new-file-btn" id="upload-folder-btn" title="Subir carpeta">
-                            <i class="fas fa-upload"></i>
-                        </button>
-                        <button class="new-file-btn" id="new-file-btn" title="Nuevo archivo">
-                            <i class="fas fa-plus"></i>
-                        </button>
+                    <div style="display: flex; gap: 5px;" id="repository-level-controls">
+                        <!-- Los controles se moverán aquí dinámicamente -->
                     </div>
                 </div>
                 <div class="file-tree" id="file-tree">
@@ -2359,16 +2348,25 @@ body {
                                 <i class="fas fa-eye"></i>
                                 Vista Previa
                             </button>
-                            <div class="ai-tools">
-    <button class="ai-btn" id="ai-companion-btn" title="IA Code Companion">
-        <i class="fas fa-robot"></i>
-        IA Companion
-    </button>
-    <button class="export-btn" id="export-project-btn" title="Exportar Archivo Actual">
-        <i class="fas fa-download"></i>
-        Exportar Archivo
-    </button>
-</div>
+                            <div class="export-tools">
+                                <div class="export-dropdown">
+                                    <button class="export-btn" id="export-dropdown-btn" title="Exportar">
+                                        <i class="fas fa-download"></i>
+                                        Exportar
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                    <div class="export-dropdown-menu" id="export-dropdown-menu">
+                                        <button class="export-option" id="export-file-btn">
+                                            <i class="fas fa-file"></i>
+                                            Exportar Archivo
+                                        </button>
+                                        <button class="export-option" id="export-repository-btn">
+                                            <i class="fas fa-folder-open"></i>
+                                            Exportar Repositorio (.zip)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div id="monaco-editor-container">
@@ -2421,74 +2419,48 @@ body {
         </div>
     </div>
 
-
-    <!-- Modal IA Code Companion -->
-<div class="modal-overlay" id="ai-companion-modal" style="display: none;">
-    <div class="modal ai-companion-modal-content">
-        <h3>🤖 IA Code Companion</h3>
+    <!-- Modal IA Contextual Mejorado -->
+<div class="modal-overlay" id="ai-contextual-modal" style="display: none;">
+    <div class="modal ai-contextual-modal-content">
         <div class="modal-content">
-            <div class="ai-actions">
-                <button class="ai-action-btn active" data-action="generate" style="display: none;">
-                    <i class="fas fa-code"></i>
-                    Generar Código
-                </button>
-                <button class="ai-action-btn" data-action="review">
-                    <i class="fas fa-search"></i>
-                    Revisar Código
-                </button>
-                <button class="ai-action-btn" data-action="fix">
-                    <i class="fas fa-wrench"></i>
-                    Corregir Error
-                </button>
-                <button class="ai-action-btn" data-action="explain">
-                    <i class="fas fa-graduation-cap"></i>
-                    Explicar Código
-                </button>
-            </div>
-            
             <div class="form-group">
-                <label>Describe qué necesitas:</label>
-                <textarea id="ai-prompt" rows="4" 
-                    placeholder="Ej: Crea una función para validar emails, genera un componente React para login, explica este algoritmo..."></textarea>
-            </div>
-            
-            <div class="ai-response" id="ai-response" style="display: none;">
-                <div class="response-header">
-                    <h4>Respuesta de IA:</h4>
-                    <button class="apply-code-btn" id="apply-code-btn" style="display: none;">
-                        <i class="fas fa-check"></i>
-                        Aplicar al Editor
-                    </button>
-                </div>
-                <div class="response-content" id="ai-response-content"></div>
+                <label>Describe los cambios que quieres hacer:</label>
+                <textarea id="ai-contextual-prompt" rows="4" 
+                    placeholder="Ej: Optimiza este código, corrige errores, agrega validación, etc."
+                    style="
+                        width: 100%;
+                        background: rgba(255, 255, 255, 0.05);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        color: white;
+                        vertical-align: top;
+                        display: flex;
+                        padding-top: 10px;
+                        line-height: 0.3;
+                        resize: vertical;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    "></textarea>
             </div>
         </div>
         
         <div class="modal-actions">
-            <button class="cancel-btn" onclick="closeAIModal()">Cancelar</button>
-            <button class="create-btn" id="ask-ai-btn">
-                <i class="fas fa-paper-plane"></i>
-                Consultar IA
+            <button class="cancel-btn" onclick="cancelAIChanges()">
+                 Cancelar
+            </button>
+            <button class="create-btn" id="generate-contextual-btn">
+                 Aplicar Cambios
             </button>
         </div>
     </div>
 </div>
 
-<!-- Modal Error Inspector -->
-<div class="error-inspector" id="error-inspector" style="display: none;">
-    <div class="error-content">
-        <div class="error-header">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>Error Detectado</span>
-            <button class="close-error-btn" onclick="closeErrorInspector()">×</button>
-        </div>
-        <div class="error-message" id="error-message"></div>
-        <button class="fix-error-btn" id="fix-error-btn">
+    <!-- Menú contextual para selección de código -->
+    <div class="contextual-menu" id="contextual-menu" style="display: none;">
+        <button class="contextual-menu-item" id="edit-with-ai-btn">
             <i class="fas fa-magic"></i>
-            Corregir con IA
+            Editar con IA
         </button>
     </div>
-</div>
+
     <script src="js/project-session.js"></script>
    <script src="js/noti.js"></script>
 
@@ -2503,7 +2475,6 @@ const PREVIEW_BACKEND_URL = 'https://bakd-pvd8.vercel.app';
 // Para IA y análisis
 const AI_BACKEND_URL = 'https://open-analy.vercel.app';
 
-
 let supabaseClient;
 let projectRepositories = [];
 let currentUser = null;
@@ -2514,18 +2485,21 @@ let openTabs = [];
 let activeTab = null;
 let saveTimeout = null;
 let expandedFolders = new Set();
-let currentAIAction = 'generate';
-let isGeneratingCode = false;
-let currentViewMode = 'repositories'; // 'repositories' o 'files'
+let currentViewMode = 'repositories';
 let selectedRepository = null;
-// Variables para sincronización simplificada
 let syncInterval = null;
 let lastSyncTime = 0;
 let isEditing = false;
-let allProjectFiles = []; // Nueva variable para todos los archivos
-// Monaco Editor variables
+let allProjectFiles = [];
 let monacoEditor = null;
 let monacoInitialized = false;
+let originalContent = '';
+let isPreviewMode = false;
+let previewTimeout = null;
+
+// Variables para IA contextual
+let selectedCodeRange = null;
+let selectedCodeText = '';
 
 // Variables para tema e idioma
 let currentTheme = localStorage.getItem('theme') || 'dark';
@@ -2612,31 +2586,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     checkAuthenticationAndLoadData();
     initializeThemeAndLanguage();
-
-     const aiCompanionBtn = document.getElementById('ai-companion-btn');
-    if (aiCompanionBtn) aiCompanionBtn.addEventListener('click', showAICompanionModal);
-    
-    const exportBtn = document.getElementById('export-project-btn');
-    if (exportBtn) exportBtn.addEventListener('click', exportCurrentFile);
-    
-    const askAIBtn = document.getElementById('ask-ai-btn');
-    if (askAIBtn) askAIBtn.addEventListener('click', askAI);
-    
-   const applyCodeBtn = document.getElementById('apply-code-btn');
-if (applyCodeBtn) applyCodeBtn.addEventListener('click', applyCodePatch);
-    
-    // Action buttons
-    document.querySelectorAll('.ai-action-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.ai-action-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentAIAction = btn.dataset.action;
-        });
-    });
-    
-    // Error detection setup
-    setupErrorDetection();
-
+    setupContextualAI();
+    setupExportDropdown();
 });
 
 function setupEventListeners() {
@@ -2657,6 +2608,56 @@ function setupEventListeners() {
     
     const folderInput = document.getElementById('folder-input');
     if (folderInput) folderInput.addEventListener('change', handleFolderUpload);
+}
+
+function setupContextualAI() {
+    // Configurar botón de generar IA contextual
+    const generateBtn = document.getElementById('generate-contextual-btn');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', generateContextualAI);
+    }
+
+    // Configurar botón de aplicar código
+    const applyBtn = document.getElementById('apply-contextual-code-btn');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applyContextualChanges);
+    }
+}
+
+function setupExportDropdown() {
+    const exportDropdownBtn = document.getElementById('export-dropdown-btn');
+    const exportDropdownMenu = document.getElementById('export-dropdown-menu');
+    const exportFileBtn = document.getElementById('export-file-btn');
+    const exportRepositoryBtn = document.getElementById('export-repository-btn');
+
+    if (exportDropdownBtn) {
+        exportDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exportDropdownMenu.style.display = 
+                exportDropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+    }
+
+    if (exportFileBtn) {
+        exportFileBtn.addEventListener('click', () => {
+            exportCurrentFile();
+            exportDropdownMenu.style.display = 'none';
+        });
+    }
+
+    if (exportRepositoryBtn) {
+        exportRepositoryBtn.addEventListener('click', () => {
+            exportCurrentRepository();
+            exportDropdownMenu.style.display = 'none';
+        });
+    }
+
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', () => {
+        if (exportDropdownMenu) {
+            exportDropdownMenu.style.display = 'none';
+        }
+    });
 }
 
 async function checkAuthenticationAndLoadData() {
@@ -2699,7 +2700,6 @@ async function checkAuthenticationAndLoadData() {
 
         await Promise.all([
             loadProjectData(projectId),
-            
         ]);
         await loadProjectRepositories(projectId);
 
@@ -2711,7 +2711,7 @@ async function checkAuthenticationAndLoadData() {
     }
 
     initializeSidebar();
-setupMenuToggle();
+    setupMenuToggle();
 }
 
 function initMonacoEditor() {
@@ -2766,6 +2766,26 @@ function initMonacoEditor() {
                     }
                 });
 
+                // Configurar acciones del menú contextual de Monaco
+                monacoEditor.addAction({
+                    id: 'edit-with-ai',
+                    label: 'Editar con IA',
+                    contextMenuGroupId: 'modification',
+                    contextMenuOrder: 1.5,
+                    precondition: null,
+                    keybindingContext: null,
+                    run: function(ed) {
+                        const selection = ed.getSelection();
+                        if (selection && !selection.isEmpty()) {
+                            selectedCodeRange = selection;
+                            selectedCodeText = ed.getModel().getValueInRange(selection);
+                            openContextualAIModal();
+                        } else {
+                            showToast('Selecciona código para editar con IA', 'error');
+                        }
+                    }
+                });
+
                 monacoInitialized = true;
                 console.log('Monaco Editor inicializado correctamente');
                 resolve();
@@ -2777,6 +2797,277 @@ function initMonacoEditor() {
     });
 }
 
+function openContextualAIModal() {
+    if (!selectedCodeText.trim()) {
+        showToast('Selecciona código para editar con IA', 'error');
+        return;
+    }
+
+    // Guardar contenido original
+    originalContent = monacoEditor.getValue();
+    isPreviewMode = false;
+    
+    // Limpiar formulario anterior
+    const prompt = document.getElementById('ai-contextual-prompt');
+    if (prompt) {
+        prompt.value = '';
+    }
+
+    // Mostrar modal
+    const modal = document.getElementById('ai-contextual-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        
+        // Focus en el prompt después de que se muestre
+        setTimeout(() => {
+            if (prompt) {
+                prompt.focus();
+            }
+        }, 100);
+    }
+}
+
+
+
+async function generateContextualAI() {
+    const prompt = document.getElementById('ai-contextual-prompt');
+    const generateBtn = document.getElementById('generate-contextual-btn');
+
+    if (!prompt.value.trim()) {
+        showToast('Describe qué cambios quieres hacer', 'error');
+        return;
+    }
+
+    if (!selectedCodeText.trim()) {
+        showToast('No hay código seleccionado', 'error');
+        return;
+    }
+
+    // UI Loading
+    generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    generateBtn.disabled = true;
+
+    try {
+        const contextualPrompt = `CÓDIGO A MODIFICAR:
+${selectedCodeText}
+
+CAMBIOS SOLICITADOS: ${prompt.value.trim()}
+
+INSTRUCCIONES:
+- Modifica ÚNICAMENTE el código seleccionado según los cambios solicitados
+- Mantén la funcionalidad existente que no se solicita cambiar
+- Devuelve SOLO el código mejorado, sin explicaciones adicionales
+- Asegúrate de que el código sea funcional y mantenga el estilo`;
+
+        const requestBody = {
+            prompt: contextualPrompt,
+            code: selectedCodeText,
+            language: activeTab ? activeTab.type : 'javascript',
+            action: 'contextual_edit'
+        };
+
+        const response = await fetch(`${AI_BACKEND_URL}/api/contextual-edit`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error HTTP ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success && data.response) {
+            const improvedCode = cleanGeneratedCode(data.response.trim());
+            
+            // Aplicar cambios inmediatamente en modo preview
+            applyPreviewChanges(improvedCode);
+            
+            // Cambiar botones a modo confirmación
+            showConfirmationButtons();
+            
+            showToast('Cambios aplicados en modo preview', 'success');
+            
+        } else {
+            throw new Error(data.error || 'Respuesta inválida de la IA');
+        }
+
+    } catch (error) {
+        console.error('Error en IA contextual:', error);
+        showToast('Error procesando con IA: ' + error.message, 'error');
+        
+        // Restaurar botón
+        generateBtn.innerHTML = '<i class="fas fa-magic"></i> Aplicar Cambios';
+        generateBtn.disabled = false;
+    }
+}
+
+function showConfirmationButtons() {
+    const modalActions = document.querySelector('#ai-contextual-modal .modal-actions');
+    if (modalActions) {
+        modalActions.innerHTML = `
+            <button class="cancel-btn" onclick="cancelAIChanges()" style="
+                background: rgba(239, 68, 68, 0.2);
+                border: 1px solid #ef4444;
+                color: #ef4444;
+            ">
+                <i class="fas fa-undo"></i> Cancelar Cambios
+            </button>
+            <button class="create-btn" onclick="confirmAIChanges()" style="
+                background: rgba(34, 197, 94, 0.2);
+                border: 1px solid #22c55e;
+                color: #22c55e;
+            ">
+                <i class="fas fa-check"></i> Confirmar Cambios
+            </button>
+        `;
+    }
+}
+
+function cancelAIChanges() {
+    if (isPreviewMode && originalContent !== '') {
+        // Restaurar contenido original
+        monacoEditor.setValue(originalContent);
+        
+        // Restaurar estado del tab
+        if (activeTab) {
+            activeTab.content = originalContent;
+            activeTab.modified = false;
+            renderTabs();
+        }
+        
+        showToast('Cambios cancelados', 'info');
+    }
+    
+    // Resetear modal antes de cerrar
+    resetModalToInitialState();
+    closeContextualAIModal();
+}
+function confirmAIChanges() {
+    if (isPreviewMode) {
+        // Los cambios ya están aplicados, solo actualizamos el estado
+        if (activeTab) {
+            activeTab.content = monacoEditor.getValue();
+            activeTab.modified = true;
+            renderTabs();
+        }
+        
+        showToast('Cambios confirmados y aplicados', 'success');
+    }
+    
+    // IMPORTANTE: Resetear completamente el modal
+    resetModalToInitialState();
+    closeContextualAIModal();
+}
+
+function resetModalToInitialState() {
+    const modalActions = document.querySelector('#ai-contextual-modal .modal-actions');
+    if (modalActions) {
+        // Restaurar botones originales
+        modalActions.innerHTML = `
+            <button class="cancel-btn" onclick="closeContextualAIModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button class="create-btn" id="generate-contextual-btn">
+                <i class="fas fa-magic"></i> Aplicar Cambios
+            </button>
+        `;
+        
+        // Re-asignar el event listener al botón
+        const generateBtn = document.getElementById('generate-contextual-btn');
+        if (generateBtn) {
+            generateBtn.onclick = generateContextualAI;
+        }
+    }
+    
+    // Limpiar el textarea
+    const prompt = document.getElementById('ai-contextual-prompt');
+    if (prompt) {
+        prompt.value = '';
+    }
+}
+
+function applyPreviewChanges(improvedCode) {
+    if (!activeTab || !monacoEditor || !selectedCodeRange) {
+        return;
+    }
+    
+    // Aplicar el código mejorado reemplazando la selección original
+    const model = monacoEditor.getModel();
+    const edit = {
+        range: selectedCodeRange,
+        text: improvedCode.trim()
+    };
+    
+    model.pushEditOperations([], [edit], () => null);
+    isPreviewMode = true;
+    
+    // Marcar como modificado temporalmente
+    if (activeTab) {
+        activeTab.modified = true;
+        renderTabs();
+    }
+}
+
+function applyContextualChanges() {
+    if (!activeTab || !monacoEditor || !selectedCodeRange) {
+        showToast('Error aplicando cambios', 'error');
+        return;
+    }
+    
+    const responseContent = document.getElementById('ai-contextual-response-content');
+    const improvedCode = responseContent.dataset.improvedCode;
+    
+    if (!improvedCode || !improvedCode.trim()) {
+        showToast('No hay código mejorado para aplicar', 'error');
+        return;
+    }
+    
+    // Aplicar el código mejorado reemplazando la selección original
+    const model = monacoEditor.getModel();
+    const edit = {
+        range: selectedCodeRange,
+        text: improvedCode.trim()
+    };
+    
+    model.pushEditOperations([], [edit], () => null);
+    
+    // Marcar como modificado
+    if (activeTab) {
+        activeTab.modified = true;
+        activeTab.content = monacoEditor.getValue();
+        renderTabs();
+        isEditing = true;
+    }
+    
+    showToast('Cambios aplicados correctamente', 'success');
+    closeContextualAIModal();
+}
+
+function closeContextualAIModal() {
+    const modal = document.getElementById('ai-contextual-modal');
+    if (modal) modal.style.display = 'none';
+    
+    // Reset variables
+    isPreviewMode = false;
+    originalContent = '';
+    selectedCodeRange = null;
+    selectedCodeText = '';
+    
+    
+    if (previewTimeout) {
+        clearTimeout(previewTimeout);
+        previewTimeout = null;
+    }
+    
+    // AGREGAR: Resetear modal al estado inicial
+    resetModalToInitialState();
+}
 // Sistema de sincronización simplificado
 function startPeriodicSync() {
     if (syncInterval) {
@@ -2846,7 +3137,6 @@ async function syncFileChanges() {
 async function saveFileChanges() {
     if (!activeTab || !activeTab.modified) return;
     
-    // CAMBIO: Permitir a owner Y admin guardar
     if (currentUserRole === 'member') {
         console.log('Member no puede guardar cambios');
         return;
@@ -2876,7 +3166,6 @@ async function saveFileChanges() {
         updateSaveStatus('error');
     }
 }
-
 
 async function checkForOtherEditors() {
     if (!activeTab) return;
@@ -2978,7 +3267,6 @@ function getUserName() {
            currentUser.email.split('@')[0];
 }
 
-
 async function verifyProjectAccess(projectId) {
     try {
         const { data: membership, error } = await supabaseClient
@@ -3000,7 +3288,6 @@ async function verifyProjectAccess(projectId) {
 
         currentUserRole = membership.role;
         
-        // DEBUG: Verificar que el rol se asigna correctamente
         console.log('=== DEBUG ROL ===');
         console.log('Rol obtenido de DB:', membership.role);
         console.log('Rol asignado a currentUserRole:', currentUserRole);
@@ -3014,7 +3301,6 @@ async function verifyProjectAccess(projectId) {
         return false;
     }
 }
-
 
 function updateUserRoleDisplay() {
     const userInfo = document.querySelector('.user-info');
@@ -3035,8 +3321,8 @@ function updateUserRoleDisplay() {
         }
         roleIndicator.textContent = currentUserRole.toUpperCase();
     }
-
 }
+
 async function loadProjectData(projectId) {
     try {
         const { data: projectData, error } = await supabaseClient
@@ -3170,6 +3456,22 @@ function backToRepositories() {
     currentViewMode = 'repositories';
     selectedRepository = null;
     renderRepositories();
+    
+    // Mover controles de vuelta al nivel de repositorios
+    moveControlsToRepositoryLevel();
+}
+
+function moveControlsToRepositoryLevel() {
+    const repositoryControls = document.getElementById('repository-level-controls');
+    if (repositoryControls && currentViewMode === 'repositories') {
+        repositoryControls.innerHTML = `
+            <button class="new-file-btn" onclick="triggerFolderUpload()" title="Subir carpeta" style="background: rgba(74, 158, 255, 0.2); border: none; color: #4a9eff; padding: 6px 8px; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-upload"></i>
+            </button>
+        `;
+    } else if (repositoryControls) {
+        repositoryControls.innerHTML = '';
+    }
 }
 
 window.backToRepositories = backToRepositories;
@@ -3180,6 +3482,7 @@ function renderFileTree() {
     
     if (currentViewMode === 'repositories') {
         renderRepositories();
+        moveControlsToRepositoryLevel();
     } else {
         renderRepositoryFiles();
     }
@@ -3251,8 +3554,6 @@ function renderRepositories() {
     });
 }
 
-
-
 function createRepositoryCard(repository) {
     const card = document.createElement('div');
     card.style.cssText = `
@@ -3267,7 +3568,7 @@ function createRepositoryCard(repository) {
         overflow: hidden;
     `;
 
-const filesCount = allProjectFiles.filter(f => f.repository_id === repository.id && !f.is_folder).length;
+    const filesCount = allProjectFiles.filter(f => f.repository_id === repository.id && !f.is_folder).length;
 
     card.innerHTML = `
         <div style="display: flex; align-items: flex-start; gap: 15px;">
@@ -3368,7 +3669,6 @@ const filesCount = allProjectFiles.filter(f => f.repository_id === repository.id
 
     return card;
 }
-
 
 function showDeleteRepositoryModal(repository) {
     // Solo owner y admin pueden eliminar
@@ -3521,7 +3821,6 @@ async function deleteRepository(repository) {
     }
 }
 
-
 function buildFileTree(files) {
     const tree = { children: {}, files: [] };
     
@@ -3569,17 +3868,23 @@ function renderFileTreeNode(node, container, depth) {
             <span>${folderName}</span>
         `;
         
+        // Click izquierdo para expandir/contraer
         if (hasContent) {
             folderElement.style.cursor = 'pointer';
             folderElement.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleFolder(folderPath, folderElement);
+                // Solo expandir/contraer con click izquierdo
+                if (e.button === 0) {
+                    e.stopPropagation();
+                    toggleFolder(folderPath, folderElement);
+                }
             });
         }
         
+        // Click derecho para menú contextual
         if (folderNode.folderData && ['owner', 'admin'].includes(currentUserRole)) {
             folderElement.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 showContextMenu(e, folderNode.folderData);
             });
         }
@@ -3602,6 +3907,9 @@ function renderFileTreeNode(node, container, depth) {
         container.appendChild(fileElement);
     });
 }
+
+
+
 
 function toggleFolder(folderPath, folderElement) {
     const isExpanded = expandedFolders.has(folderPath);
@@ -3629,10 +3937,18 @@ function createFileElement(file, depth = 0) {
         <span>${file.file_name}</span>
     `;
 
-    div.addEventListener('click', () => openFile(file));
+    // Click izquierdo para abrir archivo
+    div.addEventListener('click', (e) => {
+        // Solo abrir si no es click derecho
+        if (e.button === 0) {
+            openFile(file);
+        }
+    });
     
+    // Click derecho para menú contextual
     div.addEventListener('contextmenu', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (['owner', 'admin'].includes(currentUserRole)) {
             showContextMenu(e, file);
         }
@@ -3642,13 +3958,14 @@ function createFileElement(file, depth = 0) {
 }
 
 
+
+
 function showContextMenu(event, file) {
     const existingMenu = document.querySelector('.context-menu');
     if (existingMenu) {
         existingMenu.remove();
     }
 
-    // CAMBIO: Solo mostrar menú contextual a owner y admin
     if (!['owner', 'admin'].includes(currentUserRole)) {
         return;
     }
@@ -3659,62 +3976,603 @@ function showContextMenu(event, file) {
         position: fixed;
         top: ${event.clientY}px;
         left: ${event.clientX}px;
-        background: rgba(15, 20, 25, 0.95);
+        background: rgba(15, 20, 25, 0.98);
         backdrop-filter: blur(20px);
         border: 1px solid rgba(74, 158, 255, 0.3);
         border-radius: 8px;
-        padding: 8px 0;
+        padding: 4px 0;
         z-index: 1000;
-        min-width: 150px;
+        min-width: 200px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        font-size: 14px;
     `;
 
-    const menuItems = [
-        {
-            text: 'Eliminar',
-            icon: 'fa-trash',
-            action: () => deleteFile(file)
-        }
-    ];
+    // Definir opciones del menú según el tipo de archivo
+    let menuItems = [];
+    
+    if (file.is_folder) {
+        // Opciones para carpetas
+        menuItems = [
+            {
+                text: 'Nuevo Archivo',
+                icon: 'fa-file-plus',
+                action: () => showNewFileModalInFolder(file)
+            },
+            {
+                text: 'Nueva Carpeta',
+                icon: 'fa-folder-plus',
+                action: () => showNewFolderModalInFolder(file)
+            },
+            { type: 'separator' },
+            {
+                text: 'Renombrar',
+                icon: 'fa-edit',
+                action: () => showRenameModal(file)
+            },
+            { type: 'separator' },
+            {
+                text: 'Eliminar',
+                icon: 'fa-trash',
+                action: () => deleteFile(file),
+                danger: true
+            }
+        ];
+    } else {
+        // Opciones para archivos
+        menuItems = [
+            {
+                text: 'Abrir',
+                icon: 'fa-external-link-alt',
+                action: () => openFile(file)
+            },
+            { type: 'separator' },
+            {
+                text: 'Renombrar',
+                icon: 'fa-edit',
+                action: () => showRenameModal(file)
+            },
+            {
+                text: 'Mover',
+                icon: 'fa-arrows-alt',
+                action: () => showMoveFileModal(file)
+            },
+            { type: 'separator' },
+            {
+                text: 'Duplicar',
+                icon: 'fa-copy',
+                action: () => duplicateFile(file)
+            },
+            { type: 'separator' },
+            {
+                text: 'Eliminar',
+                icon: 'fa-trash',
+                action: () => deleteFile(file),
+                danger: true
+            }
+        ];
+    }
 
+    // Crear elementos del menú
     menuItems.forEach(item => {
-        const menuItem = document.createElement('div');
-        menuItem.style.cssText = `
-            padding: 8px 16px;
-            color: #ffffff;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.2s;
-        `;
-        
-        menuItem.innerHTML = `<i class="fas ${item.icon}"></i> ${item.text}`;
-        
-        menuItem.addEventListener('mouseenter', () => {
-            menuItem.style.background = 'rgba(239, 68, 68, 0.2)';
-        });
-        
-        menuItem.addEventListener('mouseleave', () => {
-            menuItem.style.background = 'transparent';
-        });
-        
-        menuItem.addEventListener('click', () => {
-            item.action();
-            menu.remove();
-        });
-        
-        menu.appendChild(menuItem);
+        if (item.type === 'separator') {
+            const separator = document.createElement('div');
+            separator.style.cssText = `
+                height: 1px;
+                background: rgba(74, 158, 255, 0.2);
+                margin: 4px 8px;
+            `;
+            menu.appendChild(separator);
+        } else {
+            const menuItem = document.createElement('div');
+            menuItem.style.cssText = `
+                padding: 10px 16px;
+                color: ${item.danger ? '#ef4444' : '#ffffff'};
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                transition: all 0.2s ease;
+                font-weight: 500;
+            `;
+            
+            menuItem.innerHTML = `
+                <i class="fas ${item.icon}" style="
+                    width: 14px; 
+                    font-size: 13px; 
+                    color: ${item.danger ? '#ef4444' : '#4a9eff'};
+                "></i> 
+                <span>${item.text}</span>
+            `;
+            
+            menuItem.addEventListener('mouseenter', () => {
+                menuItem.style.background = item.danger 
+                    ? 'rgba(239, 68, 68, 0.15)' 
+                    : 'rgba(74, 158, 255, 0.15)';
+                menuItem.style.transform = 'translateX(2px)';
+            });
+            
+            menuItem.addEventListener('mouseleave', () => {
+                menuItem.style.background = 'transparent';
+                menuItem.style.transform = 'translateX(0)';
+            });
+            
+            menuItem.addEventListener('click', () => {
+                item.action();
+                menu.remove();
+            });
+            
+            menu.appendChild(menuItem);
+        }
     });
 
+    // Ajustar posición si sale de la pantalla
     document.body.appendChild(menu);
+    
+    const rect = menu.getBoundingClientRect();
+    if (rect.right > window.innerWidth) {
+        menu.style.left = (event.clientX - rect.width) + 'px';
+    }
+    if (rect.bottom > window.innerHeight) {
+        menu.style.top = (event.clientY - rect.height) + 'px';
+    }
 
+    // Cerrar menú al hacer clic fuera
     setTimeout(() => {
         document.addEventListener('click', function removeMenu() {
-            menu.remove();
+            if (menu.parentNode) {
+                menu.remove();
+            }
             document.removeEventListener('click', removeMenu);
         });
     }, 100);
+}
+
+
+// Modal para renombrar archivos/carpetas
+function showRenameModal(file) {
+    const existingModal = document.querySelector('.rename-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay rename-modal';
+    modal.innerHTML = `
+        <div class="modal">
+            <h3>
+                <i class="fas ${file.is_folder ? 'fa-folder' : 'fa-file'}"></i>
+                Renombrar ${file.is_folder ? 'Carpeta' : 'Archivo'}
+            </h3>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label>Nuevo nombre:</label>
+                    <input type="text" id="rename-input" value="${file.file_name}" style="
+                        width: 100%;
+                        padding: 12px 16px;
+                        background: rgba(255, 255, 255, 0.05);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 14px;
+                    ">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="cancel-rename-btn">Cancelar</button>
+                <button class="create-btn" id="confirm-rename-btn">Renombrar</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    const input = document.getElementById('rename-input');
+    const cancelBtn = document.getElementById('cancel-rename-btn');
+    const confirmBtn = document.getElementById('confirm-rename-btn');
+    
+    // Seleccionar el nombre sin la extensión
+    const dotIndex = file.file_name.lastIndexOf('.');
+    if (dotIndex > 0 && !file.is_folder) {
+        input.setSelectionRange(0, dotIndex);
+    } else {
+        input.select();
+    }
+    input.focus();
+    
+    cancelBtn.onclick = () => modal.remove();
+    confirmBtn.onclick = () => renameFile(file, input.value.trim(), modal);
+    
+    // Enter para confirmar
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            renameFile(file, input.value.trim(), modal);
+        }
+    });
+}
+
+// Función para renombrar archivo
+
+async function renameFile(file, newName, modal) {
+    if (!newName || newName === file.file_name) {
+        modal.remove();
+        return;
+    }
+
+    if (!/^[\w\-. ]+$/.test(newName)) {
+        showToast('El nombre solo puede contener letras, números, espacios, puntos y guiones', 'error');
+        return;
+    }
+
+    try {
+        // Construir nueva ruta
+        const pathParts = file.file_path.split('/');
+        pathParts[pathParts.length - 1] = newName;
+        const newPath = pathParts.join('/');
+
+        // Verificar que no exista ya
+        const existingFile = projectFiles.find(f => f.file_path === newPath && f.id !== file.id);
+        if (existingFile) {
+            showToast('Ya existe un archivo con ese nombre', 'error');
+            return;
+        }
+
+        if (file.is_folder) {
+            // Para carpetas: actualizar la carpeta y todos sus archivos hijos
+            const oldPath = file.file_path;
+            
+            // 1. Obtener todos los archivos que están dentro de esta carpeta
+            const childFiles = projectFiles.filter(f => 
+                f.file_path.startsWith(oldPath + '/') || f.file_path === oldPath
+            );
+
+            // 2. Preparar actualizaciones en lote
+            const updates = childFiles.map(childFile => {
+                let newChildPath;
+                if (childFile.id === file.id) {
+                    // La carpeta misma
+                    newChildPath = newPath;
+                } else {
+                    // Archivos dentro de la carpeta
+                    newChildPath = childFile.file_path.replace(oldPath, newPath);
+                }
+
+                return {
+                    id: childFile.id,
+                    file_name: childFile.id === file.id ? newName : childFile.file_name,
+                    file_path: newChildPath
+                };
+            });
+
+            // 3. Actualizar en la base de datos
+            for (const update of updates) {
+                const { error } = await supabaseClient
+                    .from('project_files')
+                    .update({ 
+                        file_name: update.file_name,
+                        file_path: update.file_path
+                    })
+                    .eq('id', update.id);
+
+                if (error) {
+                    console.error('Error updating file:', update, error);
+                    throw error;
+                }
+            }
+
+            // 4. Cerrar pestañas de archivos que estaban dentro de la carpeta renombrada
+            childFiles.forEach(childFile => {
+                if (!childFile.is_folder) {
+                    const openTab = openTabs.find(tab => tab.id === childFile.id);
+                    if (openTab) {
+                        // Actualizar la ruta en la pestaña en lugar de cerrarla
+                        const newTabPath = childFile.file_path.replace(oldPath, newPath);
+                        openTab.filePath = newTabPath;
+                    }
+                }
+            });
+
+        } else {
+            // Para archivos: actualización simple
+            const { error } = await supabaseClient
+                .from('project_files')
+                .update({ 
+                    file_name: newName,
+                    file_path: newPath
+                })
+                .eq('id', file.id);
+
+            if (error) throw error;
+
+            // Si es un archivo abierto, actualizar la pestaña
+            const openTab = openTabs.find(tab => tab.id === file.id);
+            if (openTab) {
+                openTab.name = newName;
+                openTab.filePath = newPath;
+                renderTabs();
+            }
+        }
+
+        showToast(`${file.is_folder ? 'Carpeta' : 'Archivo'} renombrado correctamente`);
+        modal.remove();
+        
+        // Recargar vista
+        if (selectedRepository) {
+            await loadRepositoryFiles(selectedRepository.id);
+        }
+
+    } catch (error) {
+        console.error('Error renaming file:', error);
+        showToast('Error al renombrar: ' + error.message, 'error');
+    }
+}
+
+// Modal para mover archivos
+function showMoveFileModal(file) {
+    if (file.is_folder) {
+        showToast('No se pueden mover carpetas aún', 'error');
+        return;
+    }
+
+    const existingModal = document.querySelector('.move-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay move-modal';
+    modal.innerHTML = `
+        <div class="modal">
+            <h3>
+                <i class="fas fa-arrows-alt"></i>
+                Mover Archivo
+            </h3>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label>Archivo:</label>
+                    <div style="
+                        padding: 10px 12px;
+                        background: rgba(74, 158, 255, 0.1);
+                        border-radius: 6px;
+                        color: #4a9eff;
+                        margin-bottom: 15px;
+                    ">
+                        <i class="fas ${getFileIcon(file.file_type)}"></i>
+                        ${file.file_name}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Mover a carpeta:</label>
+                    <select id="move-folder-select" style="
+                        width: 100%;
+                        padding: 12px 16px;
+                        background: rgba(255, 255, 255, 0.05);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 14px;
+                    ">
+                        <option value="/">/</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" id="cancel-move-btn">Cancelar</button>
+                <button class="create-btn" id="confirm-move-btn">Mover</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Llenar opciones de carpetas
+    const select = document.getElementById('move-folder-select');
+    const folders = projectFiles.filter(f => 
+        f.is_folder && 
+        f.repository_id === selectedRepository?.id &&
+        f.file_path !== file.file_path // No mostrar la carpeta actual si es carpeta
+    );
+    
+    folders.forEach(folder => {
+        const option = document.createElement('option');
+        option.value = folder.file_path;
+        option.textContent = folder.file_path;
+        select.appendChild(option);
+    });
+    
+    document.getElementById('cancel-move-btn').onclick = () => modal.remove();
+    document.getElementById('confirm-move-btn').onclick = () => {
+        moveFile(file, select.value, modal);
+    };
+}
+
+// Función para mover archivo
+async function moveFile(file, targetFolder, modal) {
+    try {
+        const newPath = targetFolder === '/' ? `/${file.file_name}` : `${targetFolder}/${file.file_name}`;
+        
+        // Verificar que no exista ya
+        const existingFile = projectFiles.find(f => f.file_path === newPath);
+        if (existingFile) {
+            showToast('Ya existe un archivo con ese nombre en esa carpeta', 'error');
+            return;
+        }
+
+        // Actualizar en la base de datos
+        const { error } = await supabaseClient
+            .from('project_files')
+            .update({ file_path: newPath })
+            .eq('id', file.id);
+
+        if (error) throw error;
+
+        showToast('Archivo movido correctamente');
+        modal.remove();
+        
+        // Recargar vista
+        if (selectedRepository) {
+            await loadRepositoryFiles(selectedRepository.id);
+        }
+
+    } catch (error) {
+        console.error('Error moving file:', error);
+        showToast('Error al mover el archivo', 'error');
+    }
+}
+
+// Función para duplicar archivo
+async function duplicateFile(file) {
+    if (file.is_folder) {
+        showToast('No se pueden duplicar carpetas', 'error');
+        return;
+    }
+
+    try {
+        // Generar nombre único
+        const nameWithoutExt = file.file_name.replace(/\.[^/.]+$/, "");
+        const extension = file.file_name.includes('.') ? '.' + file.file_name.split('.').pop() : '';
+        let copyNumber = 1;
+        let newName = `${nameWithoutExt}_copia${extension}`;
+        
+        while (projectFiles.find(f => f.file_name === newName && f.file_path.startsWith(file.file_path.substring(0, file.file_path.lastIndexOf('/'))))) {
+            copyNumber++;
+            newName = `${nameWithoutExt}_copia${copyNumber}${extension}`;
+        }
+
+        const newPath = file.file_path.substring(0, file.file_path.lastIndexOf('/')) + '/' + newName;
+
+        // Obtener contenido del archivo original
+        const { data: originalFile, error: fetchError } = await supabaseClient
+            .from('project_files')
+            .select('content')
+            .eq('id', file.id)
+            .single();
+
+        if (fetchError) throw fetchError;
+
+        // Crear archivo duplicado
+        const { error } = await supabaseClient
+            .from('project_files')
+            .insert([{
+                project_id: currentProject.id,
+                repository_id: selectedRepository.id,
+                file_name: newName,
+                file_path: newPath,
+                file_type: file.file_type,
+                content: originalFile.content,
+                is_folder: false,
+                created_by: currentUser.id
+            }]);
+
+        if (error) throw error;
+
+        showToast('Archivo duplicado correctamente');
+        
+        // Recargar vista
+        if (selectedRepository) {
+            await loadRepositoryFiles(selectedRepository.id);
+        }
+
+    } catch (error) {
+        console.error('Error duplicating file:', error);
+        showToast('Error al duplicar el archivo', 'error');
+    }
+}
+
+// Función para crear archivo en carpeta específica
+function showNewFileModalInFolder(folder) {
+    const folderSelect = document.getElementById('new-file-folder');
+    if (folderSelect) {
+        // Llenar opciones de carpetas
+        folderSelect.innerHTML = '<option value="/">/</option>';
+        const folders = projectFiles.filter(f => f.is_folder && f.repository_id === selectedRepository?.id);
+        folders.forEach(f => {
+            const option = document.createElement('option');
+            option.value = f.file_path;
+            option.textContent = f.file_path;
+            folderSelect.appendChild(option);
+        });
+        
+        // Seleccionar la carpeta actual
+        folderSelect.value = folder.file_path;
+    }
+    
+    showNewFileModal();
+}
+
+// Función para crear carpeta en carpeta específica
+function showNewFolderModalInFolder(parentFolder) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal">
+            <h3>Crear Nueva Carpeta</h3>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label>Nombre de la carpeta:</label>
+                    <input type="text" id="new-folder-name" placeholder="mi-carpeta">
+                </div>
+                <div class="form-group">
+                    <label>Carpeta padre:</label>
+                    <div style="
+                        padding: 10px 12px;
+                        background: rgba(74, 158, 255, 0.1);
+                        border-radius: 6px;
+                        color: #4a9eff;
+                    ">
+                        <i class="fas fa-folder"></i>
+                        ${parentFolder.file_path}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
+                <button class="create-btn" id="create-folder-btn">Crear</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    const input = document.getElementById('new-folder-name');
+    input.focus();
+    
+    document.getElementById('create-folder-btn').onclick = async () => {
+        const folderName = input.value.trim();
+        if (!folderName) {
+            showToast('Ingresa un nombre para la carpeta', 'error');
+            return;
+        }
+
+        const newPath = `${parentFolder.file_path}/${folderName}`;
+        
+        try {
+            const { error } = await supabaseClient
+                .from('project_files')
+                .insert([{
+                    project_id: currentProject.id,
+                    repository_id: selectedRepository.id,
+                    file_name: folderName,
+                    file_path: newPath,
+                    file_type: 'folder',
+                    content: '',
+                    is_folder: true,
+                    created_by: currentUser.id
+                }]);
+
+            if (error) throw error;
+
+            showToast('Carpeta creada correctamente');
+            modal.remove();
+            
+            if (selectedRepository) {
+                await loadRepositoryFiles(selectedRepository.id);
+            }
+
+        } catch (error) {
+            console.error('Error creating folder:', error);
+            showToast('Error creando la carpeta', 'error');
+        }
+    };
 }
 
 
@@ -3995,7 +4853,6 @@ function setActiveTab(tab) {
         const model = monaco.editor.createModel(tab.content, language);
         monacoEditor.setModel(model);
         
-        // CAMBIO: Solo members no pueden editar
         const canEdit = currentUserRole !== 'member';
         monacoEditor.updateOptions({ readOnly: !canEdit });
         
@@ -4062,7 +4919,6 @@ function debounceAutoSave() {
 async function autoSave() {
     if (!activeTab || !activeTab.modified) return;
     
-    // CAMBIO: Permitir a owner Y admin auto-guardar
     if (currentUserRole === 'member') {
         console.log('Member no puede auto-guardar');
         return;
@@ -4156,17 +5012,17 @@ async function openPreviewInNewTab() {
 }
 
 function showNewFileModal() {
-    // CAMBIO: Permitir a owner Y admin crear archivos
     if (!['owner', 'admin'].includes(currentUserRole)) {
         showToast('No tienes permisos para crear archivos', 'error');
         return;
     }
 
     const folderSelect = document.getElementById('new-file-folder');
-    if (folderSelect) {
+    if (folderSelect && selectedRepository) {
         folderSelect.innerHTML = '<option value="/">/</option>';
         
-        const folders = projectFiles.filter(f => f.is_folder);
+        // CORREGIR: Usar projectFiles en lugar de allProjectFiles y filtrar por repositorio actual
+        const folders = projectFiles.filter(f => f.is_folder && f.repository_id === selectedRepository.id);
         folders.forEach(folder => {
             const option = document.createElement('option');
             option.value = folder.file_path;
@@ -4211,7 +5067,6 @@ async function createNewFile() {
         return;
     }
 
-    // VERIFICAR QUE ESTAMOS EN UN REPOSITORIO
     if (!selectedRepository) {
         showToast('Debes estar dentro de un repositorio para crear archivos', 'error');
         return;
@@ -4242,7 +5097,7 @@ async function createNewFile() {
             .from('project_files')
             .insert([{
                 project_id: currentProject.id,
-                repository_id: selectedRepository.id, // ESTO ES CLAVE
+                repository_id: selectedRepository.id,
                 file_name: fileName,
                 file_path: fullPath,
                 file_type: fileType,
@@ -4258,7 +5113,6 @@ async function createNewFile() {
         showToast(`${isFolder ? 'Carpeta' : 'Archivo'} creado correctamente`);
         closeNewFileModal();
         
-        // RECARGAR ARCHIVOS DEL REPOSITORIO ACTUAL
         await loadRepositoryFiles(selectedRepository.id);
         
         if (!isFolder) {
@@ -4270,6 +5124,7 @@ async function createNewFile() {
         showToast('Error creando el archivo', 'error');
     }
 }
+
 function getDefaultContent(fileType) {
     const templates = {
         'html': `<!DOCTYPE html>
@@ -4320,7 +5175,6 @@ Este es un archivo de documentación.`,
 }
 
 function triggerFolderUpload() {
-    // CAMBIO: Permitir a owner Y admin subir carpetas
     if (!['owner', 'admin'].includes(currentUserRole)) {
         showToast('No tienes permisos para subir carpetas', 'error');
         return;
@@ -4332,13 +5186,17 @@ function triggerFolderUpload() {
     }
 }
 
-
 async function handleFolderUpload(event) {
     const files = Array.from(event.target.files);
     
     if (files.length === 0) return;
     
-    // VERIFICAR QUE ESTAMOS EN UN REPOSITORIO
+    // VERIFICAR: Si estamos en vista de repositorios, no permitir subir
+    if (currentViewMode === 'repositories') {
+        showToast('Selecciona un repositorio primero para subir archivos', 'error');
+        return;
+    }
+    
     if (!selectedRepository) {
         showToast('Debes estar dentro de un repositorio para subir carpetas', 'error');
         return;
@@ -4358,7 +5216,6 @@ async function handleFolderUpload(event) {
         }
 
         showToast(`Carpeta subida correctamente (${files.length} archivos)`, 'success');
-        // RECARGAR ARCHIVOS DEL REPOSITORIO ACTUAL
         await loadRepositoryFiles(selectedRepository.id);
         
     } catch (error) {
@@ -4368,7 +5225,6 @@ async function handleFolderUpload(event) {
 
     event.target.value = '';
 }
-
 
 async function processUploadedFile(file, progressInfo) {
     try {
@@ -4390,7 +5246,7 @@ async function processUploadedFile(file, progressInfo) {
             .from('project_files')
             .insert([{
                 project_id: currentProject.id,
-                repository_id: selectedRepository?.id, // AGREGAR ESTO
+                repository_id: selectedRepository?.id,
                 file_name: file.name,
                 file_path: fullPath,
                 file_type: fileType,
@@ -4411,7 +5267,6 @@ async function processUploadedFile(file, progressInfo) {
         progressInfo.completed++;
     }
 }
-
 
 function readFileContent(file) {
     return new Promise((resolve, reject) => {
@@ -4467,6 +5322,7 @@ async function ensureParentFolders(filePath) {
                 .from('project_files')
                 .insert([{
                     project_id: currentProject.id,
+                    repository_id: selectedRepository?.id,
                     file_name: part,
                     file_path: currentPath,
                     file_type: 'folder',
@@ -4487,6 +5343,129 @@ async function ensureParentFolders(filePath) {
             console.error(`Error en ensureParentFolders para ${currentPath}:`, err);
         }
     }
+}
+
+// Funciones de exportación
+async function exportCurrentFile() {
+    if (!activeTab || !monacoEditor) {
+        showToast('Abre un archivo para exportar', 'error');
+        return;
+    }
+    
+    try {
+        const currentContent = monacoEditor.getValue();
+        if (!currentContent.trim()) {
+            showToast('El archivo está vacío', 'error');
+            return;
+        }
+        
+        showToast('Preparando exportación del archivo...', 'info');
+        
+        const blob = new Blob([currentContent], { 
+            type: getContentType(activeTab.type)
+        });
+        
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = activeTab.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast(`${activeTab.name} exportado correctamente`, 'success');
+        
+    } catch (error) {
+        console.error('Error exporting file:', error);
+        showToast('Error exportando archivo', 'error');
+    }
+}
+
+async function exportCurrentRepository() {
+    if (!selectedRepository) {
+        showToast('Debes estar dentro de un repositorio para exportarlo', 'error');
+        return;
+    }
+    
+    try {
+        showToast('Preparando exportación del repositorio...', 'info');
+        
+        // Obtener todos los archivos del repositorio
+        const { data: repositoryFiles, error } = await supabaseClient
+            .from('project_files')
+            .select('*')
+            .eq('repository_id', selectedRepository.id)
+            .eq('is_folder', false); // Solo archivos, no carpetas
+            
+        if (error) throw error;
+        
+        if (!repositoryFiles || repositoryFiles.length === 0) {
+            showToast('El repositorio está vacío', 'error');
+            return;
+        }
+        
+        // Usar JSZip para crear el archivo ZIP
+        const JSZip = await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
+        const zip = new JSZip.default();
+        
+        // Agregar cada archivo al ZIP
+        repositoryFiles.forEach(file => {
+            const filePath = file.file_path.startsWith('/') ? file.file_path.substring(1) : file.file_path;
+            zip.file(filePath, file.content || '');
+        });
+        
+        // Generar y descargar el ZIP
+        const content = await zip.generateAsync({ type: 'blob' });
+        
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${selectedRepository.name}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast(`Repositorio "${selectedRepository.name}" exportado correctamente`, 'success');
+        
+    } catch (error) {
+        console.error('Error exporting repository:', error);
+        showToast('Error exportando repositorio', 'error');
+    }
+}
+
+function getContentType(fileType) {
+    const contentTypes = {
+        'html': 'text/html',
+        'css': 'text/css',
+        'js': 'text/javascript',
+        'jsx': 'text/javascript',
+        'ts': 'text/typescript',
+        'tsx': 'text/typescript',
+        'json': 'application/json',
+        'xml': 'application/xml',
+        'py': 'text/x-python',
+        'java': 'text/x-java-source',
+        'cpp': 'text/x-c++',
+        'c': 'text/x-c',
+        'cs': 'text/x-csharp',
+        'php': 'text/x-php',
+        'rb': 'text/x-ruby',
+        'go': 'text/x-go',
+        'rs': 'text/x-rust',
+        'swift': 'text/x-swift',
+        'kt': 'text/x-kotlin',
+        'scala': 'text/x-scala',
+        'sh': 'text/x-shellscript',
+        'sql': 'text/x-sql',
+        'yml': 'text/x-yaml',
+        'yaml': 'text/x-yaml',
+        'md': 'text/markdown',
+        'txt': 'text/plain'
+    };
+    
+    return contentTypes[fileType] || 'text/plain';
 }
 
 async function handleLogout() {
@@ -4655,29 +5634,8 @@ function toggleLanguageDropdown() {
     }
 }
 
-// Event listeners
-document.addEventListener('click', function(event) {
-    const languageSelector = document.querySelector('.language-selector');
-    const dropdown = document.getElementById('languageDropdown');
-    
-    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-window.addEventListener('beforeunload', async () => {
-    stopPeriodicSync();
-});
-
-window.addEventListener('focus', () => {
-    if (activeTab) {
-        startPeriodicSync();
-    }
-});
-
 async function loadProjectRepositories(projectId) {
     try {
-        // PRIMERO cargar los repositorios
         const { data: repositories, error } = await supabaseClient
             .from('repositories')
             .select('*')
@@ -4686,7 +5644,6 @@ async function loadProjectRepositories(projectId) {
 
         if (error) throw error;
 
-        // SEGUNDO cargar todos los archivos del proyecto para el conteo
         const { data: allFiles, error: filesError } = await supabaseClient
             .from('project_files')
             .select('*')
@@ -4697,7 +5654,7 @@ async function loadProjectRepositories(projectId) {
         }
 
         projectRepositories = repositories || [];
-        renderFileTree(); // Cambié esto porque renderRepositories() no existe
+        renderFileTree();
 
     } catch (error) {
         console.error('Error loading repositories:', error);
@@ -4705,13 +5662,11 @@ async function loadProjectRepositories(projectId) {
 }
 
 function showCreateRepositoryModal() {
-    // Verificar si ya existe un modal
     const existingModal = document.querySelector('.modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
-    // Crear modal dinámicamente
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
@@ -4736,7 +5691,6 @@ function showCreateRepositoryModal() {
     
     document.body.appendChild(modal);
     
-    // Event listeners únicos
     document.getElementById('cancel-repo-btn').onclick = () => {
         modal.remove();
     };
@@ -4748,7 +5702,6 @@ function showCreateRepositoryModal() {
     
     document.getElementById('repo-name').focus();
 }
-
 
 async function createRepository() {
     const name = document.getElementById('repo-name').value.trim();
@@ -4774,7 +5727,6 @@ async function createRepository() {
         if (error) throw error;
 
         showToast('Repositorio creado correctamente');
-        closeRepositoryModal();
         await loadProjectRepositories(currentProject.id);
 
     } catch (error) {
@@ -4789,20 +5741,52 @@ function openRepository(repository) {
     loadRepositoryFiles(repository.id);
 }
 
+// Funciones auxiliares para IA contextual
+function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') {
+        return String(unsafe);
+    }
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
-// === JAVASCRIPT SIMPLIFICADO PARA SIDEBAR CON HOVER ===
-// Reemplaza las funciones del sidebar anterior con estas
-
-// Función para inicializar el sidebar con hover
-function initializeSidebar() {
-    // Agregar tooltips a los links
-    addTooltipsToNavLinks();
+function cleanGeneratedCode(code) {
+    let cleaned = code
+        .replace(/```[\w]*\n?/g, '')
+        .replace(/```\n?/g, '')
+        .replace(/^\s*```[\w]*$/gm, '')
+        .replace(/^\s*```\s*$/gm, '')
+        
+        .replace(/^(Aquí tienes|Este código|El siguiente código|Aquí está|He corregido|Los errores han sido|Correcciones aplicadas).*?[:\.]\s*/gi, '')
+        .replace(/^(Errores encontrados|Problemas detectados|Correcciones realizadas).*?\n/gi, '')
+        .replace(/^(Análisis|Explicación|Descripción|Resumen).*?\n/gi, '')
+        .replace(/^(Error \d+:|Corrección \d+:|Línea \d+:).*?\n/gi, '')
+        
+        .split('\n')
+        .filter(line => {
+            const trimmedLine = line.trim();
+            return !trimmedLine.match(/^(El error estaba|El problema era|Ahora el código|La corrección|Se ha corregido)/i) &&
+                   !trimmedLine.match(/^(Cambios realizados|Errores solucionados|Modificaciones)/i);
+        })
+        .join('\n')
+        
+        .replace(/^\s*\n+/, '')
+        .replace(/\n+\s*$/, '')
+        .trim();
     
-    // Setup hover events para mejor control si es necesario
+    return cleaned;
+}
+
+// Funciones para el sidebar
+function initializeSidebar() {
+    addTooltipsToNavLinks();
     setupSidebarHover();
 }
 
-// Agregar tooltips a los nav links
 function addTooltipsToNavLinks() {
     const navLinks = document.querySelectorAll('.nav-link');
     const tooltips = {
@@ -4820,7 +5804,6 @@ function addTooltipsToNavLinks() {
         if (tooltips[href]) {
             link.setAttribute('data-tooltip', tooltips[href]);
         } else {
-            // Extraer texto del link si no hay tooltip definido
             const textElement = link.querySelector('.nav-link-text');
             if (textElement) {
                 const text = textElement.textContent.trim();
@@ -4830,15 +5813,12 @@ function addTooltipsToNavLinks() {
     });
 }
 
-// Setup eventos de hover del sidebar
 function setupSidebarHover() {
     const sidebar = document.getElementById('sidebar');
     
     if (!sidebar) return;
     
-    // Opcional: hacer layout de Monaco cuando se expande/contrae
     sidebar.addEventListener('mouseenter', () => {
-        // Delay para que la animación termine
         setTimeout(() => {
             if (monacoEditor) {
                 monacoEditor.layout();
@@ -4847,7 +5827,6 @@ function setupSidebarHover() {
     });
     
     sidebar.addEventListener('mouseleave', () => {
-        // Delay para que la animación termine
         setTimeout(() => {
             if (monacoEditor) {
                 monacoEditor.layout();
@@ -4856,7 +5835,6 @@ function setupSidebarHover() {
     });
 }
 
-// Función para el menú móvil (mantener la funcionalidad existente)
 function toggleSidebarMobile() {
     const sidebar = document.getElementById('sidebar');
     
@@ -4865,7 +5843,6 @@ function toggleSidebarMobile() {
     }
 }
 
-// Setup del botón de menú móvil
 function setupMenuToggle() {
     const menuToggle = document.getElementById('menu-toggle');
     if (menuToggle) {
@@ -4873,23 +5850,38 @@ function setupMenuToggle() {
     }
 }
 
-// Detectar cambios de tamaño de ventana
 function handleResize() {
     const sidebar = document.getElementById('sidebar');
     
     if (window.innerWidth <= 768) {
-        // En móvil, remover la clase show si la ventana se hace más grande
-        // El hover automático no funciona bien en móvil
+        
     } else {
-        // En desktop, asegurar que no tenga la clase show
         sidebar.classList.remove('show');
     }
 }
 
 // Event listeners
+document.addEventListener('click', function(event) {
+    const languageSelector = document.querySelector('.language-selector');
+    const dropdown = document.getElementById('languageDropdown');
+    
+    if (dropdown && languageSelector && !languageSelector.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+window.addEventListener('beforeunload', async () => {
+    stopPeriodicSync();
+});
+
+window.addEventListener('focus', () => {
+    if (activeTab) {
+        startPeriodicSync();
+    }
+});
+
 window.addEventListener('resize', handleResize);
 
-// Cerrar sidebar en móvil al hacer clic fuera
 document.addEventListener('click', function(event) {
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
@@ -4904,1205 +5896,203 @@ document.addEventListener('click', function(event) {
     }
 });
 
-
-
-
-
-
-function getFileTypeDescription(fileType) {
-    const descriptions = {
-        'html': 'página web completa',
-        'css': 'hoja de estilos moderna',
-        'js': 'script funcional',
-        'jsx': 'componente React',
-        'py': 'programa Python',
-        'java': 'clase Java'
-    };
-    return descriptions[fileType] || 'archivo de código';
-}
-
-function escapeHtml(unsafe) {
-    if (typeof unsafe !== 'string') {
-        return String(unsafe);
-    }
-    return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-function getContextualSuggestions(code, fileType) {
-    const suggestions = {
-        'html': [
-            'agrega un menú de navegación',
-            'mejora la estructura semántica',
-            'agrega un footer responsive',
-            'incluye meta tags para SEO'
-        ],
-        'css': [
-            'hazlo responsive con media queries',
-            'agrega animaciones hover',
-            'mejora la tipografía y espaciado',
-            'agrega modo oscuro'
-        ],
-        'js': [
-            'agrega validación de formularios',
-            'implementa manejo de errores',
-            'optimiza el performance',
-            'agrega funcionalidad de búsqueda'
-        ],
-        'jsx': [
-            'convierte a componente funcional',
-            'agrega manejo de estado',
-            'implementa loading states',
-            'agrega PropTypes'
-        ]
-    };
-    
-    const options = suggestions[fileType] || ['mejora este código', 'agrega funcionalidad', 'optimiza el código'];
-    return options[Math.floor(Math.random() * options.length)];
-}
-
-
-
-async function askAI() {
-    if (isGeneratingCode) return;
-    
-    const prompt = document.getElementById('ai-prompt').value.trim();
-    if (!prompt) {
-        showToast('Describe qué necesitas que haga la IA', 'error');
-        return;
-    }
-    
-    isGeneratingCode = true;
-    const askBtn = document.getElementById('ask-ai-btn');
-    const responseDiv = document.getElementById('ai-response');
-    const responseContent = document.getElementById('ai-response-content');
-    
-    askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Consultando IA...';
-    askBtn.disabled = true;
-    responseDiv.style.display = 'block';
-    responseContent.innerHTML = '<div class="typing-effect">IA está analizando tu código...</div>';
-    
-    try {
-        const currentCode = (activeTab && monacoEditor) ? monacoEditor.getValue() : '';
-        const language = activeTab ? activeTab.type : 'javascript';
-        
-        console.log('=== DEBUG FRONTEND ===');
-        console.log('Current action:', currentAIAction);
-        console.log('Language:', language);
-        console.log('Has existing code:', !!currentCode);
-        console.log('Code length:', currentCode.length);
-        console.log('Prompt:', prompt);
-        
-      let finalPrompt = prompt;
-
-if (currentAIAction === 'fix' && currentCode && currentCode.trim()) {
-    finalPrompt = `IDENTIFICA Y CORRIGE SOLO LA PARTE PROBLEMÁTICA:
-
-CÓDIGO COMPLETO:
-${currentCode}
-
-ERROR A CORREGIR: ${prompt}
-
-INSTRUCCIONES IMPORTANTES:
-- Identifica SOLO las líneas que necesitan corrección
-- Devuelve ÚNICAMENTE el fragmento de código corregido
-- Incluye 1-2 líneas de contexto antes y después si es necesario
-- NO devuelvas todo el código, solo la parte que cambias
-- NO agregues explicaciones
-- Formato: [líneas de código corregidas]`;
-} else if (currentAIAction === 'generate' && currentCode && currentCode.trim()) {
-    finalPrompt = `MEJORA/AGREGA AL CÓDIGO EXISTENTE: ${prompt}
-
-Instrucciones específicas:
-- Analiza el código actual para mantener consistencia
-- Mantén todo lo que ya funciona
-- Agrega solo lo que solicito
-- Asegúrate de que todo sea compatible`;
-}
-
-const requestBody = {
-    prompt: finalPrompt,
-    code: currentCode,
-    language: language,
-    action: currentAIAction
-};
-
-        
-        console.log('Sending request:', requestBody);
-        
-        const response = await fetch(`${AI_BACKEND_URL}/api/code-companion`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error HTTP ${response.status}: ${errorText}`);
-        }
-        
-        const data = await response.json();
-        console.log('Response received:', {
-            success: data.success,
-            hasExistingCode: data.hasExistingCode,
-            responseLength: data.response ? data.response.length : 0,
-            action: data.action
-        });
-        
-// BUSCA esta parte que empieza con "if (data.success && data.response)" y REEMPLÁZALA:
-if (data.success && data.response) {
-    const aiResponse = data.response.trim();
-    
-    if (!aiResponse) {
-        throw new Error('La IA devolvió una respuesta vacía');
-    }
-    
-    // NUEVO: Manejo específico según la acción
-    if (currentAIAction === 'fix') {
-        // Para correcciones, extraer solo el código sin explicaciones
-        const cleanCode = cleanGeneratedCode(aiResponse);
-        
-        responseContent.innerHTML = `
-            <div style="margin-bottom: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 4px;">
-                <strong>🔧 Errores corregidos</strong>
-                <br><small style="color: #8892a6;">Código con correcciones listo para aplicar</small>
-            </div>
-            <pre><code class="language-${language}">${escapeHtml(cleanCode)}</code></pre>
-        `;
-        
-        // Almacenar código limpio para aplicar
-        responseContent.dataset.fullCode = cleanCode;
-        responseContent.dataset.isContextual = 'false';
-        
-        // Highlight syntax
-        if (typeof hljs !== 'undefined') {
-            hljs.highlightAll();
-        }
-        
-        // Mostrar botón aplicar SOLO para fix
-        const applyBtn = document.getElementById('apply-code-btn');
-        if (applyBtn) {
-            applyBtn.style.display = 'inline-block';
-            applyBtn.innerHTML = '<i class="fas fa-wrench" style="display:  none;"></i> Aplicar Correcciones';
-        }
-        
-    } else {
-        // Para explicaciones y revisiones, solo texto
-        await typeWriterEffect(responseContent, aiResponse);
-        
-        // Ocultar botón aplicar para otras acciones
-        const applyBtn = document.getElementById('apply-code-btn');
-        if (applyBtn) {
-            applyBtn.style.display = 'none';
-        }
-    }
-    
-} else {
-    throw new Error(data.error || 'Respuesta inválida de la IA');
-}
- } catch (error) {
-    console.error('Error asking AI:', error);
-    const currentCode = (activeTab && monacoEditor) ? monacoEditor.getValue() : '';
-    
-    responseContent.innerHTML = `
-        <div style="color: #ef4444; padding: 15px; border: 1px solid #ef4444; border-radius: 8px;">
-            <strong>❌ Error:</strong> ${error.message}
-            <br><small style="margin-top: 8px; display: block; opacity: 0.8;">
-                ${currentCode ? 'Intenta reformular tu pregunta sobre el código existente' : 'Verifica tu conexión e intenta de nuevo'}
-            </small>
-        </div>`;
-}
-    
-    askBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Consultar IA';
-    askBtn.disabled = false;
-    isGeneratingCode = false;
-}
-
-
-
-
-
-
-
-
-
-function applyCodePatch() {
-    if (!activeTab || !monacoEditor) {
-        showToast('Abre un archivo primero', 'error');
-        return;
-    }
-    
-    const responseContent = document.getElementById('ai-response-content');
-    let patchCode = responseContent.dataset.fullCode || '';
-    
-    if (!patchCode.trim()) {
-        showToast('No hay corrección para aplicar', 'error');
-        return;
-    }
-    
-    const currentCode = monacoEditor.getValue();
-    const correctedCode = applyIntelligentPatch(currentCode, patchCode);
-    
-    if (correctedCode && correctedCode !== currentCode) {
-        monacoEditor.setValue(correctedCode);
-        
-        if (activeTab) {
-            activeTab.modified = true;
-            activeTab.content = correctedCode;
-            renderTabs();
-            isEditing = true;
-        }
-        
-        showToast('Corrección aplicada correctamente', 'success');
-        closeAIModal();
-    } else {
-        showToast('No se pudo aplicar la corrección automáticamente', 'error');
-    }
-}
-
-function applyIntelligentPatch(originalCode, patchCode) {
-    // Limpiar el código del parche
-    const cleanPatch = cleanGeneratedCode(patchCode);
-    const originalLines = originalCode.split('\n');
-    const patchLines = cleanPatch.split('\n');
-    
-    // Buscar patrones similares para encontrar dónde aplicar el parche
-    for (let i = 0; i <= originalLines.length - patchLines.length; i++) {
-        let matchScore = 0;
-        
-        for (let j = 0; j < patchLines.length; j++) {
-            const originalLine = originalLines[i + j]?.trim() || '';
-            const patchLine = patchLines[j].trim();
-            
-            // Calcular similitud (simple)
-            if (originalLine === patchLine) {
-                matchScore += 1;
-            } else if (originalLine.length > 0 && patchLine.length > 0) {
-                // Similitud parcial para líneas modificadas
-                const similarity = calculateSimilarity(originalLine, patchLine);
-                if (similarity > 0.5) {
-                    matchScore += similarity;
-                }
-            }
-        }
-        
-        // Si hay suficiente similitud, aplicar el parche
-        if (matchScore / patchLines.length > 0.7) {
-            const newLines = [
-                ...originalLines.slice(0, i),
-                ...patchLines,
-                ...originalLines.slice(i + patchLines.length)
-            ];
-            return newLines.join('\n');
-        }
-    }
-    
-    // Si no encuentra coincidencia exacta, intentar reemplazo por palabras clave
-    return applyKeywordBasedPatch(originalCode, cleanPatch);
-}
-
-function applyKeywordBasedPatch(originalCode, patchCode) {
-    // Buscar líneas con errores comunes y reemplazarlas
-    const errorPatterns = [
-        /firebase\.database\);/g,  // Error de Firebase
-        /console\.log\(/g,         // Errores de console
-        /function\s+\w+\(/g,       // Errores de función
-        /var\s+\w+\s*=/g,         // Errores de variables
-    ];
-    
-    let correctedCode = originalCode;
-    
-    errorPatterns.forEach(pattern => {
-        const originalMatches = originalCode.match(pattern);
-        const patchMatches = patchCode.match(pattern);
-        
-        if (originalMatches && patchMatches && originalMatches.length === patchMatches.length) {
-            originalMatches.forEach((match, index) => {
-                if (patchMatches[index] !== match) {
-                    correctedCode = correctedCode.replace(match, patchMatches[index]);
-                }
-            });
-        }
-    });
-    
-    return correctedCode;
-}
-
-function calculateSimilarity(str1, str2) {
-    const longer = str1.length > str2.length ? str1 : str2;
-    const shorter = str1.length > str2.length ? str2 : str1;
-    
-    if (longer.length === 0) return 1.0;
-    
-    const editDistance = levenshteinDistance(longer, shorter);
-    return (longer.length - editDistance) / longer.length;
-}
-
-function levenshteinDistance(str1, str2) {
-    const matrix = [];
-    
-    for (let i = 0; i <= str2.length; i++) {
-        matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= str1.length; j++) {
-        matrix[0][j] = j;
-    }
-    
-    for (let i = 1; i <= str2.length; i++) {
-        for (let j = 1; j <= str1.length; j++) {
-            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    matrix[i][j - 1] + 1,
-                    matrix[i - 1][j] + 1
-                );
-            }
-        }
-    }
-    
-    return matrix[str2.length][str1.length];
-}
-
-async function typeWriterEffect(element, text) {
-    element.innerHTML = '';
-    const words = text.split(' ');
-    
-    for (let i = 0; i < words.length; i++) {
-        element.innerHTML += words[i] + ' ';
-        await new Promise(resolve => setTimeout(resolve, 50));
-    }
-}
-
-function cleanGeneratedCode(code) {
-    let cleaned = code
-        // Remover markdown
-        .replace(/```[\w]*\n?/g, '')
-        .replace(/```\n?/g, '')
-        .replace(/^\s*```[\w]*$/gm, '')
-        .replace(/^\s*```\s*$/gm, '')
-        
-        // Remover explicaciones típicas de IA (más agresivo)
-        .replace(/^(Aquí tienes|Este código|El siguiente código|Aquí está|He corregido|Los errores han sido|Correcciones aplicadas).*?[:\.]\s*/gi, '')
-        .replace(/^(Errores encontrados|Problemas detectados|Correcciones realizadas).*?\n/gi, '')
-        .replace(/^(Análisis|Explicación|Descripción|Resumen).*?\n/gi, '')
-        .replace(/^(Error \d+:|Corrección \d+:|Línea \d+:).*?\n/gi, '')
-        
-        // Remover líneas que son pura explicación
-        .split('\n')
-        .filter(line => {
-            const trimmedLine = line.trim();
-            // Filtrar líneas explicativas
-            return !trimmedLine.match(/^(El error estaba|El problema era|Ahora el código|La corrección|Se ha corregido)/i) &&
-                   !trimmedLine.match(/^(Cambios realizados|Errores solucionados|Modificaciones)/i);
-        })
-        .join('\n')
-        
-        // Limpiar espacios
-        .replace(/^\s*\n+/, '')
-        .replace(/\n+\s*$/, '')
-        .trim();
-    
-    return cleaned;
-}
-
-function applyCodeToEditor() {
-    if (!activeTab || !monacoEditor) {
-        showToast('Abre un archivo primero', 'error');
-        return;
-    }
-    
-    const responseContent = document.getElementById('ai-response-content');
-    let codeToApply = responseContent.dataset.fullCode || '';
-    const isContextual = responseContent.dataset.isContextual === 'true';
-    
-    if (!codeToApply.trim()) {
-        // Fallback a método anterior
-        const codeElement = responseContent.querySelector('code');
-        codeToApply = codeElement ? codeElement.textContent : responseContent.textContent;
-    }
-    
-    if (!codeToApply.trim()) {
-        showToast('No hay código para aplicar', 'error');
-        return;
-    }
-    
-    // Limpiar código
-    codeToApply = cleanGeneratedCode(codeToApply);
-    
-    // Validar código por tipo de archivo
-    const fileType = activeTab.type.toLowerCase();
-    if (!validateGeneratedCode(codeToApply, fileType)) {
-        showToast(`El código generado no es válido para archivos ${fileType.toUpperCase()}`, 'error');
-        return;
-    }
-    
-    // Mostrar confirmación si es actualización contextual de código grande
-    if (isContextual && activeTab.content.length > 500) {
-        const confirmMsg = `¿Aplicar los cambios sugeridos por la IA al archivo ${activeTab.name}?\n\nEsto reemplazará todo el código actual.`;
-        if (!confirm(confirmMsg)) {
-            return;
-        }
-    }
-    
-    // Aplicar código con animación suave
-    monacoEditor.setValue('');
-    setTimeout(() => {
-        monacoEditor.setValue(codeToApply.trim());
-        
-        if (activeTab) {
-            activeTab.modified = true;
-            activeTab.content = codeToApply.trim();
-            renderTabs();
-            isEditing = true;
-        }
-        
-        const message = isContextual 
-            ? `Código actualizado con las mejoras de la IA`
-            : `Código aplicado correctamente`;
-        showToast(message, 'success');
-        
-        closeAIModal();
-    }, 100);
-}
-
-function validateGeneratedCode(code, fileType) {
-    const trimmed = code.trim();
-    
-    const validators = {
-        'html': () => trimmed.includes('<') && trimmed.includes('>') && trimmed.length > 20,
-        'css': () => trimmed.includes('{') && trimmed.includes('}') && trimmed.includes(':'),
-        'js': () => trimmed.length > 10 && (
-            trimmed.includes('function') || trimmed.includes('=>') || 
-            trimmed.includes('const') || trimmed.includes('let') || 
-            trimmed.includes('var') || trimmed.includes('class')
-        ),
-        'jsx': () => trimmed.includes('React') || trimmed.includes('<') || trimmed.includes('=>'),
-        'ts': () => trimmed.includes('interface') || trimmed.includes('type') || trimmed.includes('function'),
-        'tsx': () => (trimmed.includes('React') || trimmed.includes('<')) && 
-                    (trimmed.includes('interface') || trimmed.includes('type')),
-        'py': () => trimmed.includes('def ') || trimmed.includes('class ') || 
-                   trimmed.includes('import ') || trimmed.includes('from '),
-        'java': () => trimmed.includes('class ') || trimmed.includes('public ') || 
-                     trimmed.includes('private '),
-        'php': () => trimmed.includes('<?php') || trimmed.includes('function ') || 
-                    trimmed.includes('class '),
-        'go': () => trimmed.includes('package ') || trimmed.includes('func '),
-        'rs': () => trimmed.includes('fn ') || trimmed.includes('struct ') || 
-                   trimmed.includes('impl '),
-        'default': () => trimmed.length > 5
-    };
-    
-    const validator = validators[fileType] || validators['default'];
-    return validator();
-}
-
-async function typeCodeIntoEditor(code) {
-    const lines = code.split('\n');
-    let currentContent = '';
-    
-    for (const line of lines) {
-        currentContent += line + '\n';
-        monacoEditor.setValue(currentContent);
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
-    
-    if (activeTab) {
-        activeTab.modified = true;
-        activeTab.content = code;
-        renderTabs();
-        isEditing = true;
-    }
-}
-
-async function exportCurrentFile() {
-    if (!activeTab || !monacoEditor) {
-        showToast('Abre un archivo para exportar', 'error');
-        return;
-    }
-    
-    try {
-        const currentContent = monacoEditor.getValue();
-        if (!currentContent.trim()) {
-            showToast('El archivo está vacío', 'error');
-            return;
-        }
-        
-        showToast('Preparando exportación del archivo...', 'info');
-        
-        const response = await fetch(`${AI_BACKEND_URL}/api/export-current-file`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                fileName: activeTab.name,
-                content: currentContent,
-                fileType: activeTab.type
-            })
-        });
-        
-        if (!response.ok) throw new Error('Error en exportación');
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            const blob = new Blob([data.data.content], { 
-                type: getContentType(data.data.type)
-            });
-            
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = data.data.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showToast(`${data.data.name} exportado correctamente`, 'success');
-        }
-        
-    } catch (error) {
-        console.error('Error exporting file:', error);
-        showToast('Error exportando archivo', 'error');
-    }
-}
-function getContentType(fileType) {
-    const contentTypes = {
-        // Web Technologies
-        'html': 'text/html',
-        'htm': 'text/html',
-        'css': 'text/css',
-        'scss': 'text/css',
-        'sass': 'text/css',
-        'less': 'text/css',
-        'stylus': 'text/css',
-        'js': 'text/javascript',
-        'jsx': 'text/javascript',
-        'ts': 'text/typescript',
-        'tsx': 'text/typescript',
-        'xml': 'application/xml',
-        'svg': 'image/svg+xml',
-        'vue': 'text/x-vue',
-        'svelte': 'text/x-svelte',
-        'astro': 'text/x-astro',
-        'solid': 'text/x-solid',
-        
-        // Data Formats
-        'json': 'application/json',
-        'json5': 'application/json5',
-        'jsonl': 'application/jsonl',
-        'ndjson': 'application/x-ndjson',
-        'csv': 'text/csv',
-        'tsv': 'text/tab-separated-values',
-        'yaml': 'text/x-yaml',
-        'yml': 'text/x-yaml',
-        'toml': 'text/x-toml',
-        'ini': 'text/x-ini',
-        'cfg': 'text/x-ini',
-        'properties': 'text/x-properties',
-        'avro': 'application/avro',
-        'parquet': 'application/x-parquet',
-        'orc': 'application/x-orc',
-        
-        // Programming Languages - Popular
-        'py': 'text/x-python',
-        'python': 'text/x-python',
-        'pyw': 'text/x-python',
-        'java': 'text/x-java-source',
-        'class': 'application/java-vm',
-        'c': 'text/x-c',
-        'cpp': 'text/x-c++',
-        'cxx': 'text/x-c++',
-        'cc': 'text/x-c++',
-        'c++': 'text/x-c++',
-        'h': 'text/x-c',
-        'hpp': 'text/x-c++',
-        'hxx': 'text/x-c++',
-        'cs': 'text/x-csharp',
-        'csproj': 'application/xml',
-        'php': 'text/x-php',
-        'php3': 'text/x-php',
-        'php4': 'text/x-php',
-        'php5': 'text/x-php',
-        'phtml': 'text/x-php',
-        'rb': 'text/x-ruby',
-        'ruby': 'text/x-ruby',
-        'go': 'text/x-go',
-        'rs': 'text/x-rust',
-        'swift': 'text/x-swift',
-        'kt': 'text/x-kotlin',
-        'kts': 'text/x-kotlin',
-        'scala': 'text/x-scala',
-        'sc': 'text/x-scala',
-        
-        // Programming Languages - Scripting
-        'pl': 'text/x-perl',
-        'pm': 'text/x-perl',
-        'r': 'text/x-r',
-        'rmd': 'text/x-r-markdown',
-        'matlab': 'text/x-matlab',
-        'm': 'text/x-objectivec',
-        'mm': 'text/x-objectivec',
-        'lua': 'text/x-lua',
-        'tcl': 'text/x-tcl',
-        'tk': 'text/x-tcl',
-        
-        // Shell & Scripts
-        'sh': 'text/x-shellscript',
-        'bash': 'text/x-shellscript',
-        'zsh': 'text/x-shellscript',
-        'fish': 'text/x-shellscript',
-        'csh': 'text/x-shellscript',
-        'ksh': 'text/x-shellscript',
-        'ps1': 'text/x-powershell',
-        'psm1': 'text/x-powershell',
-        'psd1': 'text/x-powershell',
-        'bat': 'text/x-batch',
-        'cmd': 'text/x-batch',
-        
-        // Database & Query Languages
-        'sql': 'text/x-sql',
-        'mysql': 'text/x-sql',
-        'pgsql': 'text/x-sql',
-        'sqlite': 'text/x-sql',
-        'plsql': 'text/x-plsql',
-        'mongodb': 'text/x-mongodb',
-        'redis': 'text/x-redis',
-        'cassandra': 'text/x-cql',
-        'cql': 'text/x-cql',
-        'neo4j': 'text/x-cypher',
-        'cypher': 'text/x-cypher',
-        'sparql': 'application/sparql-query',
-        'xquery': 'application/xquery',
-        'graphql': 'application/graphql',
-        'gql': 'application/graphql',
-        
-        // Functional Languages
-        'hs': 'text/x-haskell',
-        'haskell': 'text/x-haskell',
-        'lhs': 'text/x-haskell',
-        'ml': 'text/x-ocaml',
-        'mli': 'text/x-ocaml',
-        'fs': 'text/x-fsharp',
-        'fsi': 'text/x-fsharp',
-        'fsx': 'text/x-fsharp',
-        'clj': 'text/x-clojure',
-        'cljs': 'text/x-clojure',
-        'cljc': 'text/x-clojure',
-        'elm': 'text/x-elm',
-        'erl': 'text/x-erlang',
-        'hrl': 'text/x-erlang',
-        'ex': 'text/x-elixir',
-        'exs': 'text/x-elixir',
-        'lisp': 'text/x-lisp',
-        'lsp': 'text/x-lisp',
-        'scm': 'text/x-scheme',
-        'scheme': 'text/x-scheme',
-        
-        // Mobile Development
-        'dart': 'text/x-dart',
-        'flutter': 'text/x-dart',
-        'xaml': 'application/xml',
-        
-        // Game Development & Graphics
-        'gdscript': 'text/x-gdscript',
-        'gd': 'text/x-gdscript',
-        'unity': 'text/x-csharp',
-        'hlsl': 'text/x-hlsl',
-        'glsl': 'text/x-glsl',
-        'shader': 'text/x-shader',
-        'vert': 'text/x-glsl',
-        'frag': 'text/x-glsl',
-        
-        // JVM Languages
-        'groovy': 'text/x-groovy',
-        'gradle': 'text/x-gradle',
-        'sbt': 'text/x-sbt',
-        
-        // Configuration & Infrastructure
-        'dockerfile': 'text/x-dockerfile',
-        'docker': 'text/x-dockerfile',
-        'dockerignore': 'text/plain',
-        'terraform': 'text/x-terraform',
-        'tf': 'text/x-terraform',
-        'tfvars': 'text/x-terraform',
-        'hcl': 'text/x-hcl',
-        'nomad': 'text/x-nomad',
-        'consul': 'text/x-consul',
-        'ansible': 'text/x-yaml',
-        'puppet': 'text/x-puppet',
-        'pp': 'text/x-puppet',
-        'chef': 'text/x-ruby',
-        'vagrant': 'text/x-ruby',
-        'vagrantfile': 'text/x-ruby',
-        
-        // Documentation
-        'md': 'text/markdown',
-        'markdown': 'text/markdown',
-        'mdown': 'text/markdown',
-        'mkd': 'text/markdown',
-        'mdx': 'text/x-mdx',
-        'rst': 'text/x-rst',
-        'tex': 'text/x-tex',
-        'latex': 'text/x-tex',
-        'bib': 'text/x-bibtex',
-        'txt': 'text/plain',
-        'text': 'text/plain',
-        'log': 'text/plain',
-        'readme': 'text/plain',
-        'changelog': 'text/plain',
-        'license': 'text/plain',
-        'authors': 'text/plain',
-        'contributors': 'text/plain',
-        'news': 'text/plain',
-        'todo': 'text/plain',
-        
-        // Assembly & Low Level
-        'asm': 'text/x-assembly',
-        's': 'text/x-assembly',
-        'nasm': 'text/x-assembly',
-        'masm': 'text/x-assembly',
-        'gas': 'text/x-assembly',
-        
-        // DSLs & Domain Specific
-        'prisma': 'text/x-prisma',
-        'proto': 'text/x-protobuf',
-        'protobuf': 'text/x-protobuf',
-        'thrift': 'text/x-thrift',
-        'avdl': 'text/x-avro-idl',
-        'capnp': 'text/x-capnp',
-        
-        // Web Frameworks & Templates
-        'jsp': 'text/x-jsp',
-        'jspx': 'text/x-jsp',
-        'asp': 'text/x-asp',
-        'aspx': 'text/x-aspx',
-        'ascx': 'text/x-aspx',
-        'erb': 'text/x-ruby-template',
-        'ejs': 'text/x-ejs',
-        'hbs': 'text/x-handlebars',
-        'handlebars': 'text/x-handlebars',
-        'mustache': 'text/x-mustache',
-        'twig': 'text/x-twig',
-        'smarty': 'text/x-smarty',
-        'tpl': 'text/x-smarty',
-        'blade': 'text/x-blade',
-        'razor': 'text/x-razor',
-        'cshtml': 'text/x-razor',
-        'vbhtml': 'text/x-razor',
-        'pug': 'text/x-pug',
-        'jade': 'text/x-jade',
-        'haml': 'text/x-haml',
-        'slim': 'text/x-slim',
-        
-        // Blockchain & Crypto
-        'solidity': 'text/x-solidity',
-        'sol': 'text/x-solidity',
-        'move': 'text/x-move',
-        'cairo': 'text/x-cairo',
-        'vyper': 'text/x-vyper',
-        'vy': 'text/x-vyper',
-        'clarity': 'text/x-clarity',
-        'clar': 'text/x-clarity',
-        
-        // Scientific & Statistical
-        'sas': 'text/x-sas',
-        'spss': 'text/x-spss',
-        'stata': 'text/x-stata',
-        'do': 'text/x-stata',
-        'ado': 'text/x-stata',
-        'jupyter': 'application/x-ipynb+json',
-        'ipynb': 'application/x-ipynb+json',
-        'mathematica': 'text/x-mathematica',
-        'nb': 'application/mathematica',
-        'wl': 'text/x-wolfram',
-        'wls': 'text/x-wolfram',
-        
-        // Legacy & Specialized
-        'fortran': 'text/x-fortran',
-        'f': 'text/x-fortran',
-        'f77': 'text/x-fortran',
-        'f90': 'text/x-fortran',
-        'f95': 'text/x-fortran',
-        'f03': 'text/x-fortran',
-        'f08': 'text/x-fortran',
-        'for': 'text/x-fortran',
-        'cobol': 'text/x-cobol',
-        'cob': 'text/x-cobol',
-        'cbl': 'text/x-cobol',
-        'pascal': 'text/x-pascal',
-        'pas': 'text/x-pascal',
-        'delphi': 'text/x-pascal',
-        'dfm': 'text/x-pascal',
-        'ada': 'text/x-ada',
-        'adb': 'text/x-ada',
-        'ads': 'text/x-ada',
-        'vb': 'text/x-vb',
-        'vbs': 'text/x-vbscript',
-        'vba': 'text/x-vba',
-        'basic': 'text/x-basic',
-        'bas': 'text/x-basic',
-        
-        // Version Control
-        'gitignore': 'text/plain',
-        'gitattributes': 'text/plain',
-        'gitconfig': 'text/plain',
-        'gitmodules': 'text/plain',
-        'hgignore': 'text/plain',
-        'bzrignore': 'text/plain',
-        'svnignore': 'text/plain',
-        
-        // Package Managers & Dependencies
-        'lock': 'application/json',
-        'sum': 'text/plain',
-        'mod': 'text/plain',
-        'sum': 'text/plain',
-        'requirements': 'text/plain',
-        'pipfile': 'text/x-toml',
-        'gemfile': 'text/x-ruby',
-        'podfile': 'text/x-ruby',
-        'cartfile': 'text/plain',
-        'package': 'application/json',
-        'composer': 'application/json',
-        'cargo': 'text/x-toml',
-        'mix': 'text/x-elixir',
-        'rebar': 'text/x-erlang',
-        
-        // Environment & Secrets
-        'env': 'text/plain',
-        'environment': 'text/plain',
-        'dotenv': 'text/plain',
-        'secrets': 'text/plain',
-        'vault': 'text/plain',
-        
-        // Build Systems
-        'makefile': 'text/x-makefile',
-        'make': 'text/x-makefile',
-        'cmake': 'text/x-cmake',
-        'cmakecache': 'text/x-cmake',
-        'ninja': 'text/x-ninja',
-        'bazel': 'text/x-bazel',
-        'buck': 'text/x-buck',
-        'pants': 'text/x-pants',
-        'scons': 'text/x-scons',
-        'rake': 'text/x-ruby',
-        'rakefile': 'text/x-ruby',
-        'ant': 'application/xml',
-        'maven': 'application/xml',
-        'pom': 'application/xml',
-        'ivy': 'application/xml',
-        
-        // CI/CD
-        'jenkinsfile': 'text/x-groovy',
-        'travis': 'text/x-yaml',
-        'circle': 'text/x-yaml',
-        'appveyor': 'text/x-yaml',
-        'github': 'text/x-yaml',
-        'gitlab': 'text/x-yaml',
-        'azure': 'text/x-yaml',
-        'bitbucket': 'text/x-yaml',
-        
-        // Testing
-        'test': 'text/javascript',
-        'spec': 'text/javascript',
-        'feature': 'text/x-gherkin',
-        'story': 'text/x-gherkin',
-        'cucumber': 'text/x-gherkin',
-        
-        // IDE & Editor
-        'editorconfig': 'text/x-editorconfig',
-        'eslintrc': 'application/json',
-        'prettierrc': 'application/json',
-        'babelrc': 'application/json',
-        'tsconfig': 'application/json',
-        'jsconfig': 'application/json',
-        'webpack': 'text/javascript',
-        'rollup': 'text/javascript',
-        'vite': 'text/javascript',
-        'gulpfile': 'text/javascript',
-        'gruntfile': 'text/javascript',
-        
-        // Documentation Formats
-        'adoc': 'text/x-asciidoc',
-        'asciidoc': 'text/x-asciidoc',
-        'creole': 'text/x-creole',
-        'textile': 'text/x-textile',
-        'pod': 'text/x-pod',
-        'wiki': 'text/x-wiki',
-        'mediawiki': 'text/x-mediawiki',
-        
-        // Binary Formats (for reference, usually not editable)
-        'exe': 'application/octet-stream',
-        'dll': 'application/octet-stream',
-        'so': 'application/octet-stream',
-        'dylib': 'application/octet-stream',
-        'bin': 'application/octet-stream',
-        
-        // Default fallback
-        'default': 'text/plain'
-    };
-    
-    // Clean the file type and make it lowercase
-    const cleanFileType = fileType.toLowerCase().trim();
-    
-    // Return the content type or default to text/plain
-    return contentTypes[cleanFileType] || contentTypes['default'];
-}
-function setupErrorDetection() {
-    if (!monacoEditor) return;
-    
-    monacoEditor.onDidChangeModelContent(() => {
-        if (activeTab) {
-            setTimeout(() => checkForErrors(), 1000);
-        }
-    });
-}
-
-function checkForErrors() {
-    if (!monacoEditor || !activeTab) return;
-    
-    const code = monacoEditor.getValue();
-    const markers = monaco.editor.getModelMarkers({ owner: 'typescript' });
-    
-    if (markers.length > 0) {
-        const firstError = markers[0];
-        showErrorInspector(firstError.message, firstError);
-    }
-}
-
-function showErrorInspector(message, errorDetails) {
-    const inspector = document.getElementById('error-inspector');
-    const messageEl = document.getElementById('error-message');
-    
-    if (inspector && messageEl) {
-        messageEl.textContent = message;
-        inspector.style.display = 'block';
-        
-        setTimeout(() => {
-            inspector.style.display = 'none';
-        }, 10000);
-    }
-    
-    const fixBtn = document.getElementById('fix-error-btn');
-    if (fixBtn) {
-        fixBtn.onclick = () => fixErrorWithAI(message, errorDetails);
-    }
-}
-
-function closeErrorInspector() {
-    const inspector = document.getElementById('error-inspector');
-    if (inspector) inspector.style.display = 'none';
-}
-
-async function fixErrorWithAI(errorMessage, errorDetails) {
-    closeErrorInspector();
-    
-    currentAIAction = 'fix';
-    document.querySelectorAll('.ai-action-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.ai-action-btn[data-action="fix"]').classList.add('active');
-    
-    const prompt = document.getElementById('ai-prompt');
-    prompt.value = `Tengo este error: ${errorMessage}\n\nPor favor corrige el código.`;
-    
-    showAICompanionModal();
-    setTimeout(() => askAI(), 500);
-}
-
-
-// Convertir \n\n a <br><br> o <p>
-function formatResponse(text) {
-    return text
-        .split('\n\n')
-        .map(paragraph => `<p>${paragraph.trim()}</p>`)
-        .join('');
-}
-
-// O simplemente reemplazar saltos
-function formatResponseSimple(text) {
-    return text.replace(/\n\n/g, '<br><br>');
-}
-
-
-// === FUNCIÓN SIMPLE PARA PRESERVAR RESPUESTAS DE IA ===
-
-// Variable global para guardar la última respuesta
-let lastAIResponse = null;
-
-// Función para guardar respuesta cuando la IA responde
-function saveLastAIResponse() {
-    const prompt = document.getElementById('ai-prompt')?.value || '';
-    const responseContent = document.getElementById('ai-response-content')?.innerHTML || '';
-    const fullCode = document.getElementById('ai-response-content')?.dataset.fullCode || '';
-    
-    if (prompt || responseContent) {
-        lastAIResponse = {
-            prompt: prompt,
-            responseHTML: responseContent,
-            fullCode: fullCode,
-            action: currentAIAction,
-            timestamp: new Date().toISOString(),
-            fileName: activeTab?.name || 'Sin archivo'
-        };
-        
-        // Guardar en localStorage para que persista entre sesiones
-        try {
-            localStorage.setItem('lastAIResponse', JSON.stringify(lastAIResponse));
-            console.log('Respuesta IA guardada');
-        } catch (error) {
-            console.error('Error guardando respuesta:', error);
-        }
-    }
-}
-
-// Función para restaurar la última respuesta cuando se abre el modal
-function restoreLastAIResponse() {
-    try {
-        // Primero intentar desde memoria
-        if (!lastAIResponse) {
-            const stored = localStorage.getItem('lastAIResponse');
-            if (stored) {
-                lastAIResponse = JSON.parse(stored);
-            }
-        }
-        
-        if (lastAIResponse) {
-            const prompt = document.getElementById('ai-prompt');
-            const response = document.getElementById('ai-response');
-            const responseContent = document.getElementById('ai-response-content');
-            
-            // Restaurar prompt solo si está vacío
-            if (prompt && !prompt.value.trim()) {
-                prompt.value = lastAIResponse.prompt;
-            }
-            
-            // Restaurar respuesta
-            if (response && responseContent && lastAIResponse.responseHTML) {
-                response.style.display = 'block';
-                responseContent.innerHTML = `
-                    <div style="margin-bottom: 10px; padding: 8px; background: rgba(74, 158, 255, 0.1); border-left: 3px solid #4a9eff; border-radius: 4px; font-size: 12px;">
-                        📝 Última respuesta guardada - ${lastAIResponse.fileName}
-                    </div>
-                    ${lastAIResponse.responseHTML}
-                `;
-                
-                // Restaurar código si existe
-                if (lastAIResponse.fullCode) {
-                    responseContent.dataset.fullCode = lastAIResponse.fullCode;
-                    
-                    const applyBtn = document.getElementById('apply-code-btn');
-                    if (applyBtn && lastAIResponse.action === 'fix') {
-                        applyBtn.style.display = 'inline-block';
-                    }
-                }
-                
-                showToast('Respuesta anterior restaurada', 'info');
-            }
-        }
-    } catch (error) {
-        console.error('Error restaurando respuesta:', error);
-    }
-}
-
-// Modificar la función closeAIModal (REEMPLAZAR la existente)
-function closeAIModal() {
-    // GUARDAR antes de cerrar
-    saveLastAIResponse();
-    
-    const modal = document.getElementById('ai-companion-modal');
-    if (modal) modal.style.display = 'none';
-    
-    // NO limpiar nada, solo ocultar el modal
-    // Resetear solo la acción
-    currentAIAction = 'generate';
-    document.querySelectorAll('.ai-action-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.ai-action-btn[data-action="generate"]')?.classList.add('active');
-}
-
-// Modificar showAICompanionModal (REEMPLAZAR la existente)
-function showAICompanionModal() {
-    if (!['owner', 'admin'].includes(currentUserRole)) {
-        showToast('No tienes permisos para usar IA Companion', 'error');
-        return;
-    }
-    
-    const modal = document.getElementById('ai-companion-modal');
-    if (modal) modal.style.display = 'flex';
-    
-    // Restaurar respuesta anterior
-    setTimeout(() => restoreLastAIResponse(), 100);
-    
-    // Focus en prompt
-    const prompt = document.getElementById('ai-prompt');
-    if (prompt) prompt.focus();
-}
-
-
-function addSaveToAskAI() {
-    // Esta función modifica la askAI existente
-    const originalAskAI = window.askAI;
-    
-    window.askAI = async function() {
-        await originalAskAI();
-        // Guardar después de que la IA responde
-        setTimeout(() => saveLastAIResponse(), 500);
-    };
-}
-
-// Función para limpiar respuestas guardadas (opcional)
-function clearSavedAIResponse() {
-    lastAIResponse = null;
-    localStorage.removeItem('lastAIResponse');
-    showToast('Respuestas guardadas eliminadas', 'success');
-}
-
-// Inicializar al cargar la página 
-document.addEventListener('DOMContentLoaded', function() {
-    
-    addSaveToAskAI();
-    
-    console.log('Sistema de persistencia IA inicializado');
-});
-
-// Función extra: Botón para ver respuesta guardada (opcional)
-function addViewSavedResponseButton() {
-    const aiActions = document.querySelector('.ai-actions');
-    if (aiActions) {
-        const button = document.createElement('button');
-        button.className = 'ai-action-btn';
-        button.innerHTML = '<i class="fas fa-history"></i>Última Respuesta';
-        button.onclick = () => {
-            restoreLastAIResponse();
-        };
-        aiActions.appendChild(button);
-    }
-}
-
 // Hacer funciones globales
-window.closeAIModal = closeAIModal;
-window.closeErrorInspector = closeErrorInspector;
+window.backToRepositories = backToRepositories;
+window.closeContextualAIModal = closeContextualAIModal;
 window.showDeleteRepositoryModal = showDeleteRepositoryModal;
 window.showCreateRepositoryModal = showCreateRepositoryModal;
 window.createRepository = createRepository;
-window.closeRepositoryModal = () => {
-    document.querySelector('.modal-overlay')?.remove();
-};
 window.closeTab = closeTab;
 window.closeNewFileModal = closeNewFileModal;
 window.createNewFile = createNewFile;
+// Al final del archivo, agregar:
+window.resetModalToInitialState = resetModalToInitialState;
 window.toggleTheme = toggleTheme;
 window.toggleLanguageDropdown = toggleLanguageDropdown;
 window.changeLanguage = changeLanguage;
+window.cancelAIChanges = cancelAIChanges;
+window.confirmAIChanges = confirmAIChanges;
 </script>
+
+<style>
+/* Estilos para el dropdown de exportación */
+.export-tools {
+    position: relative;
+    display: inline-block;
+}
+
+.export-dropdown {
+    position: relative;
+}
+
+.export-btn {
+    background: linear-gradient(45deg, #4a9eff, #00d4ff);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+}
+
+.export-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.export-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 200px;
+    z-index: 1000;
+    margin-top: 5px;
+}
+
+.export-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    transition: background 0.2s;
+}
+
+.export-option:hover {
+    background: rgba(74, 158, 255, 0.2);
+}
+
+/* Estilos para IA contextual */
+.ai-contextual-modal-content {
+    max-width: 2000px;
+    width: 89vw;
+}
+
+.ai-contextual-modal-content h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 22px;
+    color: #4a9eff;
+}
+
+
+.ai-contextual-modal-content textarea {
+    transition: all 0.3s ease;
+}
+
+.ai-contextual-modal-content textarea:focus {
+    border-color: #4a9eff;
+    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+    outline: none;
+}
+
+.modal-actions .cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.modal-actions .create-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+@media (max-width: 768px) {
+    .ai-contextual-modal-content {
+        width: 95vw;
+        padding: 20px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-actions .cancel-btn,
+    .modal-actions .create-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.modal-actions .cancel-btn,
+.modal-actions .create-btn {
+    padding: 1px ;
+    font-size: 10px;
+
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ai-contextual-modal-content .form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    
+}
+
+.selected-code-preview {
+    margin-bottom: 20px;
+}
+
+.typing-effect {
+    color: #4a9eff;
+    font-style: italic;
+    padding: 15px;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.apply-code-btn {
+    background: rgba(34, 197, 94, 0.2);
+    border: 1px solid #22c55e;
+    color: #22c55e;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.apply-code-btn:hover {
+    background: rgba(34, 197, 94, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .export-dropdown-menu {
+        right: auto;
+        left: 0;
+    }
+    
+    .ai-contextual-modal-content {
+        width: 95vw;
+        max-width: none;
+    }
+}
+</style>
 </body>
 </html>
-
-
