@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/noti.css">
 </head>
 <body data-theme="dark">
     <div class="app-container">
@@ -30,7 +31,7 @@
                     <div class="nav-section-title">Principal</div>
                     <a href="../index.html" class="nav-item">
                         <i class="fas fa-home"></i>
-                        <span>Dashboard </span>
+                        <span>Inicio </span>
                     </a>
                     <a href="profile.html" class="nav-item active">
                         <i class="fas fa-user"></i>
@@ -89,6 +90,22 @@
                         <i class="fas fa-moon" id="themeIcon"></i>
                         <span>Tema</span>
                     </button>
+
+                     <div class="notifications-container">
+        <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+        </button>
+        <div class="notifications-dropdown" id="notificationsDropdown">
+            <div class="notifications-header">
+                <h4>Notificaciones</h4>
+            </div>
+            <div class="notifications-list" id="notificationsList">
+                <div class="notification-item loading">Cargando...</div>
+            </div>
+        </div>
+    </div>
+
                     
                     <div class="user-menu">
                         <div class="user-menu-toggle" onclick="toggleUserMenu()">
@@ -133,10 +150,7 @@
                             <span id="rankText">Novato</span>
                         </div>
                     </div>
-                    <button class="control-btn" onclick="openEditModal()">
-                        <i class="fas fa-edit"></i>
-                        <span>Editar Perfil</span>
-                    </button>
+                    
                 </div>
 
                 <!-- Statistics -->
@@ -196,49 +210,40 @@
         </main>
     </div>
 
-    <!-- Modal de edición de perfil -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Editar Perfil</h3>
-                <button class="modal-close" onclick="closeEditModal()">&times;</button>
-            </div>
-            <form id="editProfileForm">
-                <div class="form-group">
-                    <label class="form-label" for="editFullName">Nombre Completo</label>
-                    <input type="text" id="editFullName" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="editUsername">Nombre de Usuario</label>
-                    <input type="text" id="editUsername" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="editRank">Rango</label>
-                    <select id="editRank" class="form-select">
-                        <option value="novato">Novato</option>
-                        <option value="colaborador">Colaborador</option>
-                        <option value="experto">Experto</option>
-                        <option value="maestro">Maestro</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="editAvatar">Imagen de Perfil</label>
-                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                        <img id="avatarPreview" src="" alt="Vista previa" style="width: 60px; height: 60px; border-radius: 50%; display: none; object-fit: cover;">
-                        <label for="editAvatar" class="btn btn-secondary" style="cursor: pointer; margin: 0;">
-                            <i class="fas fa-upload"></i> Seleccionar imagen
-                        </label>
-                    </div>
-                    <input type="file" id="editAvatar" accept="image/*" class="form-input" style="display: none;">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
+
+
+    <!-- Modal de foto única -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Cambiar Foto de Perfil</h3>
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form id="editProfileForm">
+            <div class="form-group">
+                <p style="color: #ff9800; margin-bottom: 15px;">
+                    ⚠️ Tienes permiso para cambiar tu foto. Después de usarlo se desactivará.
+                </p>
+                <label class="form-label" for="editAvatar">Imagen de Perfil</label>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <img id="avatarPreview" src="" alt="Vista previa" style="width: 60px; height: 60px; border-radius: 50%; display: none; object-fit: cover;">
+                    <label for="editAvatar" class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+                        <i class="fas fa-upload"></i> Seleccionar imagen
+                    </label>
+                </div>
+                <input type="file" id="editAvatar" accept="image/*" class="form-input" style="display: none;" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Subir Foto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="../js/noti.js"></script>
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
@@ -359,7 +364,7 @@
             }
         }
 
-        function updateUserInfo(profile) {
+    function updateUserInfo(profile) {
     const userName = profile?.full_name || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
     const username = profile?.username || currentUser.email.split('@')[0];
     const userRank = profile?.rank || 'novato';
@@ -401,9 +406,7 @@
     // Actualizar rango
     document.getElementById('rankText').textContent = getRankDisplayName(userRank);
     document.getElementById('userRank').className = `rank-badge rank-${userRank}`;
-    document.getElementById('editRank').value = userRank;
-    document.getElementById('editFullName').value = userName;
-    document.getElementById('editUsername').value = username;
+
     
     // Año de miembro
     const memberYear = new Date(profile?.created_at || currentUser.created_at).getFullYear();
@@ -412,17 +415,7 @@
 
 // Función auxiliar para generar un color consistente basado en el nombre
 function getColorFromName(name) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    
-    const colors = [
-        '4A90E2', '50E3C2', 'B8E986', 'F5A623', 
-        'D0021B', 'BD10E0', '9013FE', '417505'
-    ];
-    
-    return colors[Math.abs(hash) % colors.length];
+    return '4a9eff'; // El mismo azul que usas en el resto del sistema
 }
 
         function getRankDisplayName(rank) {
@@ -451,11 +444,46 @@ function getColorFromName(name) {
             }
         }
 
-        function openEditModal() {
-            document.getElementById('editModal').style.display = 'flex';
-        }
 
-        function closeEditModal() {
+async function openEditModal() {
+    try {
+        // Verificar si el usuario puede subir/cambiar foto
+        const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('avatar_url, photo_edit')
+            .eq('id', currentUser.id)
+            .single();
+        
+        // Si no tiene foto, puede subir su primera vez
+        if (!profile?.avatar_url) {
+            document.getElementById('editModal').style.display = 'flex';
+            return;
+        }
+        
+        // Si ya tiene foto, verificar si tiene permiso para editar
+        if (profile?.photo_edit === true) {
+            document.getElementById('editModal').style.display = 'flex';
+        } else {
+            // Mostrar mensaje con opción de solicitar cambio
+            if (confirm('No puedes cambiar tu foto de perfil.\n\n¿Deseas solicitar un cambio? Se te redirigirá a WhatsApp.')) {
+                // CAMBIA ESTE NÚMERO AL TUYO
+                const whatsappNumber = '573001234567'; 
+                const message = `Hola, solicito permiso para cambiar mi foto de perfil. Mi email es: ${currentUser.email}`;
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error verificando foto:', error);
+    }
+}
+
+
+
+
+
+    function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
 
@@ -466,143 +494,117 @@ function getColorFromName(name) {
 async function handleProfileUpdate(event) {
     event.preventDefault();
     
-    // Prevenir múltiples envíos simultáneos
-    if (isProcessing) {
-        console.log('El proceso ya está en ejecución, espera...');
-        return;
-    }
+    if (isProcessing) return;
     
     isProcessing = true;
     
-    // Deshabilitar el botón y mostrar indicador de carga
     const submitButton = document.querySelector('#editProfileForm button[type="submit"]');
     const originalText = submitButton.textContent;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
     submitButton.disabled = true;
     
-    // También deshabilitar los otros botones para evitar acciones concurrentes
     const cancelButton = document.querySelector('#editProfileForm button[type="button"]');
-    const originalCancelText = cancelButton.textContent;
     cancelButton.disabled = true;
     
-    const fullName = document.getElementById('editFullName').value;
-    const username = document.getElementById('editUsername').value;
-    const rank = document.getElementById('editRank').value;
     const avatarFile = document.getElementById('editAvatar').files[0];
     
+    if (!avatarFile) {
+        alert('Por favor selecciona una imagen');
+        isProcessing = false;
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+        cancelButton.disabled = false;
+        return;
+    }
+    
     try {
-        let avatarUrl = null;
-        let oldAvatarPath = null;
+        // Obtener info actual del perfil
+        const { data: currentProfile } = await supabaseClient
+            .from('profiles')
+            .select('avatar_url, photo_edit')
+            .eq('id', currentUser.id)
+            .single();
         
-        // Obtener la ruta del avatar actual si existe
-        if (currentAvatarUrl) {
-            // Extraer la ruta del archivo desde la URL completa
-            const urlParts = currentAvatarUrl.split('/');
-            const fileName = urlParts[urlParts.length - 1];
-            oldAvatarPath = `${currentUser.id}/${fileName}`;
+        const isFirstUpload = !currentProfile?.avatar_url;
+        
+        // Confirmar acción
+        let confirmMessage = isFirstUpload 
+            ? '¿Estás seguro? Esta será tu foto de perfil.'
+            : '¿Estás seguro de cambiar tu foto? Este permiso se usará y desactivará.';
+        
+        if (!confirm(confirmMessage)) {
+            isProcessing = false;
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+            cancelButton.disabled = false;
+            return;
         }
         
-        // Subir imagen si se seleccionó una
-        if (avatarFile) {
-            const fileExt = avatarFile.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${currentUser.id}/${fileName}`;
-            
-            console.log('Subiendo nueva imagen...');
-            const { error: uploadError } = await supabaseClient.storage
-                .from('avatars')
-                .upload(filePath, avatarFile);
-            
-            if (uploadError) {
-                // Si ya existe una imagen con el mismo nombre, intentar eliminarla primero
-                if (uploadError.message.includes('already exists')) {
-                    await supabaseClient.storage
-                        .from('avatars')
-                        .remove([filePath]);
-                    
-                    // Reintentar la subida
-                    const { error: retryError } = await supabaseClient.storage
-                        .from('avatars')
-                        .upload(filePath, avatarFile);
-                    
-                    if (retryError) throw retryError;
-                } else {
-                    throw uploadError;
-                }
-            }
-            
-            const { data: { publicUrl } } = supabaseClient.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-            
-            avatarUrl = publicUrl;
-            console.log('Nueva imagen subida correctamente:', avatarUrl);
-            
-            // Eliminar la imagen anterior si existe
-            if (oldAvatarPath) {
-                console.log('Eliminando imagen anterior:', oldAvatarPath);
-                try {
-                    const { error: removeError } = await supabaseClient.storage
-                        .from('avatars')
-                        .remove([oldAvatarPath]);
-                    
-                    if (removeError) {
-                        console.warn('No se pudo eliminar la imagen anterior:', removeError);
-                    } else {
-                        console.log('Imagen anterior eliminada correctamente');
-                    }
-                } catch (removeError) {
-                    console.warn('Error al eliminar la imagen anterior:', removeError);
-                    // No lanzamos el error para no interrumpir el flujo principal
-                }
+        // Subir imagen
+        const fileExt = avatarFile.name.split('.').pop();
+        const timestamp = Date.now();
+        const fileName = `${currentUser.id}_${timestamp}.${fileExt}`;
+        const filePath = `${currentUser.id}/${fileName}`;
+        
+        // Si tiene foto anterior, intentar eliminarla
+        if (currentProfile?.avatar_url) {
+            try {
+                const oldUrl = currentProfile.avatar_url;
+                const urlParts = oldUrl.split('/');
+                const oldFileName = urlParts[urlParts.length - 1];
+                await supabaseClient.storage
+                    .from('avatars')
+                    .remove([`${currentUser.id}/${oldFileName}`]);
+            } catch (err) {
+                console.log('No se pudo eliminar foto anterior');
             }
         }
         
-        // Actualizar perfil
+        const { error: uploadError } = await supabaseClient.storage
+            .from('avatars')
+            .upload(filePath, avatarFile);
+        
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabaseClient.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+        
+        // Actualizar perfil y poner photo_edit en FALSE automáticamente
         const updates = {
             id: currentUser.id,
-            full_name: fullName,
-            username: username,
-            rank: rank,
+            avatar_url: publicUrl,
+            photo_edit: false, // AUTOMÁTICAMENTE vuelve a false
             updated_at: new Date().toISOString()
         };
         
-        if (avatarUrl) {
-            updates.avatar_url = avatarUrl;
-            currentAvatarUrl = avatarUrl; // Actualizar la referencia al avatar actual
-        }
+        // Mantener el nombre y username si ya existen
+        if (currentProfile?.full_name) updates.full_name = currentProfile.full_name;
+        if (currentProfile?.username) updates.username = currentProfile.username;
+        if (currentProfile?.rank) updates.rank = currentProfile.rank;
         
-        console.log('Actualizando perfil en la base de datos...');
         const { error } = await supabaseClient
             .from('profiles')
             .upsert(updates);
         
         if (error) throw error;
         
-        // Recargar perfil
-        console.log('Perfil actualizado, recargando datos...');
         await loadUserProfile();
         closeEditModal();
         
-        // Mostrar notificación de éxito
-        showNotification('Perfil actualizado correctamente', 'success');
+        showNotification('Foto actualizada correctamente', 'success');
         
     } catch (error) {
-        console.error('Error updating profile:', error);
-        showNotification('Error al actualizar el perfil: ' + error.message, 'error');
+        console.error('Error uploading photo:', error);
+        showNotification('Error al subir la foto: ' + error.message, 'error');
     } finally {
-        // Siempre restablecer el estado, incluso si hay error
         isProcessing = false;
-        submitButton.textContent = originalText;
+        submitButton.textContent = 'Subir Foto';
         submitButton.disabled = false;
-        cancelButton.textContent = originalCancelText;
         cancelButton.disabled = false;
-        
-        // Limpiar el input de archivo
         document.getElementById('editAvatar').value = '';
     }
 }
-
 // Función para eliminar todas las imágenes antiguas de un usuario (opcional, para limpieza)
 async function cleanupOldAvatars(userId) {
     try {

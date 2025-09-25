@@ -1,4 +1,4 @@
-// Cargar contador de notificaciones (MODIFICADO)
+
 async function loadNotificationCount() {
     try {
         if (!currentUser) return;

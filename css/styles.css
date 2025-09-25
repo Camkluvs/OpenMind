@@ -227,7 +227,7 @@ body {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 8px 12px;
+    padding: 13px 14px;
     border-radius: 8px;
     font-size: 12px;
     cursor: pointer;

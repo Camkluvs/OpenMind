@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/noti.css">
     <style>
         .activity-timeline {
             position: relative;
@@ -189,7 +190,7 @@
                     <div class="nav-section-title">Principal</div>
                     <a href="../index.html" class="nav-item">
                         <i class="fas fa-home"></i>
-                        <span>Dashboard</span>
+                        <span>Inicio</span>
                     </a>
                     <a href="profile.html" class="nav-item">
                         <i class="fas fa-user"></i>
@@ -247,6 +248,20 @@
                         <i class="fas fa-moon" id="themeIcon"></i>
                         <span>Tema</span>
                     </button>
+                    <div class="notifications-container">
+        <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+        </button>
+        <div class="notifications-dropdown" id="notificationsDropdown">
+            <div class="notifications-header">
+                <h4>Notificaciones</h4>
+            </div>
+            <div class="notifications-list" id="notificationsList">
+                <div class="notification-item loading">Cargando...</div>
+            </div>
+        </div>
+    </div>
                     
                     <div class="user-menu">
                         <div class="user-menu-toggle" onclick="toggleUserMenu()">
@@ -305,6 +320,7 @@
         </main>
     </div>
 
+    <script src="../js/noti.js"></script>
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
@@ -348,20 +364,193 @@
             }
         }
 
-        async function updateUserHeader() {
-            const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', currentUser.id)
-                .single();
+     async function updateUserHeader() {
+    console.log('updateUserHeader iniciado en projects.html');
+    console.log('currentUser:', currentUser);
+    
+    if (!currentUser) {
+        console.log('currentUser no disponible aún');
+        return;
+    }
+    
+    try {
+        console.log('Obteniendo perfil para usuario:', currentUser.id);
+        
+        const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single();
 
-            const userName = profile?.full_name || currentUser.email.split('@')[0];
-            document.getElementById('headerUserName').textContent = userName;
-            
-            if (profile?.avatar_url) {
-                document.getElementById('headerAvatarImg').src = profile.avatar_url;
-            }
+        if (error) {
+            console.log('Error obteniendo perfil:', error);
+        } else {
+            console.log('Perfil obtenido:', profile);
         }
+
+        const userName = profile?.full_name || 
+                        currentUser.user_metadata?.full_name || 
+                        currentUser.user_metadata?.name || 
+                        currentUser.email.split('@')[0];
+        
+        console.log('Nombre del usuario:', userName);
+        
+        // Actualizar nombre
+        const headerUserName = document.getElementById('headerUserName');
+        if (headerUserName) {
+            headerUserName.textContent = userName;
+            console.log('Nombre actualizado en el DOM');
+        } else {
+            console.error('Elemento headerUserName no encontrado');
+        }
+
+        // Actualizar avatar
+        const avatarImg = document.getElementById('headerAvatarImg');
+        if (avatarImg) {
+            console.log('Elemento avatar encontrado, actualizando...');
+            const initials = userName.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
+            
+            if (profile?.avatar_url && profile.avatar_url.trim() !== '') {
+                console.log('URL de avatar encontrada:', profile.avatar_url);
+                avatarImg.src = profile.avatar_url;
+                avatarImg.style.display = 'block';
+                
+                avatarImg.onload = () => {
+                    console.log('Imagen de perfil cargada correctamente');
+                };
+                
+                avatarImg.onerror = () => {
+                    console.log('Error cargando imagen, usando iniciales');
+                    setInitialsAvatar(avatarImg, userName, initials);
+                };
+            } else {
+                console.log('No hay imagen de perfil, usando iniciales:', initials);
+                setInitialsAvatar(avatarImg, userName, initials);
+            }
+        } else {
+            console.error('Elemento headerAvatarImg no encontrado');
+        }
+
+    } catch (error) {
+        console.error('Error updating user header:', error);
+        
+        const userName = currentUser.email.split('@')[0];
+        const headerUserName = document.getElementById('headerUserName');
+        const avatarImg = document.getElementById('headerAvatarImg');
+        
+        if (headerUserName) {
+            headerUserName.textContent = userName;
+            console.log('Nombre de fallback asignado');
+        }
+        
+        if (avatarImg) {
+            const initials = userName.substring(0, 2).toUpperCase();
+            setInitialsAvatar(avatarImg, userName, initials);
+            console.log('Avatar de fallback asignado');
+        }
+    }
+}
+
+function setInitialsAvatar(avatarElement, userName, initials) {
+    console.log('Creando avatar con iniciales:', initials);
+    
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=4a9eff&color=ffffff&size=128&rounded=true&bold=true`;
+    
+    avatarElement.src = avatarUrl;
+    avatarElement.style.display = 'block';
+    
+    avatarElement.onload = () => {
+        console.log('Avatar con iniciales cargado:', initials);
+    };
+    
+    avatarElement.onerror = () => {
+        console.log('UI Avatars falló, creando avatar CSS');
+        createCSSAvatar(avatarElement, initials);
+    };
+}
+
+function createCSSAvatar(avatarElement, initials) {
+    console.log('Creando avatar CSS con iniciales:', initials);
+    
+    avatarElement.style.display = 'none';
+    
+    let cssAvatar = avatarElement.parentNode.querySelector('.css-avatar');
+    
+    if (!cssAvatar) {
+        cssAvatar = document.createElement('div');
+        cssAvatar.className = 'css-avatar';
+        avatarElement.parentNode.insertBefore(cssAvatar, avatarElement);
+    }
+    
+    cssAvatar.textContent = initials;
+    cssAvatar.style.cssText = `
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4a9eff, #00d4ff);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 11px;
+        border: 2px solid #4a9eff;
+        flex-shrink: 0;
+        font-family: inherit;
+    `;
+    
+    console.log('Avatar CSS creado con iniciales:', initials);
+}
+function setInitialsAvatar(avatarElement, userName, initials) {
+    console.log('Creando avatar con iniciales:', initials);
+    
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=4a9eff&color=ffffff&size=128&rounded=true&bold=true`;
+    
+    avatarElement.src = avatarUrl;
+    avatarElement.style.display = 'block';
+    
+    avatarElement.onload = () => {
+        console.log('Avatar con iniciales cargado:', initials);
+    };
+    
+    avatarElement.onerror = () => {
+        console.log('UI Avatars falló, creando avatar CSS');
+        createCSSAvatar(avatarElement, initials);
+    };
+}
+
+function createCSSAvatar(avatarElement, initials) {
+    console.log('Creando avatar CSS con iniciales:', initials);
+    
+    avatarElement.style.display = 'none';
+    
+    let cssAvatar = avatarElement.parentNode.querySelector('.css-avatar');
+    
+    if (!cssAvatar) {
+        cssAvatar = document.createElement('div');
+        cssAvatar.className = 'css-avatar';
+        avatarElement.parentNode.insertBefore(cssAvatar, avatarElement);
+    }
+    
+    cssAvatar.textContent = initials;
+    cssAvatar.style.cssText = `
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4a9eff, #00d4ff);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 11px;
+        border: 2px solid #4a9eff;
+        flex-shrink: 0;
+        font-family: inherit;
+    `;
+    
+    console.log('Avatar CSS creado con iniciales:', initials);
+}
 
 
 
