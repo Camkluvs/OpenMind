@@ -46,11 +46,11 @@ async function checkAuthAndUpdateHeader() {
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         <div class="user-dropdown" id="userDropdown">
-                            <a href="profile.html" class="user-dropdown-item">
+                            <a href="perfil/profile.html" class="user-dropdown-item">
                                 <i class="fas fa-user"></i>
                                 Mi Perfil
                             </a>
-                            <a href="settings.html" class="user-dropdown-item">
+                            <a href="perfil/settings-perfil.html" class="user-dropdown-item">
                                 <i class="fas fa-cog"></i>
                                 Configuración
                             </a>
