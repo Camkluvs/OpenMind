@@ -6,7 +6,7 @@
     <title>Editor - OpenMind AI</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="stylesheet" href="css/noti.css">
@@ -320,35 +320,45 @@ body {
     background: rgba(74, 158, 255, 0.3);
 }
 
+/* === FIX SCROLLBAR FILE EXPLORER === */
+/* === FIX SCROLLBAR FILE EXPLORER === */
 .file-tree {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 10px;
-    max-height: calc(100vh - 120px); /* Limitar altura para forzar scroll */
+    /* CLAVE: Altura calculada para no tapar status bar */
+    max-height: calc(100vh - 180px); /* Ajustado para status bar */
+    min-height: 0;
+    
+    /* Scrollbar personalizada */
     scrollbar-width: thin;
-    scrollbar-color: #4a9eff rgba(255, 255, 255, 0.1);
+    scrollbar-color: rgba(74, 158, 255, 0.6) rgba(255, 255, 255, 0.1);
 }
 
-/* Scrollbar personalizada para WebKit */
+/* Scrollbar para WebKit browsers */
 .file-tree::-webkit-scrollbar {
     width: 8px;
+    background: transparent;
 }
 
 .file-tree::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 4px;
+    margin: 4px 0;
 }
 
 .file-tree::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #4a9eff, #00d4ff);
+    background: linear-gradient(180deg, #4a9eff, #00d4ff);
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
 .file-tree::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, #5aa8ff, #20ddff);
+    background: linear-gradient(180deg, #5aa8ff, #20ddff);
+    box-shadow: 0 0 8px rgba(74, 158, 255, 0.4);
 }
-
 
 [data-theme="light"] .file-tree::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
@@ -396,6 +406,7 @@ body {
 .folder-content {
     overflow: hidden;
     transition: all 0.2s ease;
+    margin-left: 13px;
 }
 
 .editor-main {
@@ -622,9 +633,9 @@ body {
 }
 
 #monaco-editor-container .monaco-scrollable-element .scrollbar.vertical .slider {
-    background: rgba(74, 158, 255, 0.7) !important;
+    background: rgb(54, 53, 53) !important;
     border-radius: 7px !important;
-    width: 12px !important;
+    width: 3px !important;
     margin: 1px !important;
 }
 
@@ -886,233 +897,6 @@ body {
     backdrop-filter: blur(25px);
 }
 
-/* Console Panel */
-.console-panel {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 35%;
-    background: #1e1e1e;
-    border-top: 2px solid #007acc;
-    display: none;
-    flex-direction: column;
-    z-index: 10;
-}
-
-.console-panel.open {
-    display: flex;
-}
-
-.console-header {
-    background: #2d2d30;
-    color: #cccccc;
-    padding: 8px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #3c3c3c;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.console-tabs {
-    display: flex;
-    gap: 15px;
-}
-
-.console-tab {
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 3px;
-    transition: all 0.2s;
-}
-
-.console-tab.active {
-    background: #007acc;
-    color: white;
-}
-
-.console-tab:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.console-controls {
-    display: flex;
-    gap: 10px;
-}
-
-.console-btn {
-    background: none;
-    border: none;
-    color: #cccccc;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 3px;
-    font-size: 12px;
-    transition: all 0.2s;
-}
-
-.console-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.console-btn.close:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.console-output {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    font-family: 'Courier New', 'Consolas', monospace;
-    font-size: 13px;
-    line-height: 1.4;
-    background: #1e1e1e;
-}
-
-.console-line {
-    margin: 2px 0;
-    padding: 2px 5px;
-    border-radius: 2px;
-}
-
-.console-line.output {
-    color: #d4d4d4;
-}
-
-.console-line.error {
-    color: #f48771;
-    background: rgba(244, 135, 113, 0.1);
-}
-
-.console-line.warning {
-    color: #dcdcaa;
-    background: rgba(220, 220, 170, 0.1);
-}
-
-.console-line.info {
-    color: #4fc1ff;
-}
-
-.console-line.success {
-    color: #4ec9b0;
-}
-
-.console-input-container {
-    background: #2d2d30;
-    border-top: 1px solid #3c3c3c;
-    padding: 8px 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.console-prompt {
-    color: #4fc1ff;
-    font-family: 'Courier New', 'Consolas', monospace;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.console-input {
-    flex: 1;
-    background: none;
-    border: none;
-    color: #d4d4d4;
-    font-family: 'Courier New', 'Consolas', monospace;
-    font-size: 13px;
-    outline: none;
-    padding: 4px;
-}
-
-.console-input::placeholder {
-    color: #6a6a6a;
-}
-
-.run-code-btn {
-    background: #007acc;
-    border: none;
-    color: white;
-    padding: 5px 12px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.run-code-btn:hover {
-    background: #005a9e;
-}
-
-.run-code-btn:disabled {
-    background: #555;
-    cursor: not-allowed;
-}
-
-.editor-workspace.with-console {
-    height: calc(100% - 35%);
-}
-
-.console-toggle-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #d4d4d4;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.console-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: #007acc;
-}
-
-.console-toggle-btn.active {
-    background: #007acc;
-    color: white;
-    border-color: #007acc;
-}
-
-.console-resize-handle {
-    position: absolute;
-    top: -2px;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: transparent;
-    cursor: ns-resize;
-    z-index: 11;
-}
-
-.console-resize-handle:hover,
-.console-resize-handle.dragging {
-    background: #007acc;
-}
-
-.console-output::-webkit-scrollbar {
-    width: 8px;
-}
-
-.console-output::-webkit-scrollbar-track {
-    background: #2d2d30;
-}
-
-.console-output::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 4px;
-}
-
-.console-output::-webkit-scrollbar-thumb:hover {
-    background: #666;
-}
 
 /* Active Editors Display */
 #active-editors-display {
@@ -3265,11 +3049,1135 @@ select:focus {
 [data-theme="light"] .move-file-confirm-btn:hover {
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4) !important;
 }
+
+
+
+/* CONSOLA PYTHON - Agregar al final de tu CSS */
+.console-panel {
+    position: fixed;
+    bottom: 0;
+    left: 260px;
+    right: 0;
+    height: 35%;
+    background: #1a1a1a;
+    border-top: 2px solid #4a9eff;
+    display: none;
+    flex-direction: column;
+    z-index: 50;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.console-panel.open {
+    display: flex;
+}
+
+.console-header {
+    background: #2d2d30;
+    color: #cccccc;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3c3c3c;
+    min-height: 45px;
+}
+
+.console-tabs {
+    display: flex;
+    gap: 15px;
+}
+
+.console-tab {
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: #8892a6;
+}
+
+.console-tab.active {
+    background: #4a9eff;
+    color: white;
+}
+
+.console-tab:hover:not(.active) {
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+}
+
+.console-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.console-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #cccccc;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.console-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.console-btn.run-btn {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.console-btn.run-btn:hover {
+    background: rgba(34, 197, 94, 0.3);
+}
+
+.console-btn.close:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.console-content {
+    flex: 1;
+    overflow: hidden;
+}
+
+.console-tab-content {
+    display: none;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.console-tab-content.active {
+    display: block;
+}
+
+.console-output {
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    height: 100%;
+    overflow-y: auto;
+    background: #1a1a1a;
+}
+
+.console-line {
+    margin: 3px 0;
+    padding: 4px 8px;
+    border-radius: 3px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    word-wrap: break-word;
+}
+
+.console-line.output {
+    color: #d4d4d4;
+}
+
+.console-line.error {
+    color: #f48771;
+    background: rgba(244, 135, 113, 0.1);
+}
+
+.console-line.warning {
+    color: #dcdcaa;
+    background: rgba(220, 220, 170, 0.1);
+}
+
+.console-line.info {
+    color: #4fc1ff;
+}
+
+.console-line.success {
+    color: #4ec9b0;
+    background: rgba(78, 201, 176, 0.1);
+}
+
+.console-toggle-wrapper {
+    position: fixed;
+    bottom: 20px;
+    left: 280px;
+    z-index: 100;
+}
+
+.console-toggle-btn {
+    background: rgba(74, 158, 255, 0.9);
+    border: 1px solid #4a9eff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.console-toggle-btn:hover {
+    background: #4a9eff;
+    transform: translateY(-2px);
+}
+
+.console-toggle-btn.active {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+
+.dependencies-container {
+    padding: 15px;
+    height: 100%;
+    background: #1e1e1e;
+}
+
+.dependencies-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+.dependencies-header h4 {
+    color: #4a9eff;
+    margin: 0;
+    font-size: 16px;
+}
+
+.scan-deps-btn {
+    background: rgba(74, 158, 255, 0.2);
+    border: 1px solid #4a9eff;
+    color: #4a9eff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.scan-deps-btn:hover {
+    background: rgba(74, 158, 255, 0.3);
+}
+
+.dependencies-list {
+    overflow-y: auto;
+    max-height: calc(100% - 60px);
+}
+
+.empty-deps {
+    text-align: center;
+    color: #8892a6;
+    padding: 40px 20px;
+}
+
+.empty-deps i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+    display: block;
+}
+
+.dependency-item {
+    background: rgba(74, 158, 255, 0.1);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dependency-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dependency-name {
+    font-weight: 600;
+    color: #4a9eff;
+    font-size: 14px;
+}
+
+.dependency-version {
+    font-size: 12px;
+    color: #8892a6;
+}
+
+.dependency-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.dependency-status.installed {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.dependency-status.missing {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.execution-url {
+    background: rgba(74, 158, 255, 0.1);
+    border: 1px solid #4a9eff;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.execution-url a {
+    color: #4a9eff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.execution-url button {
+    background: none;
+    border: none;
+    color: #4a9eff;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.execution-url button:hover {
+    background: rgba(74, 158, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+    .console-panel {
+        left: 0;
+        height: 40%;
+    }
+    
+    .console-toggle-wrapper {
+        left: 20px;
+    }
+}
+
+/* Estilo VS Code-like para el editor */
+.editor-main {
+    background: #1e1e1e !important;
+    border-left: none !important;
+}
+
+/* Breadcrumbs de navegación */
+.editor-breadcrumbs {
+    background: #2d2d30;
+    border-bottom: 1px solid #3c3c3c;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: #cccccc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #cccccc;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.breadcrumb-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.breadcrumb-separator {
+    color: #858585;
+    font-size: 12px;
+}
+
+.breadcrumb-item.active {
+    color: #4fc1ff;
+}
+
+/* Mejorar las pestañas para que se vean más como VS Code */
+.editor-tabs {
+    background: #2d2d30 !important;
+    border-bottom: 1px solid #3c3c3c !important;
+    padding: 0 !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+}
+
+.editor-tab {
+    background: #2d2d30 !important;
+    color: #cccccc !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin-top: 0 !important;
+    border-right: 1px solid #3c3c3c !important;
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+}
+
+.editor-tab:hover {
+    background: #383838 !important;
+}
+
+.editor-tab.active {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #007acc !important;
+}
+
+.editor-tab.modified > span:not(.close-tab) {
+    color: #ffffff !important;
+}
+
+.editor-tab.modified > span:not(.close-tab)::after {
+    content: " ●" !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+}
+
+/* Mejorar la toolbar del editor */
+.editor-toolbar {
+    background: #2d2d30 !important;
+    border-bottom: 1px solid #3c3c3c !important;
+    padding: 8px 16px !important;
+    color: #cccccc !important;
+}
+
+.file-name-display {
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace !important;
+    font-size: 13px !important;
+    color: #cccccc !important;
+}
+
+/* Monaco Editor mejorado */
+#monaco-editor-container {
+    background: #1e1e1e !important;
+}
+
+#monaco-editor-container .monaco-editor {
+    background: #1e1e1e !important;
+}
+
+#monaco-editor-container .monaco-editor .margin {
+    background: #1e1e1e !important;
+}
+
+/* File Explorer estilo VS Code */
+.file-explorer {
+    background: #252526 !important;
+    border-right: 1px solid #3c3c3c !important;
+}
+
+.explorer-header {
+    background: #2d2d30 !important;
+    border-bottom: 1px solid #3c3c3c !important;
+    padding: 12px 16px !important;
+}
+
+.explorer-title {
+    color: #cccccc !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+}
+
+.file-item {
+    color: #cccccc !important;
+    font-size: 13px !important;
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace !important;
+    padding: 4px 8px !important;
+    border-radius: 0 !important;
+}
+
+.file-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.file-item.active {
+    background: #094771 !important;
+    color: #ffffff !important;
+}
+
+.editor-status-bar {
+    background: #2d2d30;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 4px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #3c3c3c;
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+    min-height: 24px;
+}
+
+.status-left, .status-right {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#cursor-position {
+    font-weight: 600;
+}
+
+#editor-language {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Tema claro */
+[data-theme="light"] .editor-status-bar {
+    background: #0066cc;
+}
+/* Tema claro para VS Code style */
+[data-theme="light"] .editor-main {
+    background: #ffffff !important;
+}
+
+[data-theme="light"] .editor-breadcrumbs {
+    background: #f3f3f3;
+    border-bottom: 1px solid #e5e5e5;
+    color: #333333;
+}
+
+[data-theme="light"] .editor-tabs {
+    background: #f3f3f3 !important;
+    border-bottom: 1px solid #e5e5e5 !important;
+}
+
+[data-theme="light"] .editor-tab {
+    background: #f3f3f3 !important;
+    color: #333333 !important;
+    border-right: 1px solid #e5e5e5 !important;
+}
+
+[data-theme="light"] .editor-tab:hover {
+    background: #e8e8e8 !important;
+}
+
+[data-theme="light"] .editor-tab.active {
+    background: #ffffff !important;
+    color: #333333 !important;
+    border-bottom: 2px solid #007acc !important;
+}
+
+[data-theme="light"] .editor-toolbar {
+    background: #f3f3f3 !important;
+    border-bottom: 1px solid #e5e5e5 !important;
+    color: #333333 !important;
+}
+
+[data-theme="light"] .file-name-display {
+    color: #333333 !important;
+}
+
+[data-theme="light"] .file-explorer {
+    background: #f8f8f8 !important;
+    border-right: 1px solid #e5e5e5 !important;
+}
+
+[data-theme="light"] .explorer-header {
+    background: #f3f3f3 !important;
+    border-bottom: 1px solid #e5e5e5 !important;
+}
+
+[data-theme="light"] .explorer-title {
+    color: #333333 !important;
+}
+
+[data-theme="light"] .file-item {
+    color: #333333 !important;
+}
+
+[data-theme="light"] .file-item:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .file-item.active {
+    background: #e7f3ff !important;
+    color: #0066cc !important;
+}
+/* === MENU SUPERIOR VS CODE STYLE === */
+.vscode-menu-bar {
+    background: #2d2d30;
+    color: #cccccc;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    border-bottom: 1px solid #3c3c3c;
+    position: relative;
+    z-index: 10;
+}
+
+.menu-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.menu-item:hover {
+    background: #383838;
+}
+
+.menu-item.active {
+    background: #0e639c;
+}
+
+.menu-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #2d2d30;
+    border: 1px solid #464647;
+    border-radius: 3px;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    display: none;
+    z-index: 1001;
+}
+
+.menu-dropdown.show {
+    display: block;
+}
+
+.menu-dropdown-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+.menu-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.menu-dropdown-item:hover {
+    background: #383838;
+}
+
+.menu-dropdown-item.disabled {
+    color: #666;
+    cursor: not-allowed;
+}
+
+.menu-dropdown-item.disabled:hover {
+    background: transparent;
+}
+
+.menu-shortcut {
+    color: #8a8a8a;
+    font-size: 12px;
+}
+
+.menu-separator {
+    height: 1px;
+    background: #3c3c3c;
+    margin: 4px 0;
+}
+
+/* === ICONOS HOVER EN EXPLORADOR === */
+.explorer-actions {
+    display: flex;
+    gap: 5px;
+  
+    transition: opacity 0.3s ease;
+}
+
+
+
+.explorer-action-btn {
+    background: rgba(74, 158, 255, 0.2);
+    border: none;
+    color: #4a9eff;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.explorer-action-btn:hover {
+    background: rgba(74, 158, 255, 0.3);
+}
+
+/* === BREADCRUMBS MEJORADOS CON BOTONES === */
+.breadcrumb-path {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.breadcrumb-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.breadcrumb-btn {
+    background: rgba(74, 158, 255, 0.2);
+    border: none;
+    color: #4a9eff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.breadcrumb-btn:hover {
+    background: rgba(74, 158, 255, 0.3);
+}
+
+.breadcrumb-btn.save-btn.saved {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.breadcrumb-btn.save-btn.saving {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+}
+
+/* === ACTUALIZACIONES PARA MENU SUPERIOR === */
+.sidebar {
+    height: calc(100vh - 30px);
+}
+
+
+
+/* === TEMA CLARO === */
+[data-theme="light"] .vscode-menu-bar {
+    background: #f3f3f3;
+    color: #333333;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+[data-theme="light"] .menu-item:hover {
+    background: #e8e8e8;
+}
+
+[data-theme="light"] .menu-dropdown {
+    background: #f3f3f3;
+    border: 1px solid #e5e5e5;
+}
+
+[data-theme="light"] .menu-dropdown-item:hover {
+    background: #e8e8e8;
+}
+
+
+
+/* === MEJORAS PARA REPOSITORIOS === */
+
+/* Tarjetas de repositorio más compactas y profesionales */
+.repository-card {
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.04) 0%, rgba(74, 158, 255, 0.02) 100%) !important;
+    border: 1px solid rgba(74, 158, 255, 0.15) !important;
+    border-radius: 8px !important;
+    padding: 5px 5px !important;
+    margin-bottom: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    max-height: 70px !important;
+}
+
+.repository-card:hover {
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(74, 158, 255, 0.04) 100%) !important;
+    border-color: rgba(74, 158, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.15) !important;
+}
+
+/* Layout interno más compacto */
+.repository-card > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+/* Icono más pequeño */
+.repository-card .repo-icon {
+    width: 36px !important;
+    height: 36px !important;
+    background: linear-gradient(45deg, #4a9eff, #00d4ff) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    color: white !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 2px 8px rgba(74, 158, 255, 0.2) !important;
+}
+
+/* Contenido del repositorio más compacto */
+.repository-card h3 {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    margin: 0 0 4px 0 !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+}
+
+.repository-card p {
+    color: #8892a6 !important;
+    font-size: 11px !important;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.3 !important;
+    opacity: 0.8 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Stats más pequeños */
+.repository-card > div:first-child > div:nth-child(2) > div {
+    display: flex !important;
+    gap: 12px !important;
+    font-size: 10px !important;
+    color: #8892a6 !important;
+}
+
+/* Chevron más sutil */
+.repository-card > div:first-child > div:last-child {
+    color: #4a9eff !important;
+    font-size: 12px !important;
+    align-self: center !important;
+    opacity: 0.6 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Header de repositorios más compacto */
+.repository-header {
+    padding: 2px 1px 8px 1px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-bottom: 12px !important;
+}
+
+.repository-header h3 {
+    color: #ffffff !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+    font-weight: 600 !important;
+}
+
+.repository-header button {
+    background: linear-gradient(45deg, #4a9eff, #00d4ff) !important;
+    border: none !important;
+    color: white !important;
+    padding: 8px 14px !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 6px rgba(74, 158, 255, 0.25) !important;
+}
+
+/* === MEJORAS PARA EXPLORADOR DE ARCHIVOS === */
+
+/* Header del repositorio abierto mejorado */
+.repository-open-header {
+   
+    margin-bottom: 16px !important;
+  
+    display: flex !important;
+  
+}
+
+.repository-open-header > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.repository-open-header button {
+    background: rgba(74, 158, 255, 0.15) !important;
+    border: none !important;
+    color: #4a9eff !important;
+    padding: 8px 10px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+}
+
+.repository-open-header button:hover {
+    background: rgba(74, 158, 255, 0.25) !important;
+}
+
+/* Título del repositorio truncado */
+.repository-open-header h3 {
+    color: #4a9eff !important;
+    font-size: 14px !important;
+    margin: 0 !important;
+    font-weight: 600 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 150px !important;
+}
+
+.repository-open-header p {
+    color: #8892a6 !important;
+    font-size: 11px !important;
+    margin: 0 !important;
+    opacity: 0.7 !important;
+}
+
+/* === MEJORAS PARA ICONOS DE ARCHIVOS === */
+
+/* Iconos de archivos más consistentes y profesionales */
+.file-item i {
+    margin-right: 8px !important;
+    width: 16px !important;
+    text-align: center !important;
+    font-size: 13px !important;
+    opacity: 0.9 !important;
+}
+
+/* Colores específicos para cada tipo de archivo */
+.file-item i.fa-html5 { color: #e34f26 !important; }
+.file-item i.fa-css3-alt { color: #1572b6 !important; }
+.file-item i.fa-js-square { color: #f7df1e !important; }
+.file-item i.fa-python { color: #3776ab !important; }
+.file-item i.fa-java { color: #ed8b00 !important; }
+.file-item i.fa-file-code { color: #6f9bd4 !important; }
+.file-item i.fa-file-alt { color: #8892a6 !important; }
+.file-item i.fa-database { color: #336791 !important; }
+.file-item i.fa-markdown { color: #083fa1 !important; }
+.file-item i.fa-react { color: #61dafb !important; }
+.file-item i.fa-php { color: #777bb4 !important; }
+.file-item i.fa-gem { color: #cc342d !important; }
+.file-item i.fa-docker { color: #0db7ed !important; }
+.file-item i.fa-git-alt { color: #f05032 !important; }
+
+/* Carpetas con color consistente */
+.file-item.folder-item i.fa-folder,
+.file-item.folder-item i.fa-folder-open {
+    color: #fbbf24 !important;
+}
+
+.file-item.folder-item i.fa-chevron-right,
+.file-item.folder-item i.fa-chevron-down {
+    color: #8892a6 !important;
+    opacity: 0.7 !important;
+}
+
+/* === MEJORAS PARA EL TÍTULO "ARCHIVOS" === */
+
+/* Ocultar título "Archivos" en vista de repositorios */
+.explorer-header {
+    display: none !important;
+}
+
+/* Mostrar solo cuando hay repositorio seleccionado */
+.repository-files-view .explorer-header {
+    display: flex !important;
+    padding: 12px 16px !important;
+    background: rgba(74, 158, 255, 0.04) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.explorer-title {
+    color: #8892a6 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    opacity: 0.8 !important;
+}
+
+/* === MEJORAS GENERALES === */
+
+/* Espaciado más consistente */
+.file-tree {
+    padding: 8px !important;
+}
+
+/* Items de archivo más compactos */
+.file-item {
+    padding: 4px 1px !important;
+ 
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    transition: all 0.15s ease !important;
+}
+
+.file-item:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.file-item.active {
+    background: rgba(74, 158, 255, 0.15) !important;
+    color: #4a9eff !important;
+}
+
+/* Botones de acción más sutiles */
+.explorer-actions button {
+    background: rgba(74, 158, 255, 0.1) !important;
+    border: none !important;
+    color: #4a9eff !important;
+    padding: 6px 8px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 11px !important;
+    transition: all 0.2s ease !important;
+    opacity: 0.8 !important;
+}
+
+.explorer-actions button:hover {
+    background: rgba(74, 158, 255, 0.2) !important;
+    opacity: 1 !important;
+}
+
+/* === ESTADO VACÍO MEJORADO === */
+.empty-repository-state {
+    text-align: center !important;
+    padding: 32px 20px !important;
+    color: #8892a6 !important;
+}
+
+.empty-repository-state i {
+    font-size: 2.5rem !important;
+    margin-bottom: 16px !important;
+    display: block !important;
+    opacity: 0.4 !important;
+    color: #4a9eff !important;
+}
+
+.empty-repository-state h3 {
+    color: #ffffff !important;
+    margin-bottom: 8px !important;
+    font-size: 16px !important;
+}
+
+.empty-repository-state p {
+    font-size: 13px !important;
+    margin-bottom: 20px !important;
+    opacity: 0.8 !important;
+    line-height: 1.4 !important;
+}
+
+.empty-repository-state button {
+    background: linear-gradient(45deg, #4a9eff, #00d4ff) !important;
+    border: none !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-weight: 600 !important;
+    box-shadow: 0 3px 12px rgba(74, 158, 255, 0.3) !important;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .repository-card {
+        padding: 12px !important;
+        max-height: 64px !important;
+    }
+    
+    .repository-card .repo-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
+    
+    .repository-card h3 {
+        font-size: 13px !important;
+    }
+    
+    .repository-open-header {
+        padding: 10px 12px !important;
+    }
+    
+    .repository-open-header h3 {
+        max-width: 120px !important;
+        font-size: 13px !important;
+    }
+}
         </style>
 
 
 </head>
 <body>
+
+
     <aside class="sidebar" id="sidebar">
     <!-- Botón toggle se crea automáticamente con JS -->
     
@@ -3381,11 +4289,11 @@ select:focus {
         <i class="fas fa-chevron-down"></i>
     </div>
     <div class="user-dropdown" id="userDropdown">
-        <a href="profile.html" class="user-dropdown-item">
+         <a href="perfil/profile.html" class="user-dropdown-item">
             <i class="fas fa-user"></i>
             Mi Perfil
         </a>
-        <a href="settings.html" class="user-dropdown-item">
+        <a href="perfil/settings-perfil.html" class="user-dropdown-item">
             <i class="fas fa-cog"></i>
             Configuración
         </a>
@@ -3399,15 +4307,207 @@ select:focus {
     </div>
 </header>
 
+
+<!-- === MENU SUPERIOR VS CODE === -->
+<div class="vscode-menu-bar">
+    <div class="menu-item" data-menu="file">
+        <span>File</span>
+        <div class="menu-dropdown" id="file-menu">
+            <div class="menu-dropdown-item" onclick="showNewFileModal()">
+                <span>New File</span>
+                <span class="menu-shortcut">Ctrl+N</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerFolderUpload()">
+                <span>Open Folder...</span>
+                <span class="menu-shortcut">Ctrl+K Ctrl+O</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="saveCurrentFile()">
+                <span>Save</span>
+                <span class="menu-shortcut">Ctrl+S</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="saveAllFiles()">
+                <span>Save All</span>
+                <span class="menu-shortcut">Ctrl+K S</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="closeCurrentFile()">
+                <span>Close Editor</span>
+                <span class="menu-shortcut">Ctrl+F4</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="closeAllFiles()">
+                <span>Close All Editors</span>
+                <span class="menu-shortcut">Ctrl+K Ctrl+W</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="menu-item" data-menu="edit">
+        <span>Edit</span>
+        <div class="menu-dropdown" id="edit-menu">
+            <div class="menu-dropdown-item" onclick="triggerUndo()">
+                <span>Undo</span>
+                <span class="menu-shortcut">Ctrl+Z</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerRedo()">
+                <span>Redo</span>
+                <span class="menu-shortcut">Ctrl+Y</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="triggerCut()">
+                <span>Cut</span>
+                <span class="menu-shortcut">Ctrl+X</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerCopy()">
+                <span>Copy</span>
+                <span class="menu-shortcut">Ctrl+C</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerPaste()">
+                <span>Paste</span>
+                <span class="menu-shortcut">Ctrl+V</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="triggerFind()">
+                <span>Find</span>
+                <span class="menu-shortcut">Ctrl+F</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerReplace()">
+                <span>Replace</span>
+                <span class="menu-shortcut">Ctrl+H</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="menu-item" data-menu="selection">
+        <span>Selection</span>
+        <div class="menu-dropdown" id="selection-menu">
+            <div class="menu-dropdown-item" onclick="triggerSelectAll()">
+                <span>Select All</span>
+                <span class="menu-shortcut">Ctrl+A</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerExpandSelection()">
+                <span>Expand Selection</span>
+                <span class="menu-shortcut">Shift+Alt+Right</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerShrinkSelection()">
+                <span>Shrink Selection</span>
+                <span class="menu-shortcut">Shift+Alt+Left</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="triggerCopyLinesUp()">
+                <span>Copy Line Up</span>
+                <span class="menu-shortcut">Shift+Alt+Up</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerCopyLinesDown()">
+                <span>Copy Line Down</span>
+                <span class="menu-shortcut">Shift+Alt+Down</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerMoveLinesUp()">
+                <span>Move Line Up</span>
+                <span class="menu-shortcut">Alt+Up</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerMoveLinesDown()">
+                <span>Move Line Down</span>
+                <span class="menu-shortcut">Alt+Down</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="menu-item" data-menu="view">
+        <span>View</span>
+        <div class="menu-dropdown" id="view-menu">
+            <div class="menu-dropdown-item" onclick="triggerCommandPalette()">
+                <span>Command Palette...</span>
+                <span class="menu-shortcut">Ctrl+Shift+P</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="toggleExplorer()">
+                <span>Explorer</span>
+                <span class="menu-shortcut">Ctrl+Shift+E</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="toggleTerminal()">
+                <span>Terminal</span>
+                <span class="menu-shortcut">Ctrl+`</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="zoomIn()">
+                <span>Zoom In</span>
+                <span class="menu-shortcut">Ctrl+=</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="zoomOut()">
+                <span>Zoom Out</span>
+                <span class="menu-shortcut">Ctrl+-</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="resetZoom()">
+                <span>Reset Zoom</span>
+                <span class="menu-shortcut">Ctrl+0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="menu-item" data-menu="go">
+        <span>Go</span>
+        <div class="menu-dropdown" id="go-menu">
+            <div class="menu-dropdown-item" onclick="triggerGoToFile()">
+                <span>Go to File...</span>
+                <span class="menu-shortcut">Ctrl+P</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerGoToLine()">
+                <span>Go to Line...</span>
+                <span class="menu-shortcut">Ctrl+G</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerGoToSymbol()">
+                <span>Go to Symbol...</span>
+                <span class="menu-shortcut">Ctrl+Shift+O</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="triggerGoBack()">
+                <span>Go Back</span>
+                <span class="menu-shortcut">Alt+Left</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="triggerGoForward()">
+                <span>Go Forward</span>
+                <span class="menu-shortcut">Alt+Right</span>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <div class="menu-item" data-menu="help">
+        <span>Help</span>
+        <div class="menu-dropdown" id="help-menu">
+            <div class="menu-dropdown-item" onclick="showWelcome()">
+                <span>Welcome</span>
+            </div>
+            <div class="menu-dropdown-item" onclick="showKeyboardShortcuts()">
+                <span>Keyboard Shortcuts Reference</span>
+                <span class="menu-shortcut">Ctrl+K Ctrl+R</span>
+            </div>
+            <div class="menu-separator"></div>
+            <div class="menu-dropdown-item" onclick="showAbout()">
+                <span>About</span>
+            </div>
+        </div>
+    </div>
+</div>
         <!-- Code Editor View -->
         <div class="code-editor-container">
             <div class="file-explorer">
-                <div class="explorer-header">
-                    <div class="explorer-title">Archivos</div>
-                    <div style="display: flex; gap: 5px;" id="repository-level-controls">
-                        <!-- Los controles se moverán aquí dinámicamente -->
-                    </div>
-                </div>
+               <div class="explorer-header">
+    <div class="explorer-title">Archivos</div>
+    <div class="explorer-actions" id="repository-level-controls">
+        <button class="explorer-action-btn" onclick="triggerFolderUpload()" title="Subir carpeta">
+            <i class="fas fa-upload"></i>
+        </button>
+        <button class="explorer-action-btn" onclick="showNewFileModal()" title="Nuevo archivo">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button class="explorer-action-btn" onclick="showCreateRepositoryModal()" title="Nuevo repositorio">
+            <i class="fas fa-code-branch"></i>
+        </button>
+    </div>
+</div>
                 <div class="file-tree" id="file-tree">
                     <div style="text-align: center; color: #8892a6; padding: 20px;">
                         Cargando archivos...
@@ -3417,8 +4517,20 @@ select:focus {
             
             <div class="editor-main">
                 <div class="editor-tabs" id="editor-tabs">
-                    <!-- Tabs dinámicos -->
-                </div>
+        <!-- Tabs dinámicos -->
+    </div>
+    
+    
+<div class="editor-breadcrumbs" id="editor-breadcrumbs">
+    <div class="breadcrumb-path">
+        <div class="breadcrumb-item">
+            <i class="fas fa-home"></i>
+            <span>Selecciona un archivo</span>
+        </div>
+    </div>
+   
+</div>
+
                 
                 <div class="editor-workspace">
                     <div class="code-editor">
@@ -3432,25 +4544,25 @@ select:focus {
                                 <i class="fas fa-eye"></i>
                                 Vista Previa
                             </button>
-                            <div class="export-tools">
-                                <div class="export-dropdown">
-                                    <button class="export-btn" id="export-dropdown-btn" title="Exportar">
-                                        <i class="fas fa-download"></i>
-                                        Exportar
-                                        <i class="fas fa-chevron-down"></i>
-                                    </button>
-                                    <div class="export-dropdown-menu" id="export-dropdown-menu">
-                                        <button class="export-option" id="export-file-btn">
-                                            <i class="fas fa-file"></i>
-                                            Exportar Archivo
-                                        </button>
-                                        <button class="export-option" id="export-repository-btn">
-                                            <i class="fas fa-folder-open"></i>
-                                            Exportar Repositorio (.zip)
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                             <div class="export-tools">
+            <div class="export-dropdown">
+                <button class="breadcrumb-btn" id="export-dropdown-btn" title="Exportar">
+                    <i class="fas fa-download"></i>
+                    Exportar
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="export-dropdown-menu" id="export-dropdown-menu">
+                    <button class="export-option" id="export-file-btn">
+                        <i class="fas fa-file"></i>
+                        Exportar Archivo
+                    </button>
+                    <button class="export-option" id="export-repository-btn">
+                        <i class="fas fa-folder-open"></i>
+                        Exportar Repositorio (.zip)
+                    </button>
+                </div>
+            </div>
+        </div>
                         </div>
                         
                         <div id="monaco-editor-container">
@@ -3463,9 +4575,41 @@ select:focus {
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
+      
+
+
+
+<div class="editor-status-bar">
+    <div class="status-left">
+        <div class="status-item" id="cursor-position">
+            <span>Ln 1, Col 1</span>
+        </div>
+        <div class="status-item" id="file-encoding">
+            <span>UTF-8</span>
+        </div>
+        <div class="status-item" id="line-ending">
+            <span>LF</span>
+        </div>
+    </div>
+    <div class="status-right">
+        <div class="status-item" id="editor-language">
+            <span>Texto plano</span>
+        </div>
+        <div class="status-item" id="file-size">
+            <span>0 bytes</span>
+        </div>
+        <div class="status-item" id="selection-info" style="display: none;">
+            <span>0 seleccionado</span>
+        </div>
+    </div>
+</div>
+
+
     </main>
 
     <!-- Toast Notification -->
@@ -4003,20 +5147,84 @@ print("Hola Mundo")`,
         System.out.println("Hola Mundo");
     }
 }`,
+        'cpp': `#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hola Mundo" << endl;
+    return 0;
+}`,
+        'c': `#include <stdio.h>
+
+int main() {
+    printf("Hola Mundo\\n");
+    return 0;
+}`,
+        'cs': `using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("Hola Mundo");
+    }
+}`,
+        'go': `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hola Mundo")
+}`,
+        'rs': `fn main() {
+    println!("Hola Mundo");
+}`,
+        'php': `<?php
+echo "Hola Mundo";
+?>`,
+        'rb': `# Ruby
+puts "Hola Mundo"`,
+        'swift': `import Foundation
+
+print("Hola Mundo")`,
+        'kt': `fun main() {
+    println("Hola Mundo")
+}`,
+        'dart': `void main() {
+    print('Hola Mundo');
+}`,
+        'r': `# R
+print("Hola Mundo")`,
+        'sql': `-- SQL
+SELECT 'Hola Mundo' AS mensaje;`,
+        'sh': `#!/bin/bash
+echo "Hola Mundo"`,
         'json': `{
     "mensaje": "Hola Mundo",
     "version": "1.0.0"
 }`,
+        'yml': `# YAML
+mensaje: "Hola Mundo"
+version: "1.0.0"`,
         'md': `# Mi Archivo
 
 ## Descripción
 Este es un archivo de documentación.`,
+        'dockerfile': `FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+CMD ["npm", "start"]`,
         'txt': 'Archivo de texto'
     };
 
-    return templates[fileType] || `// Archivo ${fileType}\n// Contenido inicial`;
+    return templates[fileType] || `// Archivo ${fileType}
+// Contenido inicial`;
 }
-
 // Funciones auxiliares de utilidad
 
 function triggerFolderUpload() {
@@ -4580,10 +5788,10 @@ function showContextMenu(event, file) {
         position: fixed;
         top: ${event.clientY}px;
         left: ${event.clientX}px;
-        background: rgba(15, 20, 25, 0.98);
+        background: #2d2d30;
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(74, 158, 255, 0.3);
-        border-radius: 8px;
+        border: 1px solid #464647;
+    
         padding: 4px 0;
         z-index: 1000;
         min-width: 180px;
@@ -4658,8 +5866,8 @@ function showContextMenu(event, file) {
             const separator = document.createElement('div');
             separator.style.cssText = `
                 height: 1px;
-                background: rgba(74, 158, 255, 0.2);
-                margin: 4px 8px;
+                background: #464647;
+              
             `;
             menu.appendChild(separator);
         } else {
@@ -4679,7 +5887,7 @@ function showContextMenu(event, file) {
                 <i class="fas ${item.icon}" style="
                     width: 12px; 
                     font-size: 12px; 
-                    color: ${item.danger ? '#ef4444' : '#4a9eff'};
+                    color: ${item.danger ? '#ef4444' : '#4fc1ff'};
                 "></i> 
                 <span>${item.text}</span>
             `;
@@ -6175,33 +7383,14 @@ async function renderRepositoriesWithAnimation() {
 
 function createRepositoryHeader() {
     const header = document.createElement('div');
-    header.style.cssText = `
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 15px;
-    `;
+    header.className = 'repository-header';
     
     header.innerHTML = `
-        <h3 style="color: #ffffff; font-size: 18px; margin: 0; font-weight: 600;">
-            <i class="fas fa-code-branch" style="margin-right: 10px; color: #4a9eff;"></i>
+        <h3>
+            <i class="fas fa-code-branch" style="margin-right: 8px; color: #4a9eff;"></i>
             Repositorios
         </h3>
-        <button onclick="showCreateRepositoryModal()" style="
-            background: linear-gradient(45deg, #4a9eff, #00d4ff);
-            border: none;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(74, 158, 255, 0.4)';" 
-           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(74, 158, 255, 0.3)';">
+        <button onclick="showCreateRepositoryModal()">
             <i class="fas fa-plus"></i> Nuevo
         </button>
     `;
@@ -6244,76 +7433,49 @@ function createEmptyRepositoryState() {
 function createOptimizedRepositoryCard(repository) {
     const card = document.createElement('div');
     card.className = 'repository-card';
-    card.style.cssText = `
-        background: linear-gradient(135deg, rgba(74, 158, 255, 0.08) 0%, rgba(74, 158, 255, 0.03) 100%);
-        border: 1px solid rgba(74, 158, 255, 0.2);
-        border-radius: 12px;
-        padding: 18px;
-        margin-bottom: 12px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    `;
 
-    // Calcular archivos de forma más eficiente usando filter optimizado
+    // Calcular archivos de forma más eficiente
     const filesCount = allProjectFiles.filter(f => 
         f.repository_id === repository.id && !f.is_folder
     ).length;
 
     card.innerHTML = `
-        <div style="display: flex; align-items: flex-start; gap: 16px;">
-            <div class="repo-icon" style="
-                width: 52px;
-                height: 52px;
-                background: linear-gradient(45deg, #4a9eff, #00d4ff);
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 22px;
-                color: white;
-                flex-shrink: 0;
-                box-shadow: 0 4px 12px rgba(74, 158, 255, 0.25);
-            ">
+        <div>
+            <div class="repo-icon">
                 <i class="fas fa-code-branch"></i>
             </div>
             <div style="flex: 1; min-width: 0;">
-                <h3 style="color: #ffffff; font-size: 16px; margin: 0 0 8px 0; font-weight: 600; line-height: 1.3;">
-                    ${repository.name}
-                </h3>
-                <p style="color: #8892a6; font-size: 13px; margin: 0 0 10px 0; line-height: 1.4; opacity: 0.9;">
-                    ${repository.description || 'Sin descripción'}
-                </p>
-                <div style="display: flex; gap: 16px; font-size: 12px; color: #8892a6;">
-                    <span style="display: flex; align-items: center; gap: 4px;">
-                        <i class="fas fa-file" style="font-size: 11px;"></i> 
+                <h3>${repository.name}</h3>
+                <p style="display: none">${repository.description || 'Sin descripción'}</p>
+                <div>
+                    <span>
+                        <i class="fas fa-file"></i> 
                         ${filesCount} archivos
                     </span>
-                    <span style="display: flex; align-items: center; gap: 4px;">
-                        <i class="fas fa-clock" style="font-size: 11px;"></i> 
+                    <span>
+                        <i class="fas fa-clock"></i> 
                         ${new Date(repository.updated_at).toLocaleDateString('es-ES')}
                     </span>
                 </div>
             </div>
-            <div style="color: #4a9eff; font-size: 16px; align-self: center; opacity: 0.7; transition: all 0.3s ease;">
+            <div>
                 <i class="fas fa-chevron-right"></i>
             </div>
         </div>
         
         <button class="delete-repo-btn" style="
             position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(239, 68, 68, 0.9);
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.8);
             border: none;
             color: white;
-            padding: 8px 10px;
-            border-radius: 6px;
+            padding: 6px 8px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
             opacity: 0;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             z-index: 10;
         " title="Eliminar repositorio">
             <i class="fas fa-trash"></i>
@@ -6321,17 +7483,14 @@ function createOptimizedRepositoryCard(repository) {
     `;
 
     // Event listeners optimizados
-    let hoverTimeout;
-    
     card.addEventListener('mouseenter', () => {
-        clearTimeout(hoverTimeout);
-        card.style.transform = 'translateY(-4px)';
-        card.style.boxShadow = '0 12px 32px rgba(74, 158, 255, 0.25)';
-        card.style.borderColor = '#4a9eff';
+        card.style.transform = 'translateY(-2px)';
+        card.style.boxShadow = '0 6px 20px rgba(74, 158, 255, 0.2)';
+        card.style.borderColor = 'rgba(74, 158, 255, 0.4)';
         
         const chevron = card.querySelector('.fas.fa-chevron-right').parentElement;
         chevron.style.opacity = '1';
-        chevron.style.transform = 'translateX(4px)';
+        chevron.style.transform = 'translateX(2px)';
         
         // Mostrar botón eliminar si tiene permisos
         const deleteBtn = card.querySelector('.delete-repo-btn');
@@ -6341,21 +7500,19 @@ function createOptimizedRepositoryCard(repository) {
     });
 
     card.addEventListener('mouseleave', () => {
-        hoverTimeout = setTimeout(() => {
-            card.style.transform = 'translateY(0)';
-            card.style.boxShadow = 'none';
-            card.style.borderColor = 'rgba(74, 158, 255, 0.2)';
-            
-            const chevron = card.querySelector('.fas.fa-chevron-right').parentElement;
-            chevron.style.opacity = '0.7';
-            chevron.style.transform = 'translateX(0)';
-            
-            // Ocultar botón eliminar
-            const deleteBtn = card.querySelector('.delete-repo-btn');
-            if (deleteBtn) {
-                deleteBtn.style.opacity = '0';
-            }
-        }, 50);
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = 'none';
+        card.style.borderColor = 'rgba(74, 158, 255, 0.15)';
+        
+        const chevron = card.querySelector('.fas.fa-chevron-right').parentElement;
+        chevron.style.opacity = '0.6';
+        chevron.style.transform = 'translateX(0)';
+        
+        // Ocultar botón eliminar
+        const deleteBtn = card.querySelector('.delete-repo-btn');
+        if (deleteBtn) {
+            deleteBtn.style.opacity = '0';
+        }
     });
 
     // Click para abrir repositorio
@@ -6923,69 +8080,42 @@ async function loadRepositoryFiles(repositoryId) {
     }
 }
 
+
 function renderRepositoryFiles() {
     const fileTree = document.getElementById('file-tree');
     fileTree.innerHTML = '';
+    
+    // Agregar clase para identificar que estamos en vista de archivos
+    fileTree.parentElement.classList.add('repository-files-view');
 
     // Header con botón de regreso optimizado
     const header = document.createElement('div');
-    header.style.cssText = `
-        padding: 16px 20px;
-        background: rgba(74, 158, 255, 0.08);
-        border-radius: 10px;
-        margin-bottom: 18px;
-        border-left: 4px solid #4a9eff;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    `;
+    header.className = 'repository-open-header';
 
     header.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 14px;">
-            <button onclick="backToRepositories()" style="
-                background: rgba(74, 158, 255, 0.2);
-                border: none;
-                color: #4a9eff;
-                padding: 10px 12px;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-weight: 500;
-            " onmouseover="this.style.background='rgba(74, 158, 255, 0.3)';" 
-               onmouseout="this.style.background='rgba(74, 158, 255, 0.2)';">
+        <div>
+            <button onclick="backToRepositories()">
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div>
-                <h3 style="color: #4a9eff; font-size: 16px; margin: 0; font-weight: 600;">
-                    ${selectedRepository?.name || 'Repositorio'}
-                </h3>
-                <p style="color: #8892a6; font-size: 12px; margin: 0; opacity: 0.8;">
-                    ${projectFiles.length} archivos
-                </p>
+                <h3>${selectedRepository?.name || 'Repositorio'}</h3>
+                <p>${projectFiles.length} archivos</p>
             </div>
         </div>
-        <div style="display: flex; gap: 6px;">
-            <button onclick="triggerFolderUpload()" style="background: rgba(74, 158, 255, 0.2); border: none; color: #4a9eff; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;" 
-                    title="Subir carpeta" onmouseover="this.style.background='rgba(74, 158, 255, 0.3)';" onmouseout="this.style.background='rgba(74, 158, 255, 0.2)';">
-                <i class="fas fa-upload"></i>
-            </button>
-            <button onclick="showNewFileModal()" style="background: rgba(74, 158, 255, 0.2); border: none; color: #4a9eff; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;" 
-                    title="Nuevo archivo" onmouseover="this.style.background='rgba(74, 158, 255, 0.3)';" onmouseout="this.style.background='rgba(74, 158, 255, 0.2)';">
-                <i class="fas fa-plus"></i>
-            </button>
-        </div>
+       
     `;
     
     fileTree.appendChild(header);
 
     if (projectFiles.length === 0) {
-        fileTree.innerHTML += `
-            <div style="text-align: center; padding: 40px 20px; color: #8892a6;">
-                <i class="fas fa-folder-open" style="font-size: 3.5rem; margin-bottom: 18px; display: block; opacity: 0.4; color: #4a9eff;"></i>
-                <p style="font-size: 1.2rem; margin-bottom: 8px; color: #ffffff;">Repositorio vacío</p>
-                <p style="font-size: 0.95rem; opacity: 0.8; line-height: 1.4;">Sube archivos o crea nuevos para comenzar</p>
-            </div>
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-repository-state';
+        emptyState.innerHTML = `
+            <i class="fas fa-folder-open"></i>
+            <h3>Repositorio vacío</h3>
+            <p>Sube archivos o crea nuevos para comenzar</p>
         `;
+        fileTree.appendChild(emptyState);
         return;
     }
 
@@ -6996,9 +8126,17 @@ function renderRepositoryFiles() {
 function backToRepositories() {
     currentViewMode = 'repositories';
     selectedRepository = null;
+    
+    // Remover clase de vista de archivos
+    const fileTree = document.getElementById('file-tree');
+    if (fileTree && fileTree.parentElement) {
+        fileTree.parentElement.classList.remove('repository-files-view');
+    }
+    
     renderRepositories();
-    moveControlsToRepositoryLevel();
+
 }
+
 
 function moveControlsToRepositoryLevel() {
     const repositoryControls = document.getElementById('repository-level-controls');
@@ -7075,6 +8213,8 @@ function buildFileTree(files) {
     return tree;
 }
 
+
+
 function renderFileTreeNode(node, container, depth) {
     // Renderizar carpetas primero
     Object.keys(node.children).sort().forEach(folderName => {
@@ -7084,14 +8224,14 @@ function renderFileTreeNode(node, container, depth) {
         
         const folderElement = document.createElement('div');
         folderElement.className = 'file-item folder-item';
-        folderElement.style.paddingLeft = `${depth * 15 + 12}px`;
+        folderElement.style.paddingLeft = `${depth * 12 + 8}px`;
         
         const hasContent = Object.keys(folderNode.children).length > 0 || folderNode.files.length > 0;
         
         folderElement.innerHTML = `
             <i class="fas ${hasContent ? (isExpanded ? 'fa-chevron-down' : 'fa-chevron-right') : ''}" 
-               style="width: 12px; margin-right: 6px; font-size: 0.8rem; color: #8892a6;"></i>
-            <i class="fas fa-folder${isExpanded ? '-open' : ''}" style="color: #fbbf24; margin-right: 10px;"></i>
+               style="width: 12px; margin-right: 4px; font-size: 10px;"></i>
+            <i class="fas fa-folder${isExpanded ? '-open' : ''}"></i>
             <span>${folderName}</span>
         `;
         
@@ -7133,6 +8273,38 @@ function renderFileTreeNode(node, container, depth) {
     });
 }
 
+function applyDesignImprovements() {
+    // Agregar clases necesarias
+    const fileExplorer = document.querySelector('.file-explorer');
+    if (fileExplorer) {
+        fileExplorer.classList.add('improved-explorer');
+    }
+    
+    // Ocultar header de archivos por defecto
+    const explorerHeader = document.querySelector('.explorer-header');
+    if (explorerHeader && currentViewMode === 'repositories') {
+        explorerHeader.style.display = '';
+    }
+}
+
+// Ejecutar mejoras al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(applyDesignImprovements, 100);
+});
+
+// También ejecutar cuando cambie el modo de vista
+const originalOpenRepository = openRepository;
+openRepository = function(repository) {
+    originalOpenRepository.call(this, repository);
+    setTimeout(applyDesignImprovements, 100);
+};
+
+const originalBackToRepositories = backToRepositories;
+backToRepositories = function() {
+    originalBackToRepositories.call(this);
+    setTimeout(applyDesignImprovements, 100);
+};
+
 function toggleFolder(folderPath, folderElement) {
     const isExpanded = expandedFolders.has(folderPath);
     
@@ -7148,14 +8320,14 @@ function toggleFolder(folderPath, folderElement) {
 function createFileElement(file, depth = 0) {
     const div = document.createElement('div');
     div.className = 'file-item';
-    div.style.paddingLeft = `${depth * 15 + 29}px`;
+    div.style.paddingLeft = `${depth * 12 + 8}px`;
     div.dataset.fileId = file.id;
     div.dataset.filePath = file.file_path;
 
     const icon = getFileIcon(file.file_type);
     
     div.innerHTML = `
-        <i class="fas ${icon}" style="margin-right: 10px; color: #60a5fa;"></i>
+        <i class="fas ${icon}"></i>
         <span>${file.file_name}</span>
     `;
 
@@ -7173,62 +8345,233 @@ function createFileElement(file, depth = 0) {
         }
     });
     
-    
     return div;
 }
-
 function getFileIcon(fileType) {
     const icons = {
-        'html': 'fa-file-code',
-        'css': 'fa-file-code', 
-        'js': 'fa-file-code',
-        'jsx': 'fa-file-code',
-        'ts': 'fa-file-code',
-        'tsx': 'fa-file-code',
-        'json': 'fa-file-code',
-        'xml': 'fa-file-code',
-        'php': 'fa-file-code',
-        'py': 'fa-file-code',
-        'rb': 'fa-file-code',
-        'java': 'fa-file-code',
-        'cs': 'fa-file-code',
-        'cpp': 'fa-file-code',
-        'c': 'fa-file-code',
-        'go': 'fa-file-code',
-        'rs': 'fa-file-code',
-        'swift': 'fa-file-code',
-        'kt': 'fa-file-code',
-        'scala': 'fa-file-code',
-        'sh': 'fa-file-code',
-        'bash': 'fa-file-code',
-        'sql': 'fa-file-code',
-        'yml': 'fa-file-code',
-        'yaml': 'fa-file-code',
-        'md': 'fa-file-alt',
-        'txt': 'fa-file-alt',
-        'pdf': 'fa-file-pdf',
-        'doc': 'fa-file-word',
-        'docx': 'fa-file-word',
-        'xls': 'fa-file-excel',
-        'xlsx': 'fa-file-excel',
-        'zip': 'fa-file-archive',
-        'rar': 'fa-file-archive',
-        '7z': 'fa-file-archive',
-        'jpg': 'fa-file-image',
-        'jpeg': 'fa-file-image',
-        'png': 'fa-file-image',
-        'gif': 'fa-file-image',
-        'svg': 'fa-file-image',
-        'mp4': 'fa-file-video',
-        'avi': 'fa-file-video',
-        'mov': 'fa-file-video',
-        'mp3': 'fa-file-audio',
-        'wav': 'fa-file-audio'
+        // Web Technologies
+        'html': 'fab fa-html5',
+        'htm': 'fab fa-html5',
+        'xhtml': 'fab fa-html5',
+        'css': 'fab fa-css3-alt',
+        'scss': 'fab fa-sass',
+        'sass': 'fab fa-sass',
+        'less': 'fab fa-less',
+        'js': 'fab fa-js-square',
+        'jsx': 'fab fa-react',
+        'mjs': 'fab fa-js-square',
+        'ts': 'fas fa-file-code',
+        'tsx': 'fab fa-react',
+        'vue': 'fab fa-vuejs',
+        'svelte': 'fas fa-file-code',
+        'astro': 'fas fa-rocket',
+        
+        // Backend Languages
+        'py': 'fab fa-python',
+        'pyw': 'fab fa-python',
+        'java': 'fab fa-java',
+        'class': 'fab fa-java',
+        'jsp': 'fab fa-java',
+        'php': 'fab fa-php',
+        'php3': 'fab fa-php',
+        'php4': 'fab fa-php',
+        'php5': 'fab fa-php',
+        'php7': 'fab fa-php',
+        'phtml': 'fab fa-php',
+        'rb': 'fas fa-gem',
+        'rbw': 'fas fa-gem',
+        'gem': 'fas fa-gem',
+        'rake': 'fas fa-gem',
+        'go': 'fas fa-file-code',
+        'rs': 'fas fa-cog',
+        'swift': 'fab fa-swift',
+        'kt': 'fas fa-mobile-alt',
+        'kts': 'fas fa-mobile-alt',
+        'scala': 'fas fa-file-code',
+        'sc': 'fas fa-file-code',
+        'dart': 'fas fa-file-code',
+        'lua': 'fas fa-moon',
+        'perl': 'fas fa-file-code',
+        'pl': 'fas fa-file-code',
+        'pm': 'fas fa-file-code',
+        
+        // System Programming
+        'c': 'fas fa-file-code',
+        'h': 'fas fa-file-code',
+        'cpp': 'fas fa-file-code',
+        'cxx': 'fas fa-file-code',
+        'cc': 'fas fa-file-code',
+        'hpp': 'fas fa-file-code',
+        'hxx': 'fas fa-file-code',
+        'cs': 'fas fa-file-code',
+        'vb': 'fas fa-file-code',
+        'fs': 'fas fa-file-code',
+        'fsx': 'fas fa-file-code',
+        'fsi': 'fas fa-file-code',
+        
+        // Functional Languages
+        'hs': 'fas fa-file-code',
+        'lhs': 'fas fa-file-code',
+        'elm': 'fas fa-tree',
+        'ml': 'fas fa-file-code',
+        'mli': 'fas fa-file-code',
+        'clj': 'fas fa-file-code',
+        'cljs': 'fas fa-file-code',
+        'cljc': 'fas fa-file-code',
+        'erl': 'fas fa-file-code',
+        'hrl': 'fas fa-file-code',
+        'ex': 'fas fa-flask',
+        'exs': 'fas fa-flask',
+        
+        // Scripting
+        'sh': 'fas fa-terminal',
+        'bash': 'fas fa-terminal',
+        'zsh': 'fas fa-terminal',
+        'fish': 'fas fa-terminal',
+        'ps1': 'fas fa-terminal',
+        'psm1': 'fas fa-terminal',
+        'bat': 'fas fa-terminal',
+        'cmd': 'fas fa-terminal',
+        
+        // Data & Config
+        'json': 'fas fa-file-code',
+        'jsonc': 'fas fa-file-code',
+        'json5': 'fas fa-file-code',
+        'xml': 'fas fa-file-code',
+        'xsl': 'fas fa-file-code',
+        'xsd': 'fas fa-file-code',
+        'yml': 'fas fa-cog',
+        'yaml': 'fas fa-cog',
+        'toml': 'fas fa-cog',
+        'ini': 'fas fa-cog',
+        'cfg': 'fas fa-cog',
+        'conf': 'fas fa-cog',
+        'properties': 'fas fa-cog',
+        
+        // Databases
+        'sql': 'fas fa-database',
+        'mysql': 'fas fa-database',
+        'pgsql': 'fas fa-database',
+        'plsql': 'fas fa-database',
+        'tsql': 'fas fa-database',
+        
+        // Markup & Documentation
+        'md': 'fab fa-markdown',
+        'markdown': 'fab fa-markdown',
+        'mdown': 'fab fa-markdown',
+        'mkd': 'fab fa-markdown',
+        'rst': 'fas fa-file-alt',
+        'tex': 'fas fa-file-alt',
+        'latex': 'fas fa-file-alt',
+        'org': 'fas fa-file-alt',
+        
+        // Mobile Development
+        'm': 'fab fa-apple',
+        'mm': 'fab fa-apple',
+        'gradle': 'fab fa-android',
+        'groovy': 'fas fa-file-code',
+        'gvy': 'fas fa-file-code',
+        
+        // Other Languages
+        'r': 'fas fa-chart-line',
+        'R': 'fas fa-chart-line',
+        'rmd': 'fas fa-chart-line',
+        'matlab': 'fas fa-calculator',
+        'jl': 'fas fa-atom',
+        'nim': 'fas fa-crown',
+        'nims': 'fas fa-crown',
+        'cr': 'fas fa-gem',
+        'zig': 'fas fa-bolt',
+        'v': 'fas fa-file-code',
+        'sol': 'fab fa-ethereum',
+        
+        // Templates
+        'hbs': 'fas fa-file-code',
+        'handlebars': 'fas fa-file-code',
+        'mustache': 'fas fa-file-code',
+        'twig': 'fas fa-file-code',
+        'liquid': 'fas fa-file-code',
+        'ejs': 'fas fa-file-code',
+        'pug': 'fas fa-file-code',
+        'jade': 'fas fa-file-code',
+        
+        // Docker & DevOps
+        'dockerfile': 'fab fa-docker',
+        'dockerignore': 'fab fa-docker',
+        'vagrantfile': 'fas fa-box',
+        'makefile': 'fas fa-hammer',
+        'make': 'fas fa-hammer',
+        
+        // Version Control
+        'gitignore': 'fab fa-git-alt',
+        'gitattributes': 'fab fa-git-alt',
+        'gitmodules': 'fab fa-git-alt',
+        'hgignore': 'fas fa-code-branch',
+        
+        // Package Managers
+        'package': 'fab fa-npm',
+        'composer': 'fas fa-box',
+        'bower': 'fas fa-box',
+        'yarn': 'fab fa-yarn',
+        'lock': 'fas fa-lock',
+        
+        // Assembly
+        'asm': 'fas fa-microchip',
+        's': 'fas fa-microchip',
+        'nasm': 'fas fa-microchip',
+        
+        // Archives & Images
+        'zip': 'fas fa-file-archive',
+        'rar': 'fas fa-file-archive',
+        '7z': 'fas fa-file-archive',
+        'tar': 'fas fa-file-archive',
+        'gz': 'fas fa-file-archive',
+        'jpg': 'fas fa-file-image',
+        'jpeg': 'fas fa-file-image',
+        'png': 'fas fa-file-image',
+        'gif': 'fas fa-file-image',
+        'svg': 'fas fa-file-image',
+        'ico': 'fas fa-file-image',
+        'webp': 'fas fa-file-image',
+        
+        // Media
+        'mp4': 'fas fa-file-video',
+        'avi': 'fas fa-file-video',
+        'mov': 'fas fa-file-video',
+        'webm': 'fas fa-file-video',
+        'mp3': 'fas fa-file-audio',
+        'wav': 'fas fa-file-audio',
+        'flac': 'fas fa-file-audio',
+        'ogg': 'fas fa-file-audio',
+        
+        // Documents
+        'pdf': 'fas fa-file-pdf',
+        'doc': 'fas fa-file-word',
+        'docx': 'fas fa-file-word',
+        'xls': 'fas fa-file-excel',
+        'xlsx': 'fas fa-file-excel',
+        'ppt': 'fas fa-file-powerpoint',
+        'pptx': 'fas fa-file-powerpoint',
+        'txt': 'fas fa-file-alt',
+        'rtf': 'fas fa-file-alt',
+        
+        // Fonts
+        'ttf': 'fas fa-font',
+        'otf': 'fas fa-font',
+        'woff': 'fas fa-font',
+        'woff2': 'fas fa-font',
+        'eot': 'fas fa-font',
+        
+        // Certificates & Keys
+        'pem': 'fas fa-certificate',
+        'crt': 'fas fa-certificate',
+        'key': 'fas fa-key',
+        'p12': 'fas fa-certificate',
+        'pfx': 'fas fa-certificate'
     };
     
-    return icons[fileType] || 'fa-file';
+    return icons[fileType.toLowerCase()] || 'fas fa-file';
 }
-
 async function openFile(file) {
     try {
         let existingTab = openTabs.find(tab => tab.id === file.id);
@@ -7357,37 +8700,180 @@ function closeTab(tabId) {
 
 function getMonacoLanguage(fileType) {
     const languageMap = {
-        'js': 'javascript',
-        'jsx': 'javascript',
-        'ts': 'typescript',
-        'tsx': 'typescript',
+        // Web Technologies
         'html': 'html',
+        'htm': 'html',
+        'xhtml': 'html',
         'css': 'css',
         'scss': 'scss',
+        'sass': 'scss',
         'less': 'less',
-        'json': 'json',
-        'xml': 'xml',
+        'js': 'javascript',
+        'jsx': 'javascript',
+        'mjs': 'javascript',
+        'ts': 'typescript',
+        'tsx': 'typescript',
+        'vue': 'html',
+        'svelte': 'html',
+        'astro': 'html',
+        
+        // Backend Languages
         'py': 'python',
+        'pyw': 'python',
         'java': 'java',
-        'cpp': 'cpp',
-        'c': 'c',
-        'cs': 'csharp',
+        'class': 'java',
+        'jsp': 'java',
         'php': 'php',
+        'php3': 'php',
+        'php4': 'php',
+        'php5': 'php',
+        'php7': 'php',
+        'phtml': 'php',
         'rb': 'ruby',
+        'rbw': 'ruby',
+        'gem': 'ruby',
+        'rake': 'ruby',
         'go': 'go',
         'rs': 'rust',
         'swift': 'swift',
         'kt': 'kotlin',
+        'kts': 'kotlin',
         'scala': 'scala',
+        'sc': 'scala',
+        'dart': 'dart',
+        'lua': 'lua',
+        'perl': 'perl',
+        'pl': 'perl',
+        'pm': 'perl',
+        
+        // System Programming
+        'c': 'c',
+        'h': 'c',
+        'cpp': 'cpp',
+        'cxx': 'cpp',
+        'cc': 'cpp',
+        'hpp': 'cpp',
+        'hxx': 'cpp',
+        'cs': 'csharp',
+        'vb': 'vb',
+        'fs': 'fsharp',
+        'fsx': 'fsharp',
+        'fsi': 'fsharp',
+        
+        // Functional Languages
+        'hs': 'haskell',
+        'lhs': 'haskell',
+        'elm': 'elm',
+        'ml': 'ocaml',
+        'mli': 'ocaml',
+        'clj': 'clojure',
+        'cljs': 'clojure',
+        'cljc': 'clojure',
+        'erl': 'erlang',
+        'hrl': 'erlang',
+        'ex': 'elixir',
+        'exs': 'elixir',
+        
+        // Scripting
         'sh': 'shell',
         'bash': 'shell',
-        'sql': 'sql',
-        'md': 'markdown',
+        'zsh': 'shell',
+        'fish': 'shell',
+        'ps1': 'powershell',
+        'psm1': 'powershell',
+        'bat': 'batch',
+        'cmd': 'batch',
+        
+        // Data & Config
+        'json': 'json',
+        'jsonc': 'json',
+        'json5': 'json',
+        'xml': 'xml',
+        'xsl': 'xml',
+        'xsd': 'xml',
         'yml': 'yaml',
         'yaml': 'yaml',
-        'dockerfile': 'dockerfile'
+        'toml': 'ini',
+        'ini': 'ini',
+        'cfg': 'ini',
+        'conf': 'ini',
+        'properties': 'properties',
+        
+        // Databases
+        'sql': 'sql',
+        'mysql': 'sql',
+        'pgsql': 'sql',
+        'plsql': 'sql',
+        'tsql': 'sql',
+        
+        // Markup & Documentation
+        'md': 'markdown',
+        'markdown': 'markdown',
+        'mdown': 'markdown',
+        'mkd': 'markdown',
+        'rst': 'restructuredtext',
+        'tex': 'latex',
+        'latex': 'latex',
+        'org': 'org',
+        
+        // Mobile Development
+        'm': 'objective-c',
+        'mm': 'objective-cpp',
+        'gradle': 'groovy',
+        'groovy': 'groovy',
+        'gvy': 'groovy',
+        
+        // Other Languages
+        'r': 'r',
+        'R': 'r',
+        'rmd': 'r',
+        'matlab': 'matlab',
+        'm': 'matlab',
+        'jl': 'julia',
+        'nim': 'nim',
+        'nims': 'nim',
+        'cr': 'crystal',
+        'zig': 'zig',
+        'v': 'v',
+        'sol': 'solidity',
+        
+        // Templates
+        'hbs': 'handlebars',
+        'handlebars': 'handlebars',
+        'mustache': 'handlebars',
+        'twig': 'twig',
+        'liquid': 'liquid',
+        'ejs': 'html',
+        'pug': 'pug',
+        'jade': 'pug',
+        
+        // Docker & DevOps
+        'dockerfile': 'dockerfile',
+        'dockerignore': 'dockerfile',
+        'vagrantfile': 'ruby',
+        'makefile': 'makefile',
+        'make': 'makefile',
+        
+        // Version Control
+        'gitignore': 'ignore',
+        'gitattributes': 'ignore',
+        'gitmodules': 'ignore',
+        'hgignore': 'ignore',
+        
+        // Package Managers
+        'package': 'json',
+        'composer': 'json',
+        'bower': 'json',
+        'yarn': 'yaml',
+        'lock': 'yaml',
+        
+        // Assembly
+        'asm': 'asm',
+        's': 'asm',
+        'nasm': 'asm'
     };
-    return languageMap[fileType] || 'plaintext';
+    
+    return languageMap[fileType.toLowerCase()] || 'plaintext';
 }
 
 function setActiveTab(tab) {
@@ -7408,11 +8894,32 @@ function setActiveTab(tab) {
         
         const canEdit = ['owner', 'admin'].includes(currentUserRole);
         monacoEditor.updateOptions({ readOnly: !canEdit });
+        
+        // Agregar event listeners para el status bar
+        monacoEditor.onDidChangeCursorPosition(() => {
+            updateStatusBar();
+        });
+
+        monacoEditor.onDidChangeCursorSelection(() => {
+            updateStatusBar();
+        });
+
+        monacoEditor.onDidChangeModelContent(() => {
+            updateStatusBar();
+        });
     }
     
     document.getElementById('current-file-name').textContent = tab.name;
     updateFileTreeVisual();
     updateTabsVisual();
+    
+    // Crear breadcrumbs
+    createBreadcrumbs(tab.filePath, tab.name);
+    
+    // Actualizar status bar después de un breve delay para que Monaco se inicialice
+    setTimeout(() => {
+        updateStatusBar();
+    }, 100);
     
     if (currentUser && tab.id) {
         const userName = currentUser.user_metadata?.full_name || 
@@ -8445,8 +9952,583 @@ window.addEventListener('beforeunload', () => {
         uploadAbortController.abort();
     }
 });
+// Agregar después de la función setActiveTab()
+function createBreadcrumbs(filePath, fileName) {
+    const breadcrumbsContainer = document.getElementById('editor-breadcrumbs');
+    if (!breadcrumbsContainer) return;
+    
+    const pathParts = filePath.split('/').filter(part => part.length > 0);
+    let html = '';
+    
+    // Icono del repositorio
+    html += `
+        <div class="breadcrumb-item">
+            <i class="fas fa-code-branch"></i>
+            <span>${selectedRepository?.name || 'Repositorio'}</span>
+        </div>
+    `;
+    
+    // Carpetas del path
+    let currentPath = '';
+    pathParts.slice(0, -1).forEach((part, index) => {
+        currentPath += `/${part}`;
+        html += `
+            <span class="breadcrumb-separator">›</span>
+            <div class="breadcrumb-item">
+                <i class="fas fa-folder"></i>
+                <span>${part}</span>
+            </div>
+        `;
+    });
+    
+    // Archivo actual
+    if (fileName) {
+        html += `
+            <span class="breadcrumb-separator">›</span>
+            <div class="breadcrumb-item active">
+                <i class="fas ${getFileIcon(fileName.split('.').pop())}"></i>
+                <span>${fileName}</span>
+            </div>
+        `;
+    }
+    
+    breadcrumbsContainer.innerHTML = html;
+}
 
+// Actualizar la función setActiveTab() para incluir breadcrumbs
+const originalSetActiveTab = setActiveTab;
+setActiveTab = function(tab) {
+    originalSetActiveTab.call(this, tab);
+    
+    if (tab) {
+        createBreadcrumbs(tab.filePath, tab.name);
+    }
+};
 
+// Función para actualizar el status bar
+function updateStatusBar() {
+    if (!monacoEditor || !activeTab) return;
+    
+    const model = monacoEditor.getModel();
+    if (!model) return;
+    
+    // Actualizar posición del cursor
+    const position = monacoEditor.getPosition();
+    const cursorElement = document.getElementById('cursor-position');
+    if (cursorElement && position) {
+        cursorElement.innerHTML = `<span>Ln ${position.lineNumber}, Col ${position.column}</span>`;
+    }
+    
+    // Actualizar lenguaje
+    const languageElement = document.getElementById('editor-language');
+    if (languageElement) {
+        const languageMap = {
+            'javascript': 'JavaScript',
+            'typescript': 'TypeScript',
+            'html': 'HTML',
+            'css': 'CSS',
+            'scss': 'SCSS',
+            'python': 'Python',
+            'java': 'Java',
+            'cpp': 'C++',
+            'c': 'C',
+            'csharp': 'C#',
+            'php': 'PHP',
+            'ruby': 'Ruby',
+            'go': 'Go',
+            'rust': 'Rust',
+            'swift': 'Swift',
+            'kotlin': 'Kotlin',
+            'dart': 'Dart',
+            'json': 'JSON',
+            'xml': 'XML',
+            'yaml': 'YAML',
+            'markdown': 'Markdown',
+            'sql': 'SQL',
+            'shell': 'Shell',
+            'dockerfile': 'Dockerfile',
+            'plaintext': 'Texto plano'
+        };
+        
+        const currentLanguage = model.getLanguageId();
+        const displayName = languageMap[currentLanguage] || currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1);
+        languageElement.innerHTML = `<span>${displayName}</span>`;
+    }
+    
+    // Actualizar tamaño del archivo
+    const fileSizeElement = document.getElementById('file-size');
+    if (fileSizeElement) {
+        const content = model.getValue();
+        const bytes = new Blob([content]).size;
+        const size = formatFileSize(bytes);
+        fileSizeElement.innerHTML = `<span>${size}</span>`;
+    }
+    
+    // Actualizar información de selección
+    const selection = monacoEditor.getSelection();
+    const selectionElement = document.getElementById('selection-info');
+    if (selectionElement && selection && !selection.isEmpty()) {
+        const selectedText = model.getValueInRange(selection);
+        const selectedLength = selectedText.length;
+        const selectedLines = selectedText.split('\n').length;
+        
+        if (selectedLength > 0) {
+            let selectionText = '';
+            if (selectedLines > 1) {
+                selectionText = `${selectedLength} caracteres, ${selectedLines} líneas`;
+            } else {
+                selectionText = `${selectedLength} seleccionado`;
+            }
+            selectionElement.innerHTML = `<span>${selectionText}</span>`;
+            selectionElement.style.display = 'block';
+        } else {
+            selectionElement.style.display = 'none';
+        }
+    } else if (selectionElement) {
+        selectionElement.style.display = 'none';
+    }
+}
+
+// Función para formatear el tamaño del archivo
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 bytes';
+    
+    const k = 1024;
+    const sizes = ['bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+// Función para obtener información del proyecto actual
+function updateProjectInfo() {
+    const projectElement = document.getElementById('project-info');
+    if (projectElement && currentProject) {
+        projectElement.innerHTML = `
+            <i class="fas fa-folder"></i>
+            <span>${currentProject.name}</span>
+        `;
+    }
+}
+
+// Función para contar líneas totales del proyecto
+async function getProjectStats() {
+    if (!selectedRepository) return { files: 0, lines: 0 };
+    
+    const codeFiles = projectFiles.filter(f => 
+        !f.is_folder && 
+        ['js', 'ts', 'html', 'css', 'py', 'java', 'cpp', 'c', 'php', 'rb'].includes(f.file_type)
+    );
+    
+    let totalLines = 0;
+    codeFiles.forEach(file => {
+        if (file.content) {
+            totalLines += file.content.split('\n').length;
+        }
+    });
+    
+    return { files: codeFiles.length, lines: totalLines };
+}
+// === FUNCIONES DEL MENU SUPERIOR ===
+
+let activeMenu = null;
+
+// Inicializar menú superior
+document.addEventListener('DOMContentLoaded', function() {
+    setupMenuSystem();
+    setupKeyboardShortcuts();
+});
+
+function setupMenuSystem() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            const menuType = this.dataset.menu;
+            if (activeMenu && activeMenu !== menuType) {
+                closeAllMenus();
+                openMenu(menuType, this);
+            }
+        });
+        
+        item.addEventListener('click', function() {
+            const menuType = this.dataset.menu;
+            if (activeMenu === menuType) {
+                closeAllMenus();
+            } else {
+                closeAllMenus();
+                openMenu(menuType, this);
+            }
+        });
+    });
+    
+    // Cerrar menús al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.menu-item')) {
+            closeAllMenus();
+        }
+    });
+}
+
+function openMenu(menuType, element) {
+    const dropdown = element.querySelector('.menu-dropdown');
+    if (dropdown) {
+        element.classList.add('active');
+        dropdown.classList.add('show');
+        activeMenu = menuType;
+    }
+}
+
+function closeAllMenus() {
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+        const dropdown = item.querySelector('.menu-dropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+    });
+    activeMenu = null;
+}
+
+// === FUNCIONES DE COMANDOS MONACO ===
+
+function triggerUndo() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'undo', null);
+    }
+    closeAllMenus();
+}
+
+function triggerRedo() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'redo', null);
+    }
+    closeAllMenus();
+}
+
+function triggerCut() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.clipboardCutAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerCopy() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.clipboardCopyAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerPaste() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.clipboardPasteAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerFind() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'actions.find', null);
+    }
+    closeAllMenus();
+}
+
+function triggerReplace() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.startFindReplaceAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerSelectAll() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.selectAll', null);
+    }
+    closeAllMenus();
+}
+
+function triggerExpandSelection() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.smartSelect.expand', null);
+    }
+    closeAllMenus();
+}
+
+function triggerShrinkSelection() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.smartSelect.shrink', null);
+    }
+    closeAllMenus();
+}
+
+function triggerCopyLinesUp() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.copyLinesUpAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerCopyLinesDown() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.copyLinesDownAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerMoveLinesUp() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.moveLinesUpAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerMoveLinesDown() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.moveLinesDownAction', null);
+    }
+    closeAllMenus();
+}
+
+function triggerCommandPalette() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.quickCommand', null);
+    }
+    closeAllMenus();
+}
+
+function triggerGoToFile() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'workbench.action.quickOpen', null);
+    }
+    closeAllMenus();
+}
+
+function triggerGoToLine() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.gotoLine', null);
+    }
+    closeAllMenus();
+}
+
+function triggerGoToSymbol() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.quickOutline', null);
+    }
+    closeAllMenus();
+}
+
+function triggerGoBack() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'workbench.action.navigateBack', null);
+    }
+    closeAllMenus();
+}
+
+function triggerGoForward() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'workbench.action.navigateForward', null);
+    }
+    closeAllMenus();
+}
+
+// === FUNCIONES DE ARCHIVO ===
+
+function saveCurrentFile() {
+    // Aquí conectas con tu función de guardado existente
+    if (typeof autoSave === 'function') {
+        autoSave();
+    }
+    showToast('Archivo guardado', 'success');
+    closeAllMenus();
+}
+
+function saveAllFiles() {
+    // Guardar todos los archivos abiertos
+    showToast('Todos los archivos guardados', 'success');
+    closeAllMenus();
+}
+
+function closeCurrentFile() {
+    // Aquí conectas con tu función de cerrar pestaña existente
+    if (activeTab && typeof closeTab === 'function') {
+        closeTab(activeTab.id);
+    }
+    closeAllMenus();
+}
+
+function closeAllFiles() {
+    // Cerrar todas las pestañas
+    if (typeof openTabs !== 'undefined' && openTabs.length > 0) {
+        openTabs.forEach(tab => {
+            if (typeof closeTab === 'function') {
+                closeTab(tab.id);
+            }
+        });
+    }
+    closeAllMenus();
+}
+
+// === FUNCIONES DE VISTA ===
+
+function toggleExplorer() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    
+    if (sidebar && mainContent) {
+        sidebar.classList.toggle('hidden');
+        mainContent.classList.toggle('expanded');
+    }
+    closeAllMenus();
+}
+
+function toggleTerminal() {
+    showToast('Vista previa disponible en breadcrumbs', 'info');
+    closeAllMenus();
+}
+
+function zoomIn() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.fontZoomIn', null);
+    }
+    closeAllMenus();
+}
+
+function zoomOut() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.fontZoomOut', null);
+    }
+    closeAllMenus();
+}
+
+function resetZoom() {
+    if (monacoEditor) {
+        monacoEditor.trigger('keyboard', 'editor.action.fontZoomReset', null);
+    }
+    closeAllMenus();
+}
+
+// === FUNCIONES DE EJECUCIÓN ===
+
+function runCurrentFile() {
+    showToast('Ejecutando archivo...', 'info');
+    closeAllMenus();
+}
+
+function debugCurrentFile() {
+    showToast('Iniciando debug...', 'info');
+    closeAllMenus();
+}
+
+// === FUNCIONES DE TERMINAL ===
+
+function createNewTerminal() {
+    showToast('Nueva terminal creada', 'success');
+    closeAllMenus();
+}
+
+function splitTerminal() {
+    showToast('Terminal dividida', 'success');
+    closeAllMenus();
+}
+
+function runInTerminal() {
+    showToast('Ejecutando en terminal...', 'info');
+    closeAllMenus();
+}
+
+// === FUNCIONES DE AYUDA ===
+
+function showWelcome() {
+    showToast('Bienvenido a OpenMind AI Editor', 'info');
+    closeAllMenus();
+}
+
+function showKeyboardShortcuts() {
+    const shortcuts = `
+        Atajos de Teclado:
+        
+        Archivo:
+        • Ctrl+N - Nuevo archivo
+        • Ctrl+S - Guardar
+        • Ctrl+K S - Guardar todo
+        
+        Edición:
+        • Ctrl+Z - Deshacer
+        • Ctrl+Y - Rehacer
+        • Ctrl+F - Buscar
+        • Ctrl+H - Reemplazar
+        
+        Selección:
+        • Ctrl+A - Seleccionar todo
+        • Alt+Up/Down - Mover línea
+        • Shift+Alt+Up/Down - Duplicar línea
+        
+        Navegación:
+        • Ctrl+P - Ir a archivo
+        • Ctrl+G - Ir a línea
+        • Ctrl+Shift+O - Ir a símbolo
+        
+        Vista:
+        • Ctrl+Shift+E - Toggle explorador
+        • Alt+P - Vista previa
+    `;
+    alert(shortcuts);
+    closeAllMenus();
+}
+
+function showAbout() {
+    showToast('OpenMind AI Editor v1.0 - Editor colaborativo', 'info');
+    closeAllMenus();
+}
+
+// === ATAJOS DE TECLADO ===
+
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+N - Nuevo archivo
+        if (e.ctrlKey && e.key === 'n' && !e.shiftKey) {
+            e.preventDefault();
+            if (typeof showNewFileModal === 'function') {
+                showNewFileModal();
+            }
+        }
+        
+        // Ctrl+S - Guardar
+        if (e.ctrlKey && e.key === 's' && !e.shiftKey) {
+            e.preventDefault();
+            saveCurrentFile();
+        }
+        
+        // Alt+P - Preview
+        if (e.altKey && e.key === 'p') {
+            e.preventDefault();
+            if (typeof openPreviewInNewTab === 'function') {
+                openPreviewInNewTab();
+            }
+        }
+        
+        // Ctrl+Shift+E - Toggle Explorer
+        if (e.ctrlKey && e.shiftKey && e.key === 'E') {
+            e.preventDefault();
+            toggleExplorer();
+        }
+    });
+}
+
+// === FUNCIÓN AUXILIAR TOAST ===
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
 </script>
 
 
@@ -8489,10 +10571,10 @@ window.addEventListener('beforeunload', () => {
     position: absolute;
     top: 100%;
     right: 0;
-    background: rgba(15, 20, 25, 0.95);
+    background: #252526 !important;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(74, 158, 255, 0.3);
-    border-radius: 8px;
+    border: 1px solid #3c3c3c;
+   
     padding: 8px 0;
     min-width: 200px;
     z-index: 1000;

@@ -191,52 +191,6 @@ function updateLanguageContent() {
 
 
 
-async function checkUserProjectsAndRedirect() {
-    try {
-        // Obtener el usuario actual
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-        
-        if (userError || !user) {
-            console.log('Usuario no autenticado');
-            return false;
-        }
-
-        // Verificar si el usuario tiene proyectos como propietario
-        const { data: ownedProjects, error: ownedError } = await supabaseClient
-            .from('projects')
-            .select('id, name')
-            .eq('owner_id', user.id);
-
-        // Verificar si el usuario es miembro de algún proyecto
-        const { data: memberProjects, error: memberError } = await supabaseClient
-            .from('project_members')
-            .select('project_id, projects(id, name)')
-            .eq('user_id', user.id);
-
-        if (ownedError && memberError) {
-            console.error('Error al verificar proyectos:', ownedError || memberError);
-            return false;
-        }
-
-        const totalProjects = (ownedProjects?.length || 0) + (memberProjects?.length || 0);
-
-        // Si el usuario tiene al menos un proyecto, redirigir a profile.html
-        if (totalProjects > 0) {
-            console.log(`Usuario tiene ${totalProjects} proyecto(s). Redirigiendo a profile.html`);
-            window.location.href = './perfil/profile.html';
-            return true;
-        }
-
-        // Si no tiene proyectos, retornar false para continuar flujo normal
-        console.log('Usuario no tiene proyectos. Continuando con flujo normal.');
-        return false;
-
-    } catch (error) {
-        console.error('Error en verificación de proyectos:', error);
-        // En caso de error, continuar con flujo normal
-        return false;
-    }
-}
 
 function updateSpecificTexts() {
     // Actualizar título y subtítulo
@@ -299,16 +253,15 @@ function initializeDOMReferences() {
 }
 
 // Verificar sesión existente
+// Verificar sesión existente
 async function checkExistingSession() {
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         
-           if (session) {
-           const hasProjects = await checkUserProjectsAndRedirect();
-           if (!hasProjects) {
-            window.location.href = 'enter.html';
+        if (session) {
+            // Si hay sesión, redirigir directamente al perfil
+            window.location.href = './perfil/profile.html';
         }
-   }
     } catch (error) {
         console.error('Error checking session:', error);
     }
@@ -410,6 +363,7 @@ function setLoading(buttonId, isLoading) {
 }
 
 // Manejar login
+
 async function handleLogin(e) {
     e.preventDefault();
     
@@ -439,12 +393,10 @@ async function handleLogin(e) {
         
         showSuccess('¡Inicio de sesión exitoso! Redirigiendo...');
         
-        setTimeout(async () => {
-          const hasProjects = await checkUserProjectsAndRedirect();
-          if (!hasProjects) {
-          window.location.href = 'enter.html';
-        }
-       }, 1500);
+        // Redirigir directamente al perfil
+        setTimeout(() => {
+            window.location.href = './perfil/profile.html';
+        }, 1500);
         
     } catch (error) {
         console.error('Login error:', error);
@@ -455,7 +407,9 @@ async function handleLogin(e) {
     }
 }
 
+
 // Manejar registro
+
 async function handleRegister(e) {
     e.preventDefault();
     
@@ -503,11 +457,9 @@ async function handleRegister(e) {
         
         if (data?.user?.email_confirmed_at) {
             showSuccess('¡Cuenta creada! Redirigiendo...');
-            setTimeout(async () => {
-              const hasProjects = await checkUserProjectsAndRedirect();
-              if (!hasProjects) {
-                window.location.href = 'enter.html';
-              }
+            // Redirigir directamente al perfil
+            setTimeout(() => {
+                window.location.href = './perfil/profile.html';
             }, 1500);
         } else {
             showSuccess('¡Cuenta creada! Revisa tu email para confirmar tu cuenta.');
@@ -515,7 +467,6 @@ async function handleRegister(e) {
         
     } catch (error) {
         console.error('Register error:', error);
-        // Manejar errores comunes
         let errorMsg = error.message;
         if (error.message.includes('already registered')) {
             errorMsg = 'Este email ya está registrado';

@@ -269,7 +269,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 24px;
-
+    max-width: 1200px;
 }
 
 
@@ -322,18 +322,18 @@
         }
 
         /* Asegurar que no interfiera con el badge de estado */
-       .discussion-status-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    z-index: 10;
-}
+        .discussion-status-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            /* Aumentado para dar espacio al botón de eliminar */
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         /* Alternativa: Si prefieres el botón en la esquina inferior derecha */
 
@@ -396,6 +396,15 @@
     font-weight: 500;
 }
 
+.discussion-status {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
 
 .discussion-status.open {
     background: rgba(34, 197, 94, 0.2);
@@ -621,39 +630,25 @@
             align-items: center;
             gap: 4px;
         }
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #8892a6;
-    grid-column: 1 / -1; /* Esto hace que ocupe todo el ancho del grid */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px; /* Darle altura mínima */
-}
 
- 
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8892a6;
+        }
 
-.empty-state i {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    opacity: 0.3;
-    display: block;
-}
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            display: block;
+        }
 
-.empty-state h3 {
-    font-size: 24px;
-    margin-bottom: 12px;
-    color: #ffffff;
-    max-width: 400px; /* Limitar ancho para mejor legibilidad */
-}
-
-.empty-state p {
-    max-width: 500px; /* Limitar ancho del párrafo */
-    margin: 0 auto;
-    line-height: 1.5;
-}
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
 
         /* Vista de detalle de discusión */
         .discussion-detail-view {
@@ -692,103 +687,40 @@
             transform: translateX(-2px);
         }
 
-/* Mejorar diseño del post principal */
-.discussion-post {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    padding: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
-}
+        .discussion-post {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+        }
 
-.discussion-post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
+        .discussion-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
 
-.discussion-post-info {
-    flex: 1;
-    min-width: 300px;
-}
+        .discussion-post-info {
+            flex: 1;
+        }
 
-.discussion-post-title {
-    font-size: 28px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 12px;
-    line-height: 1.3;
-    word-break: break-word;
-}
+        .discussion-post-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
 
-.discussion-post-meta {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 14px;
-    color: #8892a6;
-    flex-wrap: wrap;
-}
-
-.discussion-post-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.discussion-admin-controls {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    flex-wrap: wrap;
-}
-
-/* Mejor alineación del estado */
-.discussion-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-}
-
-/* Responsive mejoras */
-@media (max-width: 768px) {
-    .discussion-post {
-        padding: 20px;
-    }
-    
-    .discussion-post-title {
-        font-size: 22px;
-    }
-    
-    .discussion-post-header {
-        flex-direction: column;
-    }
-    
-    .discussion-post-actions {
-        justify-content: stretch;
-    }
-    
-    .action-btn {
-        flex: 1;
-        justify-content: center;
-    }
-}
-    
+        .discussion-post-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+            color: #8892a6;
+        }
 
         .discussion-post-author {
             color: #4a9eff;
@@ -800,10 +732,12 @@
             line-height: 1.6;
             color: #e2e8f0;
             margin-bottom: 24px;
-            margin-left: 5px;
         }
 
-  
+        .discussion-post-actions {
+            display: flex;
+            gap: 16px;
+        }
 
         .action-btn {
             background: rgba(255, 255, 255, 0.05);
@@ -1019,16 +953,15 @@
             padding: 20px 18px;
             border: 1px solid var(--ai-border);
             box-shadow: 0 8px 32px rgba(20, 40, 80, 0.18);
-            width: 390px;
+            width: 320px;
             max-width: 100vw;
             min-width: 0;
             position: sticky;
-         
+            top: 32px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             height: 850px;
-            margin-left: -75px;
         }
 
         .ai-panel-header {
@@ -3827,291 +3760,6 @@
     border: 5px solid transparent;
     border-top-color: rgba(0, 0, 0, 0.9);
 }
-
-
-/* Avatares en respuestas */
-.reply-author-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.reply-author-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(74, 158, 255, 0.3);
-}
-
-.reply-author-avatar-initial {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4a9eff, #00d4ff);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 12px;
-    border: 2px solid rgba(74, 158, 255, 0.3);
-}
-
-/* Tema claro */
-[data-theme="light"] .reply-author-avatar {
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-[data-theme="light"] .reply-author-avatar-initial {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* Deshabilitar interacciones cuando está cerrado */
-.discussion-closed .reply-form,
-.discussion-closed .reply-form-inline {
-    display: none !important;
-}
-
-.discussion-closed .reply-action-btn[onclick*="showInlineReplyForm"] {
-    display: none;
-}
-
-/* Estado cerrado más visible */
-.discussion-status.closed {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    border: 2px solid #ef4444;
-    padding: 4px 12px;
-    font-weight: 600;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-/* Deshabilitar COMPLETAMENTE interacciones cuando está cerrado */
-.discussion-closed .reply-form,
-.discussion-closed .reply-form-inline,
-.discussion-closed .reply-textarea,
-.discussion-closed .reply-submit,
-.discussion-closed .reply-action-btn[onclick*="showInlineReplyForm"] {
-    display: none !important;
-    pointer-events: none !important;
-    opacity: 0 !important;
-}
-
-/* Mensaje de cerrado más prominente */
-.closed-message {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(185, 28, 28, 0.2));
-    border: 2px solid #ef4444;
-    color: #ffffff;
-    padding: 16px;
-    border-radius: 12px;
-    text-align: center;
-    margin: 20px 0;
-    font-size: 16px;
-    font-weight: 600;
-    animation: slideDown 0.5s ease-out;
-}
-
-@keyframes slideDown {
-    from { 
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Botones de administración mejorados */
-.admin-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #8892a6;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.admin-btn i {
-    font-size: 14px;
-}
-
-.admin-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.admin-btn.close-btn {
-    border-color: rgba(251, 191, 36, 0.5);
-    color: #fbbf24;
-}
-
-.admin-btn.close-btn:hover {
-    background: rgba(251, 191, 36, 0.1);
-    border-color: #fbbf24;
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
-}
-
-.admin-btn.open-btn {
-    border-color: rgba(34, 197, 94, 0.5);
-    color: #22c55e;
-}
-
-.admin-btn.open-btn:hover {
-    background: rgba(34, 197, 94, 0.1);
-    border-color: #22c55e;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-}
-
-.admin-btn.delete-btn {
-    border-color: rgba(239, 68, 68, 0.5);
-    color: #ef4444;
-}
-
-.admin-btn.delete-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* Solo mostrar controles a usuarios con permisos */
-.discussion-admin-controls:empty {
-    display: none;
-}
-
-/* Badge de rol del usuario */
-.user-role-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-left: 8px;
-}
-
-.user-role-badge.owner {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: #ffffff;
-}
-
-.user-role-badge.admin {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-    color: #ffffff;
-}
-
-.user-role-badge.member {
-    background: rgba(74, 158, 255, 0.2);
-    color: #4a9eff;
-}
-
-/* Avatar del autor en el post principal */
-.discussion-post-author-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(74, 158, 255, 0.3);
-}
-
-.discussion-post-author-initial {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4a9eff, #00d4ff);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 12px;
-    border: 2px solid rgba(74, 158, 255, 0.3);
-}
-
-/* Tema claro */
-[data-theme="light"] .discussion-post-author-avatar {
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-[data-theme="light"] .discussion-post-author-initial {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* Contenedor de indicadores de escribiendo */
-.typing-indicators-container {
-    margin-bottom: 16px;
-    min-height: 20px;
-}
-
-/* Indicador de escribiendo mejorado */
-.typing-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    margin: 4px 0;
-    background: rgba(74, 158, 255, 0.1);
-    border-radius: 20px;
-    color: #4a9eff;
-    font-size: 12px;
-    font-style: italic;
-    animation: fadeIn 0.3s ease-in;
-}
-
-.typing-indicator.show {
-    display: flex;
-}
-
-.typing-dots {
-    display: flex;
-    gap: 2px;
-}
-
-.typing-dot {
-    width: 4px;
-    height: 4px;
-    background: #4a9eff;
-    border-radius: 50%;
-    animation: typingBounce 1.4s infinite ease-in-out;
-}
-
-.typing-dot:nth-child(1) {
-    animation-delay: -0.32s;
-}
-
-.typing-dot:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-@keyframes typingBounce {
-    0%, 80%, 100% {
-        transform: scale(0);
-    }
-    40% {
-        transform: scale(1);
-    }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
     </style>
 </head>
 
@@ -4230,7 +3878,7 @@
             <i class="fas fa-user"></i>
             Mi Perfil
         </a>
-        <a href="perfil/settings-perfil.html" class="user-dropdown-item">
+        <a href="perfil/projects.html" class="user-dropdown-item">
             <i class="fas fa-cog"></i>
             Configuración
         </a>
@@ -4278,10 +3926,6 @@
 
                     <!-- Sección de respuestas -->
                     <div class="replies-section">
-
-                        <div id="typing-indicators-container" class="typing-indicators-container">
-                        <!-- Los indicadores se agregan dinámicamente aquí -->
-                           </div>
                         <div class="replies-header">
                             <i class="fas fa-comments"></i>
                             Respuestas (<span id="replies-count">0</span>)
@@ -4486,93 +4130,21 @@
 
 
 
-       function showDeleteModal(discussionId) {
-    console.log('showDeleteModal called with:', discussionId); // Debug
-    
-    if (!discussionId) {
-        console.error('No discussion ID provided');
-        showToast('Error: ID de discusión no válido', 'error');
-        return;
-    }
+        function showDeleteModal(discussionId) {
+            discussionToDelete = discussionId;
+            const modal = document.getElementById('delete-modal-overlay');
+            const input = document.getElementById('delete-confirmation-input');
+            const confirmBtn = document.getElementById('delete-confirm-btn');
 
-    // Verificar permisos antes de mostrar el modal
-    const canDelete = currentUserRole === 'admin' || 
-                     currentUserRole === 'owner' || 
-                     (currentDiscussion && currentDiscussion.created_by === currentUser.id);
-    
-    if (!canDelete) {
-        showToast('No tienes permisos para eliminar esta discusión', 'error');
-        return;
-    }
+            // Limpiar estado
+            input.value = '';
+            confirmBtn.disabled = true;
+            confirmBtn.style.opacity = '0.5';
 
-    discussionToDelete = discussionId;
-    const modal = document.getElementById('delete-modal-overlay');
-    const input = document.getElementById('delete-confirmation-input');
-    const confirmBtn = document.getElementById('delete-confirm-btn');
-
-    if (!modal || !input || !confirmBtn) {
-        console.error('Modal elements not found');
-        showToast('Error: Elementos del modal no encontrados', 'error');
-        return;
-    }
-
-    // Limpiar estado
-    input.value = '';
-    confirmBtn.disabled = true;
-    confirmBtn.style.opacity = '0.5';
-    confirmBtn.innerHTML = 'Eliminar Discusión';
-
-    // Mostrar modal
-    modal.classList.add('show');
-    
-    // Focus en el input después de que aparezca el modal
-    setTimeout(() => {
-        input.focus();
-    }, 300);
-    
-    console.log('Modal shown, discussionToDelete set to:', discussionToDelete); // Debug
-}
-
-
-async function verifyDeletePermissions(discussionId) {
-    try {
-        // Obtener información de la discusión
-        const { data: discussion, error } = await supabaseClient
-            .from('discussions')
-            .select('created_by, project_id')
-            .eq('id', discussionId)
-            .single();
-
-        if (error) {
-            console.error('Error getting discussion info:', error);
-            return false;
+            // Mostrar modal
+            modal.classList.add('show');
+            input.focus();
         }
-
-        // Verificar si es el autor
-        if (discussion.created_by === currentUser.id) {
-            return true;
-        }
-
-        // Verificar rol en el proyecto
-        const { data: membership, error: memberError } = await supabaseClient
-            .from('project_members')
-            .select('role')
-            .eq('project_id', discussion.project_id)
-            .eq('user_id', currentUser.id)
-            .single();
-
-        if (memberError) {
-            console.error('Error checking membership:', memberError);
-            return false;
-        }
-
-        return membership.role === 'admin' || membership.role === 'owner';
-
-    } catch (error) {
-        console.error('Error verifying delete permissions:', error);
-        return false;
-    }
-}
 
         // Función para cerrar el modal
         function closeDeleteModal() {
@@ -4585,155 +4157,53 @@ async function verifyDeletePermissions(discussionId) {
         }
 
         // Función para confirmar eliminación
-   
         async function confirmDeleteDiscussion() {
-    console.log('confirmDeleteDiscussion called'); // Debug
-    console.log('discussionToDelete:', discussionToDelete); // Debug
-    
-    if (!discussionToDelete) {
-        console.error('No discussion to delete');
-        showToast('Error: No hay discusión para eliminar', 'error');
-        return;
-    }
+            if (!discussionToDelete) return;
 
-    // Verificar permisos nuevamente
-    const canDelete = currentUserRole === 'admin' || 
-                     currentUserRole === 'owner' || 
-                     (currentDiscussion && currentDiscussion.created_by === currentUser.id);
-    
-    console.log('Current user role:', currentUserRole); // Debug
-    console.log('Can delete:', canDelete); // Debug
-    console.log('Discussion created_by:', currentDiscussion?.created_by); // Debug
-    console.log('Current user ID:', currentUser?.id); // Debug
-    
-    if (!canDelete) {
-        showToast('No tienes permisos para eliminar esta discusión', 'error');
-        closeDeleteModal();
-        return;
-    }
+            try {
+                // Eliminar discusión
+                const { error } = await supabaseClient
+                    .from('discussions')
+                    .delete()
+                    .eq('id', discussionToDelete);
 
-    // Deshabilitar botón durante la eliminación
-    const confirmBtn = document.getElementById('delete-confirm-btn');
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
-    }
+                if (error) throw error;
 
-    try {
-        console.log('Attempting to delete discussion:', discussionToDelete); // Debug
-        
-        // PASO 1: Eliminar respuestas primero (para evitar errores de foreign key)
-        const { error: repliesError } = await supabaseClient
-            .from('discussion_replies')
-            .delete()
-            .eq('discussion_id', discussionToDelete);
+                showToast('Discusión eliminada correctamente');
+                closeDeleteModal();
 
-        if (repliesError) {
-            console.error('Error deleting replies:', repliesError);
-            throw new Error('Error eliminando respuestas: ' + repliesError.message);
+                // Volver a la lista de discusiones
+                showDiscussionsList();
+
+                // Recargar la lista
+                await loadDiscussions();
+
+            } catch (error) {
+                console.error('Error deleting discussion:', error);
+                showToast('Error al eliminar la discusión', 'error');
+            }
         }
 
-        // PASO 2: Eliminar likes de la discusión
-        const { error: likesError } = await supabaseClient
-            .from('discussion_likes')
-            .delete()
-            .eq('discussion_id', discussionToDelete);
-
-        if (likesError) {
-            console.error('Error deleting likes:', likesError);
-            // No lanzar error, continuar
-        }
-
-        // PASO 3: Eliminar reacciones de la discusión
-        const { error: reactionsError } = await supabaseClient
-            .from('discussion_reactions')
-            .delete()
-            .eq('discussion_id', discussionToDelete);
-
-        if (reactionsError) {
-            console.error('Error deleting reactions:', reactionsError);
-            // No lanzar error, continuar
-        }
-
-        // PASO 4: Eliminar notificaciones de menciones relacionadas
-        const { error: mentionsError } = await supabaseClient
-            .from('mention_notifications')
-            .delete()
-            .eq('discussion_id', discussionToDelete);
-
-        if (mentionsError) {
-            console.error('Error deleting mentions:', mentionsError);
-            // No lanzar error, continuar
-        }
-
-        // PASO 5: Finalmente, eliminar la discusión
-        const { error: discussionError } = await supabaseClient
-            .from('discussions')
-            .delete()
-            .eq('id', discussionToDelete);
-
-        if (discussionError) {
-            console.error('Error deleting discussion:', discussionError);
-            throw new Error('Error eliminando discusión: ' + discussionError.message);
-        }
-
-        console.log('Discussion deleted successfully'); // Debug
-        
-        showToast('Discusión eliminada correctamente');
-        closeDeleteModal();
-
-        // Volver a la lista de discusiones si estamos en el detalle
-        if (currentView === 'discussion-detail') {
-            showDiscussionsList();
-        }
-
-        // Recargar la lista
-        await loadDiscussions();
-
-    } catch (error) {
-        console.error('Error in confirmDeleteDiscussion:', error);
-        showToast(error.message || 'Error al eliminar la discusión', 'error');
-        
-        // Restaurar botón
-        if (confirmBtn) {
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML = 'Eliminar Discusión';
-        }
-    }
-}
-
-      
-
+        // Validación del input de confirmación
         document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('delete-confirmation-input');
-    const confirmBtn = document.getElementById('delete-confirm-btn');
+            const input = document.getElementById('delete-confirmation-input');
+            const confirmBtn = document.getElementById('delete-confirm-btn');
 
-    if (input && confirmBtn) {
-        input.addEventListener('input', function () {
-            const inputValue = this.value.trim().toUpperCase();
-            const isValid = inputValue === 'ELIMINAR';
-            
-            console.log('Input value:', inputValue); // Debug
-            console.log('Is valid:', isValid); // Debug
-            
-            confirmBtn.disabled = !isValid;
-            confirmBtn.style.opacity = isValid ? '1' : '0.5';
-            
-            if (isValid) {
-                confirmBtn.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
-            } else {
-                confirmBtn.style.background = 'rgba(239, 68, 68, 0.5)';
+            if (input && confirmBtn) {
+                input.addEventListener('input', function () {
+                    const isValid = this.value.trim().toUpperCase() === 'ELIMINAR';
+                    confirmBtn.disabled = !isValid;
+                    confirmBtn.style.opacity = isValid ? '1' : '0.5';
+                });
+
+                // Enter para confirmar si está habilitado
+                input.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter' && !confirmBtn.disabled) {
+                        confirmDeleteDiscussion();
+                    }
+                });
             }
         });
-
-        // Enter para confirmar si está habilitado
-        input.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter' && !confirmBtn.disabled) {
-                confirmDeleteDiscussion();
-            }
-        });
-    }
-});
 
         // Cerrar modal con ESC
         document.addEventListener('keydown', function (e) {
@@ -4791,65 +4261,57 @@ async function verifyDeletePermissions(discussionId) {
     }
 }
 
-   
-async function loadReplies(discussionId) {
-    try {
-        const { data: replies, error } = await supabaseClient
-            .from('discussion_replies')
-            .select('*')
-            .eq('discussion_id', discussionId)
-            .order('created_at', { ascending: true });
+        async function loadReplies(discussionId) {
+            try {
+                const { data: replies, error } = await supabaseClient
+                    .from('discussion_replies')
+                    .select('*')
+                    .eq('discussion_id', discussionId)
+                    .order('created_at', { ascending: true });
 
-        if (error && error.code !== 'PGRST116') {
-            console.error('Error loading replies:', error);
-            return;
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Error loading replies:', error);
+                    return;
+                }
+
+                const repliesWithInfo = await Promise.all((replies || []).map(async (reply) => {
+                    const authorName = await getUserName(reply.created_by);
+
+                    // Obtener likes de la respuesta
+                    const { count: likesCount } = await supabaseClient
+                        .from('reply_likes')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('reply_id', reply.id);
+
+                    // Verificar si el usuario actual ha dado like
+                    const { data: userLike } = await supabaseClient
+                        .from('reply_likes')
+                        .select('id')
+                        .eq('reply_id', reply.id)
+                        .eq('user_id', currentUser.id)
+                        .maybeSingle();
+
+                    return {
+                        ...reply,
+                        author_name: authorName,
+                        likes_count: likesCount || 0,
+                        is_liked: !!userLike
+                    };
+                }));
+
+                // Organizar respuestas en jerarquía
+                repliesHierarchy = organizeRepliesHierarchy(repliesWithInfo);
+                renderRepliesHierarchy();
+
+                // Actualizar contador
+                document.getElementById('replies-count').textContent = repliesWithInfo.length;
+
+            } catch (error) {
+                console.error('Error loading replies:', error);
+                document.getElementById('replies-list').innerHTML =
+                    '<p style="color: #ef4444; text-align: center;">Error cargando respuestas</p>';
+            }
         }
-
-        const repliesWithInfo = await Promise.all((replies || []).map(async (reply) => {
-            // Obtener información completa del autor incluyendo avatar
-            const { data: profile } = await supabaseClient
-                .from('profiles')
-                .select('username, full_name, avatar_url')
-                .eq('id', reply.created_by)
-                .single();
-
-            const authorName = profile?.full_name || profile?.username || 'Usuario';
-            const authorAvatar = profile?.avatar_url || null;
-
-            const { count: likesCount } = await supabaseClient
-                .from('reply_likes')
-                .select('*', { count: 'exact', head: true })
-                .eq('reply_id', reply.id);
-
-            const { data: userLike } = await supabaseClient
-                .from('reply_likes')
-                .select('id')
-                .eq('reply_id', reply.id)
-                .eq('user_id', currentUser.id)
-                .maybeSingle();
-
-            return {
-                ...reply,
-                author_name: authorName,
-                author_avatar: authorAvatar,
-                likes_count: likesCount || 0,
-                is_liked: !!userLike
-            };
-        }));
-
-        // MANTENER LA ESTRUCTURA JERÁRQUICA ORIGINAL (NO aplanar)
-        repliesHierarchy = organizeRepliesHierarchy(repliesWithInfo);
-        renderRepliesHierarchy();
-
-        document.getElementById('replies-count').textContent = repliesWithInfo.length;
-
-    } catch (error) {
-        console.error('Error loading replies:', error);
-        document.getElementById('replies-list').innerHTML =
-            '<p style="color: #ef4444; text-align: center;">Error cargando respuestas</p>';
-    }
-}
-
 
         // Organizar respuestas en estructura jerárquica
         function organizeRepliesHierarchy(replies) {
@@ -4901,66 +4363,60 @@ async function loadReplies(discussionId) {
             });
         }
 
- 
-function createReplyThread(reply, level = 0) {
-    const div = document.createElement('div');
-    div.className = 'reply-thread';
+        function createReplyThread(reply, level = 0) {
+            const div = document.createElement('div');
+            div.className = 'reply-thread';
 
-    // Crear elemento de respuesta principal
-    const replyElement = createReplyElement(reply, level);
-    div.appendChild(replyElement);
+            // Crear elemento de respuesta principal
+            const replyElement = createReplyElement(reply, level);
+            div.appendChild(replyElement);
 
-    // Agregar respuestas anidadas si existen
-    if (reply.children && reply.children.length > 0) {
-        const isExpanded = expandedThreads.has(reply.id);
-        const childrenToShow = isExpanded ? reply.children : reply.children.slice(0, INITIAL_NESTED_REPLIES_COUNT);
-        
-        // CAMBIO: usar conteo recursivo en lugar de solo children.length
-        const totalNestedCount = countAllNestedReplies(reply);
-        const hasMoreChildren = totalNestedCount > INITIAL_NESTED_REPLIES_COUNT;
+            // Agregar respuestas anidadas si existen
+            if (reply.children && reply.children.length > 0) {
+                const isExpanded = expandedThreads.has(reply.id);
+                const childrenToShow = isExpanded ? reply.children : reply.children.slice(0, INITIAL_NESTED_REPLIES_COUNT);
+                const hasMoreChildren = reply.children.length > INITIAL_NESTED_REPLIES_COUNT;
 
-        // Crear contenedor para respuestas anidadas
-        const nestedContainer = document.createElement('div');
-        nestedContainer.className = 'nested-replies-container';
-        nestedContainer.id = `nested-${reply.id}`;
+                // Crear contenedor para respuestas anidadas
+                const nestedContainer = document.createElement('div');
+                nestedContainer.className = 'nested-replies-container';
+                nestedContainer.id = `nested-${reply.id}`;
 
-        // Agregar respuestas anidadas visibles
-        childrenToShow.forEach(childReply => {
-            const childThread = createReplyThread(childReply, level + 1);
-            nestedContainer.appendChild(childThread);
-        });
+                // Agregar respuestas anidadas visibles
+                childrenToShow.forEach(childReply => {
+                    const childThread = createReplyThread(childReply, level + 1);
+                    nestedContainer.appendChild(childThread);
+                });
 
-        div.appendChild(nestedContainer);
+                div.appendChild(nestedContainer);
 
-        // Agregar botón "Ver más respuestas" si hay más respuestas anidadas
-        if (hasMoreChildren && !isExpanded) {
-            const hiddenCount = totalNestedCount - INITIAL_NESTED_REPLIES_COUNT;
-            const showMoreBtn = document.createElement('button');
-            showMoreBtn.className = 'show-more-nested-btn';
-            showMoreBtn.innerHTML = `
+                // Agregar botón "Ver más respuestas" si hay más respuestas anidadas
+                if (hasMoreChildren && !isExpanded) {
+                    const showMoreBtn = document.createElement('button');
+                    showMoreBtn.className = 'show-more-nested-btn';
+                    showMoreBtn.innerHTML = `
                 <i class="fas fa-chevron-down"></i>
-                Ver ${hiddenCount} respuesta${hiddenCount !== 1 ? 's' : ''} más
+                Ver ${reply.children.length - INITIAL_NESTED_REPLIES_COUNT} respuestas más
             `;
-            showMoreBtn.onclick = () => expandNestedReplies(reply.id, reply.children, level);
-            div.appendChild(showMoreBtn);
-        }
+                    showMoreBtn.onclick = () => expandNestedReplies(reply.id, reply.children, level);
+                    div.appendChild(showMoreBtn);
+                }
 
-        // Agregar botón "Ver menos" si está expandido
-        if (isExpanded && hasMoreChildren) {
-            const showLessBtn = document.createElement('button');
-            showLessBtn.className = 'show-less-nested-btn';
-            showLessBtn.innerHTML = `
+                // Agregar botón "Ver menos" si está expandido
+                if (isExpanded && hasMoreChildren) {
+                    const showLessBtn = document.createElement('button');
+                    showLessBtn.className = 'show-less-nested-btn';
+                    showLessBtn.innerHTML = `
                 <i class="fas fa-chevron-up"></i>
                 Ver menos respuestas
             `;
-            showLessBtn.onclick = () => collapseNestedReplies(reply.id);
-            div.appendChild(showLessBtn);
+                    showLessBtn.onclick = () => collapseNestedReplies(reply.id);
+                    div.appendChild(showLessBtn);
+                }
+            }
+
+            return div;
         }
-    }
-
-    return div;
-}
-
 
         function collapseNestedReplies(parentReplyId) {
             expandedThreads.delete(parentReplyId);
@@ -4975,18 +4431,22 @@ function createReplyThread(reply, level = 0) {
         }
 
 
-function findReplyInHierarchy(replyId, replies = repliesHierarchy) {
-    for (const reply of replies) {
-        if (reply.id === replyId) {
-            return reply;
+        function findReplyInHierarchy(replyId) {
+            function searchInReplies(replies) {
+                for (const reply of replies) {
+                    if (reply.id === replyId) {
+                        return reply;
+                    }
+                    if (reply.children) {
+                        const found = searchInReplies(reply.children);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+
+            return searchInReplies(repliesHierarchy);
         }
-        if (reply.children && reply.children.length > 0) {
-            const found = findReplyInHierarchy(replyId, reply.children);
-            if (found) return found;
-        }
-    }
-    return null;
-}
 
         const additionalCSS = `
 .show-more-nested-btn,
@@ -5085,45 +4545,29 @@ function findReplyInHierarchy(replyId, replies = repliesHierarchy) {
         }
 
 
-function createReplyElement(reply, level = 0) {
-    const div = document.createElement('div');
-    div.className = `reply-item ${level > 0 ? 'nested' : ''}`;
-    div.dataset.replyId = reply.id;
 
-    const date = new Date(reply.created_at).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+        // Crear elemento de respuesta individual (modificado)
+        function createReplyElement(reply, level = 0) {
+            const div = document.createElement('div');
+            div.className = `reply-item ${level > 0 ? 'nested' : ''}`;
+            div.dataset.replyId = reply.id;
 
-    // NUEVO: Obtener información del padre si existe
-    let respondingToInfo = '';
-    if (reply.parent_reply_id) {
-        const parentReply = findReplyInHierarchy(reply.parent_reply_id);
-        if (parentReply) {
-            respondingToInfo = `
-                <div class="nested-indicator">
-                    <i class="fas fa-reply" style="margin-right: 4px; color: #4a9eff;"></i>
-                    Respondiendo a <strong>${parentReply.author_name}</strong>
-                </div>
-            `;
-        }
-    }
+            const date = new Date(reply.created_at).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-    // Generar avatar HTML
-    const avatarHTML = reply.author_avatar ? 
-        `<img src="${reply.author_avatar}" alt="${reply.author_name}" class="reply-author-avatar">` :
-        `<div class="reply-author-avatar-initial">${getInitials(reply.author_name)}</div>`;
+            // Indicador de respuesta anidada
+            const nestedIndicator = level > 0 && reply.parent_reply_id ?
+                `<div class="nested-indicator">Respondiendo a otra respuesta</div>` : '';
 
-    div.innerHTML = `
-        ${respondingToInfo}
+            div.innerHTML = `
+        ${nestedIndicator}
         <div class="reply-header">
-            <div class="reply-author-info">
-                ${avatarHTML}
-                <span class="reply-author">${reply.author_name}</span>
-            </div>
+            <span class="reply-author">${reply.author_name}</span>
             <span class="reply-date">${date}</span>
         </div>
         <div class="reply-content">${reply.content}</div>
@@ -5132,39 +4576,25 @@ function createReplyElement(reply, level = 0) {
                 <i class="fas fa-thumbs-up"></i>
                 <span>${reply.likes_count}</span>
             </button>
-            ${!currentDiscussion.is_closed ? `
-                <button class="reply-action-btn" onclick="showInlineReplyForm('${reply.id}')">
-                    <i class="fas fa-reply"></i>
-                    Responder
-                </button>
-            ` : ''}
+            <button class="reply-action-btn" onclick="showInlineReplyForm('${reply.id}')">
+                <i class="fas fa-reply"></i>
+                Responder
+            </button>
         </div>
         
-        ${!currentDiscussion.is_closed ? `
-            <div class="reply-form-inline" id="inline-form-${reply.id}">
-                <textarea class="reply-textarea" id="inline-textarea-${reply.id}" 
-                    placeholder="Responde a ${reply.author_name}..."></textarea>
-                <div class="reply-form-actions">
-                    <button class="reply-form-btn cancel" onclick="hideInlineReplyForm('${reply.id}')">Cancelar</button>
-                    <button class="reply-form-btn" onclick="submitInlineReply('${reply.id}')">Responder</button>
-                </div>
+        <!-- Formulario de respuesta inline -->
+        <div class="reply-form-inline" id="inline-form-${reply.id}">
+            <textarea class="reply-textarea" id="inline-textarea-${reply.id}" placeholder="Responde a ${reply.author_name}..."></textarea>
+            <div class="reply-form-actions">
+                <button class="reply-form-btn cancel" onclick="hideInlineReplyForm('${reply.id}')">Cancelar</button>
+                <button class="reply-form-btn" onclick="submitInlineReply('${reply.id}')">Responder</button>
             </div>
-        ` : ''}
+        </div>
     `;
 
-    return div;
-}
+            return div;
+        }
 
-// Función helper para obtener iniciales
-function getInitials(name) {
-    return name.split(' ')
-        .map(word => word.charAt(0))
-        .join('')
-        .substring(0, 2)
-        .toUpperCase();
-}
-
-      
         // Mostrar formulario de respuesta inline
         function showInlineReplyForm(replyId) {
             // Ocultar otros formularios abiertos
@@ -5260,8 +4690,6 @@ async function processMentionsAndNotify(content, discussionId, replyId = null) {
     return mentionedUserIds;
 }
 // Modificar submitReply para incluir menciones
-
-
 async function submitReply() {
     const textarea = document.getElementById('reply-textarea');
     const content = textarea.value.trim();
@@ -5276,51 +4704,10 @@ async function submitReply() {
         return;
     }
 
-    // CREAR RESPUESTA TEMPORAL INMEDIATAMENTE
-    const tempReply = {
-        id: 'temp-' + Date.now(),
-        discussion_id: currentDiscussion.id,
-        content: content,
-        created_by: currentUser.id,
-        parent_reply_id: null,
-        created_at: new Date().toISOString(),
-        author_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
-        author_avatar: null,
-        likes_count: 0,
-        is_liked: false,
-        children: [],
-        isTemp: true // Marcar como temporal
-    };
-
-    // LIMPIAR TEXTAREA INMEDIATAMENTE
-    textarea.value = '';
-
-    // AGREGAR A LA JERARQUÍA Y RENDERIZAR INMEDIATAMENTE
-    repliesHierarchy.push(tempReply);
-    renderRepliesHierarchy();
-    
-    // Actualizar contador
-    const currentCount = parseInt(document.getElementById('replies-count').textContent) || 0;
-    document.getElementById('replies-count').textContent = currentCount + 1;
-
-    // Scroll a la nueva respuesta
-    setTimeout(() => {
-        const newReplyElement = document.querySelector(`[data-reply-id="${tempReply.id}"]`);
-        if (newReplyElement) {
-            newReplyElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            // Efecto de highlight temporal
-            newReplyElement.style.background = 'rgba(74, 158, 255, 0.1)';
-            setTimeout(() => {
-                newReplyElement.style.background = '';
-            }, 2000);
-        }
-    }, 100);
-
     try {
-        // Procesar menciones en background
+        // Procesar menciones ANTES de insertar
         const mentionedUserIds = await processMentionsAndNotify(content, currentDiscussion.id);
 
-        // Insertar en base de datos
         const { data, error } = await supabaseClient
             .from('discussion_replies')
             .insert([{
@@ -5328,47 +4715,21 @@ async function submitReply() {
                 content: content,
                 created_by: currentUser.id,
                 parent_reply_id: null,
-                mentioned_users: mentionedUserIds
+                mentioned_users: mentionedUserIds // Guardar IDs mencionados
             }])
             .select()
             .single();
 
         if (error) throw error;
 
-        // REEMPLAZAR RESPUESTA TEMPORAL CON LA REAL
-        const tempIndex = repliesHierarchy.findIndex(r => r.id === tempReply.id);
-        if (tempIndex !== -1) {
-            // Crear respuesta real con datos completos
-            const realReply = {
-                ...data,
-                author_name: tempReply.author_name,
-                author_avatar: tempReply.author_avatar,
-                likes_count: 0,
-                is_liked: false,
-                children: []
-            };
-            
-            repliesHierarchy[tempIndex] = realReply;
-            renderRepliesHierarchy();
-        }
+        showToast('Respuesta enviada correctamente');
+        textarea.value = '';
 
-        // Toast discreto sin bloquear
-        showToast('Respuesta enviada', 'success', 1500);
+        // Recargar respuestas
+        await loadReplies(currentDiscussion.id);
 
     } catch (error) {
         console.error('Error submitting reply:', error);
-        
-        // REMOVER RESPUESTA TEMPORAL EN CASO DE ERROR
-        const tempIndex = repliesHierarchy.findIndex(r => r.id === tempReply.id);
-        if (tempIndex !== -1) {
-            repliesHierarchy.splice(tempIndex, 1);
-            renderRepliesHierarchy();
-            // Restaurar contador
-            document.getElementById('replies-count').textContent = currentCount;
-        }
-        
-        // Restaurar contenido del textarea
-        textarea.value = content;
         showToast('Error al enviar la respuesta', 'error');
     }
 }
@@ -5389,44 +4750,9 @@ async function submitInlineReply(parentReplyId) {
         return;
     }
 
-    // Obtener información del padre
-    const parentReply = findReplyInHierarchy(parentReplyId);
-    
-    // CREAR RESPUESTA TEMPORAL
-    const tempReply = {
-        id: 'temp-' + Date.now(),
-        discussion_id: currentDiscussion.id,
-        content: content,
-        created_by: currentUser.id,
-        parent_reply_id: parentReplyId,
-        created_at: new Date().toISOString(),
-        author_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
-        author_avatar: null,
-        likes_count: 0,
-        is_liked: false,
-        children: [],
-        isTemp: true
-    };
-
-    // AGREGAR A CHILDREN DEL PADRE INMEDIATAMENTE
-    if (parentReply) {
-        if (!parentReply.children) parentReply.children = [];
-        parentReply.children.push(tempReply);
-        renderRepliesHierarchy();
-        
-        // Expandir el thread si no está expandido
-        if (!expandedThreads.has(parentReplyId) && parentReply.children.length > INITIAL_NESTED_REPLIES_COUNT) {
-            expandedThreads.add(parentReplyId);
-            renderRepliesHierarchy();
-        }
-    }
-
-    // OCULTAR FORMULARIO Y LIMPIAR
-    hideInlineReplyForm(parentReplyId);
-
     try {
-        // Procesar menciones
-        const mentionedUserIds = await processMentionsAndNotify(content, currentDiscussion.id, parentReplyId);
+        // PROCESAR MENCIONES ANTES DE INSERTAR
+        const mentionedUserIds = await processMentionsAndNotify(content, currentDiscussion.id);
 
         const { data, error } = await supabaseClient
             .from('discussion_replies')
@@ -5435,50 +4761,25 @@ async function submitInlineReply(parentReplyId) {
                 content: content,
                 created_by: currentUser.id,
                 parent_reply_id: parentReplyId,
-                mentioned_users: mentionedUserIds
+                mentioned_users: mentionedUserIds // Guardar IDs mencionados
             }])
             .select()
             .single();
 
         if (error) throw error;
 
-        // REEMPLAZAR TEMPORAL CON REAL
-        if (parentReply && parentReply.children) {
-            const tempIndex = parentReply.children.findIndex(r => r.id === tempReply.id);
-            if (tempIndex !== -1) {
-                const realReply = {
-                    ...data,
-                    author_name: tempReply.author_name,
-                    author_avatar: tempReply.author_avatar,
-                    likes_count: 0,
-                    is_liked: false,
-                    children: []
-                };
-                parentReply.children[tempIndex] = realReply;
-                renderRepliesHierarchy();
-            }
-        }
+        showToast('Respuesta enviada correctamente');
+        hideInlineReplyForm(parentReplyId);
 
-        showToast('Respuesta enviada', 'success', 1500);
+        // Recargar respuestas
+        await loadReplies(currentDiscussion.id);
 
     } catch (error) {
         console.error('Error submitting nested reply:', error);
-        
-        // REMOVER TEMPORAL EN CASO DE ERROR
-        if (parentReply && parentReply.children) {
-            const tempIndex = parentReply.children.findIndex(r => r.id === tempReply.id);
-            if (tempIndex !== -1) {
-                parentReply.children.splice(tempIndex, 1);
-                renderRepliesHierarchy();
-            }
-        }
-        
         showToast('Error al enviar la respuesta', 'error');
-        // Reabrir formulario con el contenido
-        showInlineReplyForm(parentReplyId);
-        document.getElementById(`inline-textarea-${parentReplyId}`).value = content;
     }
 }
+
 
 // Variables de vista
         let currentView = 'discussions-list';
@@ -5643,72 +4944,69 @@ setupMenuToggle();
             }
         }
 
-
-
-async function loadDiscussions() {
-    try {
-        if (!currentProject) {
-            console.warn('No current project for loading discussions');
-            return;
-        }
-
-        const { data, error } = await supabaseClient
-            .from('discussions')
-            .select('*')
-            .eq('project_id', currentProject.id)
-            .order('order_index', { ascending: false });
-
-        if (error && error.code !== 'PGRST116') {
-            console.error('Error en consulta de discusiones:', error);
-            throw error;
-        }
-
-        const discussionsWithInfo = await Promise.all((data || []).map(async (discussion) => {
-            const authorName = await getUserName(discussion.created_by);
-
-            let likesCount = 0;
+        async function loadDiscussions() {
             try {
-                const { count } = await supabaseClient
-                    .from('discussion_likes')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('discussion_id', discussion.id);
-                likesCount = count || 0;
-            } catch (e) {
-                console.log('Error contando likes:', e);
+                if (!currentProject) {
+                    console.warn('No current project for loading discussions');
+                    return;
+                }
+
+                const { data, error } = await supabaseClient
+                    .from('discussions')
+                    .select('*')
+                    .eq('project_id', currentProject.id)
+                    .order('created_at', { ascending: false });
+
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Error en consulta de discusiones:', error);
+                    throw error;
+                }
+
+                const discussionsWithInfo = await Promise.all((data || []).map(async (discussion) => {
+                    const authorName = await getUserName(discussion.created_by);
+
+                    let likesCount = 0;
+                    try {
+                        const { count } = await supabaseClient
+                            .from('discussion_likes')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('discussion_id', discussion.id);
+                        likesCount = count || 0;
+                    } catch (e) {
+                        console.log('Error contando likes:', e);
+                    }
+
+                    let repliesCount = 0;
+                    try {
+                        const { count } = await supabaseClient
+                            .from('discussion_replies')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('discussion_id', discussion.id);
+                        repliesCount = count || 0;
+                    } catch (e) {
+                        console.log('Error contando replies:', e);
+                    }
+
+                    return {
+                        ...discussion,
+                        author_name: authorName,
+                        likes_count: likesCount,
+                        replies_count: repliesCount
+                    };
+                }));
+
+                discussions = discussionsWithInfo;
+                renderDiscussions();
+
+            } catch (error) {
+                console.error('Error loading discussions:', error);
+                const discussionsGrid = document.getElementById('discussions-grid');
+                if (discussionsGrid) {
+                    discussionsGrid.innerHTML =
+                        '<p style="color: #ef4444; text-align: center; grid-column: 1 / -1;">Error cargando discusiones</p>';
+                }
             }
-
-            let repliesCount = 0;
-            try {
-                const { count } = await supabaseClient
-                    .from('discussion_replies')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('discussion_id', discussion.id);
-                repliesCount = count || 0;
-            } catch (e) {
-                console.log('Error contando replies:', e);
-            }
-
-            return {
-                ...discussion,
-                author_name: authorName,
-                likes_count: likesCount,
-                replies_count: repliesCount
-            };
-        }));
-
-        discussions = discussionsWithInfo;
-        renderDiscussions();
-
-    } catch (error) {
-        console.error('Error loading discussions:', error);
-        const discussionsGrid = document.getElementById('discussions-grid');
-        if (discussionsGrid) {
-            discussionsGrid.innerHTML =
-                '<p style="color: #ef4444; text-align: center; grid-column: 1 / -1;">Error cargando discusiones</p>';
         }
-    }
-}
-
 
         function renderDiscussions() {
             const container = document.getElementById('discussions-grid');
@@ -5737,13 +5035,7 @@ async function loadDiscussions() {
 async function createDiscussionCard(discussion) {
     const div = document.createElement('div');
     div.className = 'discussion-card';
-    div.dataset.discussionId = discussion.id; // Importante para identificar la card
-    
-    // Si es temporal, agregar efecto visual
-    if (discussion.isTemp) {
-        div.style.opacity = '0.8';
-        div.style.border = '2px solid #4a9eff';
-    }
+    div.dataset.discussionId = discussion.id;
 
     const authorName = discussion.author_name || 'Usuario';
     const date = new Date(discussion.created_at).toLocaleDateString('es-ES', {
@@ -5757,8 +5049,11 @@ async function createDiscussionCard(discussion) {
     const isClosed = discussion.is_closed;
     
     // Obtener participantes únicos de la discusión
-    const participantsData = await getDiscussionParticipants(discussion.id);
-    const participantsDisplay = generateParticipantsAvatars(participantsData);
+    // Obtener participantes únicos de la discusión
+const participantsData = await getDiscussionParticipants(discussion.id);
+
+// Generar avatares de participantes
+const participantsDisplay = generateParticipantsAvatars(participantsData);
 
     div.innerHTML = `
         <div class="discussion-card-header">
@@ -5775,12 +5070,12 @@ async function createDiscussionCard(discussion) {
         
         <div class="discussion-card-footer">
             <div class="discussion-participants">
-                ${participantsDisplay.avatarsHtml}
-                ${participantsDisplay.countHtml}
-                <div class="participants-tooltip">
-                    ${participantsData.totalCount} participante${participantsData.totalCount !== 1 ? 's' : ''}
-                </div>
-            </div>
+    ${participantsDisplay.avatarsHtml}
+    ${participantsDisplay.countHtml}
+    <div class="participants-tooltip">
+        ${participantsData.totalCount} participante${participantsData.totalCount !== 1 ? 's' : ''}
+    </div>
+</div>
 
             <div class="discussion-card-stats">
                 <span class="discussion-card-stat">
@@ -5797,38 +5092,6 @@ async function createDiscussionCard(discussion) {
     return div;
 }
 
-const newDiscussionStyles = `
-    .discussion-card[data-discussion-id^="temp-"] {
-        opacity: 0.8;
-        border: 2px solid #4a9eff;
-        position: relative;
-    }
-    
-    .discussion-card[data-discussion-id^="temp-"]::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #4a9eff, transparent);
-        animation: creatingAnimation 1.5s infinite;
-    }
-    
-    @keyframes creatingAnimation {
-        0% { opacity: 0.3; }
-        50% { opacity: 1; }
-        100% { opacity: 0.3; }
-    }
-`;
-
-// Inyectar estilos si no existen
-if (!document.getElementById('new-discussion-styles')) {
-    const style = document.createElement('style');
-    style.id = 'new-discussion-styles';
-    style.textContent = newDiscussionStyles;
-    document.head.appendChild(style);
-}
 
 async function getDiscussionParticipants(discussionId) {
     try {
@@ -6025,233 +5288,147 @@ function generateParticipantsAvatars(participantsData) {
             showDiscussionDetail(discussionId);
         }
 
- async function loadDiscussionDetail(discussionId) {
-    try {
-        // Cargar la discusión con verificación de estado
-        const { data: discussion, error } = await supabaseClient
-            .from('discussions')
-            .select('*')
-            .eq('id', discussionId)
-            .single();
+        async function loadDiscussionDetail(discussionId) {
+            try {
+                // Cargar la discusión
+                const { data: discussion, error } = await supabaseClient
+                    .from('discussions')
+                    .select('*')
+                    .eq('id', discussionId)
+                    .single();
 
-        if (error) throw error;
+                if (error) throw error;
 
-        // IMPORTANTE: Actualizar currentDiscussion con datos frescos
-        currentDiscussion = discussion;
+                currentDiscussion = discussion;
 
-        // Verificar y aplicar el estado de cerrado
-        const discussionDetailView = document.getElementById('discussion-detail-view');
-        if (discussionDetailView) {
-            if (discussion.is_closed) {
-                discussionDetailView.classList.add('discussion-closed');
-            } else {
-                discussionDetailView.classList.remove('discussion-closed');
+                // Obtener información del autor
+                const authorName = await getUserName(discussion.created_by);
+
+                // Obtener likes de la discusión
+                const { count: likesCount } = await supabaseClient
+                    .from('discussion_likes')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('discussion_id', discussionId);
+
+                // Verificar si el usuario actual ha dado like
+                const { data: userLike } = await supabaseClient
+                    .from('discussion_likes')
+                    .select('id')
+                    .eq('discussion_id', discussionId)
+                    .eq('user_id', currentUser.id)
+                    .maybeSingle();
+
+                // Renderizar la discusión
+                renderDiscussionPost(discussion, authorName, likesCount || 0, !!userLike);
+
+                // Cargar respuestas
+                await loadReplies(discussionId);
+
+                await initEnhancedFeatures();
+                subscribeToReplies(discussionId);
+
+            } catch (error) {
+                console.error('Error loading discussion detail:', error);
+                showToast('Error cargando la discusión', 'error');
             }
         }
 
-        const authorName = await getUserName(discussion.created_by);
 
-        const { count: likesCount } = await supabaseClient
-            .from('discussion_likes')
-            .select('*', { count: 'exact', head: true })
-            .eq('discussion_id', discussionId);
+        function renderDiscussionPost(discussion, authorName, likesCount, isLiked) {
+            const container = document.getElementById('discussion-post');
+            if (!container) return;
 
-        const { data: userLike } = await supabaseClient
-            .from('discussion_likes')
-            .select('id')
-            .eq('discussion_id', discussionId)
-            .eq('user_id', currentUser.id)
-            .maybeSingle();
+            const date = new Date(discussion.created_at).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
-        renderDiscussionPost(discussion, authorName, likesCount || 0, !!userLike);
+            const isClosed = discussion.is_closed;
+            const statusIcon = isClosed ? 'lock' : 'unlock';
+            const statusText = isClosed ? 'Cerrado' : 'Abierto';
+            const statusClass = isClosed ? 'closed' : 'open';
 
-        // Ocultar/mostrar formulario principal basado en el estado
-        const replyForm = document.querySelector('.reply-form');
-        if (replyForm) {
-            replyForm.style.display = discussion.is_closed ? 'none' : 'block';
-        }
+            // Agregar clase CSS si está cerrado
+            container.parentElement.classList.toggle('discussion-closed', isClosed);
 
-        await loadReplies(discussionId);
-        await initEnhancedFeatures();
-        subscribeToReplies(discussionId);
-
-    } catch (error) {
-        console.error('Error loading discussion detail:', error);
-        showToast('Error cargando la discusión', 'error');
-    }
-}
-
-async function renderDiscussionPost(discussion, authorName, likesCount, isLiked) {
-    const container = document.getElementById('discussion-post');
-    if (!container) return;
-
-    const date = new Date(discussion.created_at).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-
-    // NUEVO: Obtener información completa del autor incluyendo avatar
-    let authorAvatar = null;
-    let authorFullName = authorName;
-    
-    try {
-        const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('username, full_name, avatar_url')
-            .eq('id', discussion.created_by)
-            .single();
-        
-        if (profile) {
-            authorAvatar = profile.avatar_url;
-            authorFullName = profile.full_name || profile.username || authorName;
-        }
-    } catch (error) {
-        console.log('Error obteniendo perfil del autor:', error);
-    }
-
-    // Generar HTML del avatar
-    const authorAvatarHTML = authorAvatar ? 
-        `<img src="${authorAvatar}" alt="${authorFullName}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(74, 158, 255, 0.3);">` :
-        `<div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #4a9eff, #00d4ff); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid rgba(74, 158, 255, 0.3);">
-            ${authorFullName.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase()}
-        </div>`;
-
-    const isClosed = discussion.is_closed;
-    const statusIcon = isClosed ? 'lock' : 'unlock';
-    const statusText = isClosed ? 'Cerrado' : 'Abierto';
-    const statusClass = isClosed ? 'closed' : 'open';
-    
-    const canManageDiscussion = currentUserRole === 'admin' || currentUserRole === 'owner';
-    const isAuthor = discussion.created_by === currentUser.id;
-
-    const discussionDetailView = document.getElementById('discussion-detail-view');
-    if (discussionDetailView) {
-        if (isClosed) {
-            discussionDetailView.classList.add('discussion-closed');
-        } else {
-            discussionDetailView.classList.remove('discussion-closed');
-        }
-    }
-
-    container.innerHTML = `
+            container.innerHTML = `
         <div class="discussion-post-header">
             <div class="discussion-post-info">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                    <div style="flex: 1;">
-                        <h1 class="discussion-post-title">${discussion.title || 'Sin título'}</h1>
-                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
-                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: -26px; margin-top: 8px;">
-                                ${authorAvatarHTML}
-                                <span class="discussion-post-author">${authorFullName}</span>
-                            </div>
-                           
-                        </div>
-                    </div>
-                    <div class="discussion-status ${statusClass}" style="position: static; margin: 0; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <h1 class="discussion-post-title">${discussion.title || 'Sin título'}</h1>
+                    <div class="discussion-status ${statusClass}">
                         <i class="fas fa-${statusIcon}"></i>
-                        <span>${statusText}</span>
-
-                        
+                        ${statusText}
                     </div>
-                    
+                </div>
+                <div class="discussion-post-meta">
+                    <span class="discussion-post-author">${authorName}</span>
+                    <span>•</span>
+                    <span>${date}</span>
                 </div>
             </div>
         </div>
-        
         <div class="discussion-post-content">
             ${processContentWithMentions(discussion.content || 'Sin contenido')}
         </div>
-         <div style="display: flex; align-items: center; gap: 8px; color: #8892a6; margin-left: 5px; ">
-                <i class="far fa-clock" style="color: #4a9eff;"></i>
-                <span>${date}</span>
-         </div>
-        
         <div class="discussion-post-actions">
             <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleDiscussionLike('${discussion.id}')">
                 <i class="fas fa-thumbs-up"></i>
-                <span>${likesCount}</span>
+                <span id="likes-count">${likesCount}</span>
             </button>
-            ${!isClosed ? `
-                <button class="action-btn" onclick="focusReplyTextarea()">
-                    <i class="fas fa-reply"></i>
-                    Responder
-                </button>
-            ` : ''}
-            <button class="action-btn" onclick="shareDiscussion('${discussion.id}')">
-                <i class="fas fa-share-alt"></i>
+            <button class="action-btn" onclick="focusReplyTextarea()">
+                <i class="fas fa-reply"></i>
+                Responder
+            </button>
+            <button class="action-btn">
+                <i class="fas fa-share"></i>
                 Compartir
             </button>
         </div>
         
+        <!-- Reacciones rápidas -->
         <div class="quick-reactions" id="discussion-reactions">
             <!-- Se cargan dinámicamente -->
         </div>
         
-        ${canManageDiscussion || isAuthor ? `
-            <div class="discussion-admin-controls">
-                ${canManageDiscussion ? `
-                    ${isClosed ?
+        ${currentUserRole === 'admin' || currentUserRole === 'owner' ? `
+        <div class="discussion-admin-controls">
+            ${isClosed ?
                         `<button class="admin-btn open-btn" onclick="toggleDiscussionStatus('${discussion.id}', false)">
-                            <i class="fas fa-unlock"></i> 
-                            Reabrir Discusión
-                        </button>` :
+                    <i class="fas fa-unlock"></i> Reabrir Discusión
+                </button>` :
                         `<button class="admin-btn close-btn" onclick="toggleDiscussionStatus('${discussion.id}', true)">
-                            <i class="fas fa-lock"></i> 
-                            Cerrar Discusión
-                        </button>`
+                    <i class="fas fa-lock"></i> Cerrar Discusión
+                </button>`
                     }
-                ` : ''}
-                
-                ${(canManageDiscussion || isAuthor) ? `
-                    <button class="admin-btn delete-btn" onclick="deleteDiscussionFromDetail('${discussion.id}')">
-                        <i class="fas fa-trash-alt"></i>
-                        Eliminar Discusión
-                    </button>
-                ` : ''}
-            </div>
+            <button class="discussion-delete-action" onclick="deleteDiscussionFromDetail('${discussion.id}')">
+                <i class="fas fa-trash"></i>
+                Eliminar Discusión
+            </button>
+        </div>
         ` : ''}
         
-        ${isClosed ? `
-            <div class="closed-message">
-                <i class="fas fa-lock" style="margin-right: 8px;"></i>
-                Esta discusión ha sido cerrada. No se pueden agregar nuevas respuestas.
-            </div>
-        ` : ''}
+        ${isClosed ? '<div class="closed-message">Esta discusión ha sido cerrada. No se pueden agregar nuevas respuestas.</div>' : ''}
     `;
 
-    const replyForm = document.querySelector('.reply-form');
-    if (replyForm) {
-        replyForm.style.display = isClosed ? 'none' : 'block';
-    }
-
-    loadDiscussionReactions(discussion.id);
-}
+            // Cargar reacciones
+            loadDiscussionReactions(discussion.id);
+        }
 
 
-async function deleteDiscussionFromDetail(discussionId) {
-    console.log('deleteDiscussionFromDetail called with:', discussionId); // Debug
-    
-    // Verificar permisos en tiempo real
-    const hasPermission = await verifyDeletePermissions(discussionId);
-    
-    if (!hasPermission) {
-        showToast('No tienes permisos para eliminar esta discusión', 'error');
-        return;
-    }
+        async function deleteDiscussionFromDetail(discussionId) {
+            // Verificar permisos
+            if (currentUserRole !== 'admin' && currentUserRole !== 'owner') {
+                showToast('No tienes permisos para eliminar discusiones', 'error');
+                return;
+            }
 
-    showDeleteModal(discussionId);
-}
-
-// 6. DEBUGGING: Agregar logs para verificar que las funciones están disponibles
-console.log('Delete functions loaded:');
-console.log('- showDeleteModal:', typeof showDeleteModal);
-console.log('- confirmDeleteDiscussion:', typeof confirmDeleteDiscussion);
-console.log('- deleteDiscussionFromDetail:', typeof deleteDiscussionFromDetail);
-console.log('- verifyDeletePermissions:', typeof verifyDeletePermissions);
-
+            // Mostrar modal personalizado en lugar de confirm()
+            showDeleteModal(discussionId);
+        }
 
         function processContentWithMentions(content) {
             return content.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
@@ -6349,65 +5526,33 @@ console.log('- verifyDeletePermissions:', typeof verifyDeletePermissions);
             }
         }
 
-// Modificar la función toggleDiscussionStatus para actualizar también la lista
-async function toggleDiscussionStatus(discussionId, shouldClose) {
-    try {
-        const updates = {
-            is_closed: shouldClose,
-            closed_at: shouldClose ? new Date().toISOString() : null,
-            closed_by: shouldClose ? currentUser.id : null
-        };
+        async function toggleDiscussionStatus(discussionId, shouldClose) {
+            try {
+                const updates = {
+                    is_closed: shouldClose,
+                    closed_at: shouldClose ? new Date().toISOString() : null,
+                    closed_by: shouldClose ? currentUser.id : null
+                };
 
-        const { data, error } = await supabaseClient
-            .from('discussions')
-            .update(updates)
-            .eq('id', discussionId)
-            .select()
-            .single();
+                const { error } = await supabaseClient
+                    .from('discussions')
+                    .update(updates)
+                    .eq('id', discussionId);
 
-        if (error) throw error;
+                if (error) throw error;
 
-        showToast(shouldClose ? 'Discusión cerrada correctamente' : 'Discusión reabierta correctamente');
+                showToast(shouldClose ? 'Discusión cerrada' : 'Discusión reabierta');
 
-        // IMPORTANTE: Actualizar el objeto currentDiscussion
-        currentDiscussion = data;
+                // Recargar detalle
+                await loadDiscussionDetail(discussionId);
 
-        // NUEVO: Actualizar la discusión en el array de discussions
-        const index = discussions.findIndex(d => d.id === discussionId);
-        if (index !== -1) {
-            discussions[index] = {
-                ...discussions[index],
-                is_closed: shouldClose,
-                closed_at: updates.closed_at,
-                closed_by: updates.closed_by
-            };
-            
-            // Re-renderizar la card específica sin recargar toda la lista
-            updateDiscussionCard(discussionId, shouldClose);
+            } catch (error) {
+                console.error('Error updating discussion status:', error);
+                showToast('Error al cambiar el estado', 'error');
+            }
         }
 
-        // Forzar recarga completa del detalle
-        await loadDiscussionDetail(discussionId);
 
-        // Resto del código...
-    } catch (error) {
-        console.error('Error updating discussion status:', error);
-        showToast('Error al cambiar el estado de la discusión', 'error');
-    }
-}
-
-// Nueva función para actualizar solo la card específica
-function updateDiscussionCard(discussionId, isClosed) {
-    const card = document.querySelector(`[data-discussion-id="${discussionId}"]`);
-    if (card) {
-        // Actualizar el icono de estado en la card
-        const statusElement = card.querySelector('.discussion-status');
-        if (statusElement) {
-            statusElement.className = `discussion-status ${isClosed ? 'closed' : 'open'}`;
-            statusElement.innerHTML = `<i class="fas fa-${isClosed ? 'lock' : 'unlock'}"></i>`;
-        }
-    }
-}
 
       // MODIFICAR setupTypingIndicator para incluir menciones en inline replies
 function setupTypingIndicator() {
@@ -6932,147 +6077,52 @@ function setupMentions(textareaId) {
             }
         }
 
-async function createNewDiscussion() {
-    const titleEl = document.getElementById('discussion-title');
-    const contentEl = document.getElementById('discussion-content');
+        async function createNewDiscussion() {
+            const titleEl = document.getElementById('discussion-title');
+            const contentEl = document.getElementById('discussion-content');
 
-    if (!titleEl || !contentEl) {
-        showToast('Error en el formulario', 'error');
-        return;
-    }
+            if (!titleEl || !contentEl) {
+                showToast('Error en el formulario', 'error');
+                return;
+            }
 
-    const title = titleEl.value.trim();
-    const content = contentEl.value.trim();
+            const title = titleEl.value.trim();
+            const content = contentEl.value.trim();
 
-    if (!title) {
-        showToast('El título es obligatorio', 'error');
-        return;
-    }
+            if (!title) {
+                showToast('El título es obligatorio', 'error');
+                return;
+            }
 
-    if (!content) {
-        showToast('El contenido es obligatorio', 'error');
-        return;
-    }
+            if (!content) {
+                showToast('El contenido es obligatorio', 'error');
+                return;
+            }
 
-    // CREAR DISCUSIÓN TEMPORAL
-    const tempDiscussion = {
-    id: 'temp-' + Date.now(),
-    project_id: currentProject.id,
-    title: title,
-    content: content,
-    created_by: currentUser.id,
-    created_at: new Date().toISOString(),
-    order_index: Date.now() * 1000 + Math.floor(Math.random() * 1000), // AGREGAR ESTA LÍNEA
-    author_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
-    likes_count: 0,
-    replies_count: 0,
-    is_closed: false,
-    isTemp: true
-};
+            try {
+                const { data, error } = await supabaseClient
+                    .from('discussions')
+                    .insert([{
+                        project_id: currentProject.id,
+                        title: title,
+                        content: content,
+                        created_by: currentUser.id
+                    }])
+                    .select()
+                    .single();
 
-    discussions.unshift(tempDiscussion);
-    
-    const container = document.getElementById('discussions-grid');
-    const newCard = await createDiscussionCard(tempDiscussion);
-    
-    const emptyState = container.querySelector('.empty-state');
-    if (emptyState) {
-        emptyState.remove();
-    }
-    
-    container.insertBefore(newCard, container.firstChild);
-    
-    newCard.style.opacity = '0';
-    newCard.style.transform = 'translateY(-20px)';
-    setTimeout(() => {
-        newCard.style.transition = 'all 0.3s ease';
-        newCard.style.opacity = '1';
-        newCard.style.transform = 'translateY(0)';
-    }, 50);
+                if (error) throw error;
 
-    closeNewDiscussionModal();
+                showToast('Discusión creada correctamente');
+                closeNewDiscussionModal();
 
-    try {
-        const { data, error } = await supabaseClient
-    .from('discussions')
-    .insert([{
-        project_id: currentProject.id,
-        title: title,
-        content: content,
-        created_by: currentUser.id,
-        order_index: Date.now() * 1000 + Math.floor(Math.random() * 1000) // AGREGAR ESTA LÍNEA
-    }])
-    .select()
-    .single();
+                await loadDiscussions();
 
-        if (error) throw error;
-
-        // ACTUALIZAR ORDEN GUARDADO CON LA NUEVA DISCUSIÓN
-        const tempIndex = discussions.findIndex(d => d.id === tempDiscussion.id);
-        if (tempIndex !== -1) {
-            const realDiscussion = {
-                ...data,
-                author_name: tempDiscussion.author_name,
-                likes_count: 0,
-                replies_count: 0
-            };
-            
-            discussions[tempIndex] = realDiscussion;
-            
-            // ACTUALIZAR ORDEN EN LOCALSTORAGE
-            const storageKey = `discussion_order_${currentProject.id}`;
-            const newOrder = discussions.map(d => d.id);
-            localStorage.setItem(storageKey, JSON.stringify(newOrder));
-            
-            const tempCard = document.querySelector(`[data-discussion-id="${tempDiscussion.id}"]`);
-            if (tempCard) {
-                tempCard.setAttribute('data-discussion-id', data.id);
-                tempCard.onclick = () => openDiscussion(data.id);
-                tempCard.style.opacity = '1';
-                tempCard.style.border = '';
+            } catch (error) {
+                console.error('Error creating discussion:', error);
+                showToast('Error al crear la discusión', 'error');
             }
         }
-
-        showToast('Discusión creada correctamente');
-
-    } catch (error) {
-        console.error('Error creating discussion:', error);
-        
-        const tempIndex = discussions.findIndex(d => d.id === tempDiscussion.id);
-        if (tempIndex !== -1) {
-            discussions.splice(tempIndex, 1);
-            
-            const tempCard = document.querySelector(`[data-discussion-id="${tempDiscussion.id}"]`);
-            if (tempCard) {
-                tempCard.style.transition = 'all 0.3s ease';
-                tempCard.style.opacity = '0';
-                tempCard.style.transform = 'translateY(-20px)';
-                setTimeout(() => {
-                    tempCard.remove();
-                    if (discussions.length === 0) {
-                        showEmptyState();
-                    }
-                }, 300);
-            }
-        }
-        
-        showToast('Error al crear la discusión', 'error');
-    }
-}
-
-function showEmptyState() {
-    const container = document.getElementById('discussions-grid');
-    if (container && discussions.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state" style="grid-column: 1 / -1;">
-                <i class="fas fa-comments"></i>
-                <h3>No hay discusiones aún</h3>
-                <p>Sé el primero en crear una discusión para este proyecto</p>
-            </div>
-        `;
-    }
-}
-
 
         // Utility functions
         async function handleLogout() {
@@ -7104,78 +6154,18 @@ function showEmptyState() {
             }, 1000);
         }
 
-function showToast(message, type = 'success', duration = 3000) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
 
-    toast.textContent = message;
-    toast.className = `toast ${type}`;
-    toast.classList.add('show');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
 
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, duration);
-}
-
-
-const tempReplyStyles = `
-    .reply-item[data-reply-id^="temp-"] {
-        opacity: 0.8;
-        background: rgba(74, 158, 255, 0.05);
-        border-left: 3px solid #4a9eff;
-        position: relative;
-    }
-    
-    .reply-item[data-reply-id^="temp-"]::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, #4a9eff, transparent);
-        animation: sendingAnimation 1.5s infinite;
-    }
-    
-    @keyframes sendingAnimation {
-        0% { opacity: 0.3; }
-        50% { opacity: 1; }
-        100% { opacity: 0.3; }
-    }
-    
-    .nested-indicator {
-        font-size: 11px;
-        color: #6366f1;
-        margin-bottom: 8px;
-        font-style: italic;
-        padding: 4px 8px;
-        background: rgba(74, 158, 255, 0.1);
-        border-radius: 4px;
-        display: inline-block;
-    }
-    
-    .nested-indicator strong {
-        color: #4a9eff;
-        font-weight: 600;
-    }
-`;
-
-// Inyectar estilos
-if (!document.getElementById('temp-reply-styles')) {
-    const style = document.createElement('style');
-    style.id = 'temp-reply-styles';
-    style.textContent = tempReplyStyles;
-    document.head.appendChild(style);
-}
-
-// Inyectar estilos
-if (!document.getElementById('temp-reply-styles')) {
-    const style = document.createElement('style');
-    style.id = 'temp-reply-styles';
-    style.textContent = tempReplyStyles;
-    document.head.appendChild(style);
-}
-
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function (e) {
@@ -7411,25 +6401,7 @@ function subscribeToReplies(discussionId) {
 // Manejadores de eventos en tiempo real
 async function handleNewDiscussion(discussion) {
     if (currentView === 'discussions-list') {
-        // VERIFICAR SI YA EXISTE (para evitar duplicados de real-time)
-        const existingIndex = discussions.findIndex(d => d.id === discussion.id);
-        if (existingIndex !== -1) {
-            return; // Ya existe, no hacer nada
-        }
-        
-        // VERIFICAR SI EXISTE COMO TEMPORAL
-        const tempIndex = discussions.findIndex(d => 
-            d.isTemp && 
-            d.title === discussion.title && 
-            d.created_by === discussion.created_by
-        );
-        
-        if (tempIndex !== -1) {
-            // Es la versión real de nuestra temporal, ya se manejó en createNewDiscussion
-            return;
-        }
-        
-        // ES UNA NUEVA DISCUSIÓN DE OTRO USUARIO
+        // Agregar la nueva discusión a la lista
         const authorName = await getUserName(discussion.created_by);
         const discussionWithInfo = {
             ...discussion,
@@ -7438,28 +6410,8 @@ async function handleNewDiscussion(discussion) {
             replies_count: 0
         };
 
-        // Agregar al principio de la lista
         discussions.unshift(discussionWithInfo);
-        
-        // SOLO AGREGAR LA NUEVA CARD (no re-renderizar todo)
-        const container = document.getElementById('discussions-grid');
-        const emptyState = container.querySelector('.empty-state');
-        
-        if (emptyState) {
-            emptyState.remove();
-        }
-        
-        const newCard = await createDiscussionCard(discussionWithInfo);
-        container.insertBefore(newCard, container.firstChild);
-        
-        // Animación de entrada
-        newCard.style.opacity = '0';
-        newCard.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-            newCard.style.transition = 'all 0.3s ease';
-            newCard.style.opacity = '1';
-            newCard.style.transform = 'translateY(0)';
-        }, 50);
+        renderDiscussions();
 
         // Mostrar notificación si no es del usuario actual
         if (discussion.created_by !== currentUser.id) {
@@ -7507,26 +6459,17 @@ function handleDeletedDiscussion(discussion) {
     }
 }
 
-
 async function handleNewReply(reply) {
     if (currentDiscussion && reply.discussion_id === currentDiscussion.id) {
-        // Verificar si ya existe como temporal
-        const existsAsTemp = repliesHierarchy.some(r => 
-            r.isTemp && r.content === reply.content && r.created_by === reply.created_by
-        );
-        
-        // Si existe como temporal, no hacer nada (ya se manejó en submitReply)
-        if (existsAsTemp) {
-            return;
-        }
-        
-        // Si es de otro usuario, recargar normalmente
+        // Recargar respuestas para mantener la jerarquía correcta
+        await loadReplies(currentDiscussion.id);
+
+        // Mostrar notificación si no es del usuario actual
         if (reply.created_by !== currentUser.id) {
-            await loadReplies(currentDiscussion.id);
-            
             const authorName = await getUserName(reply.created_by);
             showRealtimeNotification(`${authorName} respondió en la discusión`);
             
+            // Hacer scroll al final de las respuestas
             setTimeout(() => {
                 const repliesContainer = document.getElementById('replies-list');
                 if (repliesContainer) {
@@ -7535,20 +6478,6 @@ async function handleNewReply(reply) {
             }, 500);
         }
     }
-}
-
-
-
-
-function countAllNestedReplies(reply) {
-    let count = 0;
-    if (reply.children && reply.children.length > 0) {
-        count += reply.children.length;
-        reply.children.forEach(child => {
-            count += countAllNestedReplies(child);
-        });
-    }
-    return count;
 }
 
 async function handleUpdatedReply(reply) {
@@ -7586,13 +6515,9 @@ async function handleTypingStatusChange(payload) {
 }
 
 // Mostrar indicador de escritura
-// Mostrar indicador de escritura
 function showTypingIndicator(userName, userId) {
-    const container = document.getElementById('typing-indicators-container');
-    if (!container) {
-        console.log('Container typing-indicators-container no encontrado');
-        return;
-    }
+    const repliesContainer = document.getElementById('replies-list');
+    if (!repliesContainer) return;
 
     // Remover indicador existente de este usuario
     const existingIndicator = document.getElementById(`typing-${userId}`);
@@ -7604,8 +6529,6 @@ function showTypingIndicator(userName, userId) {
     const typingDiv = document.createElement('div');
     typingDiv.id = `typing-${userId}`;
     typingDiv.className = 'typing-indicator show';
-    
-    // IMPORTANTE: Usar innerHTML correctamente
     typingDiv.innerHTML = `
         <span>${userName} está escribiendo</span>
         <div class="typing-dots">
@@ -7615,10 +6538,9 @@ function showTypingIndicator(userName, userId) {
         </div>
     `;
 
-    container.appendChild(typingDiv);
-    console.log('Typing indicator agregado para:', userName);
+    repliesContainer.appendChild(typingDiv);
 
-    // Auto-remover después de 5 segundos
+    // Auto-remover después de 5 segundos (por si el evento de DELETE no llega)
     setTimeout(() => {
         const indicator = document.getElementById(`typing-${userId}`);
         if (indicator) {
@@ -7628,11 +6550,10 @@ function showTypingIndicator(userName, userId) {
 }
 
 // Ocultar indicador de escritura
-// Ocultar indicador de escritura
 function hideTypingIndicator(userId) {
     const indicator = document.getElementById(`typing-${userId}`);
     if (indicator) {
-        indicator.style.animation = 'fadeOut 0.3s ease-out';
+        indicator.classList.remove('show');
         setTimeout(() => {
             if (indicator && indicator.parentNode) {
                 indicator.remove();
@@ -8292,27 +7213,6 @@ document.addEventListener('click', function(event) {
         userDropdown.classList.remove('show');
     }
 });
-
-
-// Agregar función de compartir
-function shareDiscussion(discussionId) {
-    const url = `${window.location.origin}/discussions.html?project=${currentProject.id}&discussion=${discussionId}`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: currentDiscussion.title,
-            text: 'Mira esta discusión interesante',
-            url: url
-        }).catch(err => console.log('Error al compartir:', err));
-    } else {
-        // Fallback: copiar al portapapeles
-        navigator.clipboard.writeText(url).then(() => {
-            showToast('Enlace copiado al portapapeles');
-        }).catch(err => {
-            showToast('Error al copiar enlace', 'error');
-        });
-    }
-}
 // LLAMAR ESTAS FUNCIONES EN TU checkAuthenticationAndLoadData() AL FINAL:
 
         window.subscribeToRealtimeChanges = subscribeToRealtimeChanges;

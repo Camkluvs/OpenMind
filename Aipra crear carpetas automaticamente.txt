@@ -2588,3 +2588,21 @@ window.changeLanguage = changeLanguage;
     </script>
 </body>
 </html> 
+
+
+
+
+
+
+
+
+
+
+<div id="typing-91a4e12f-438a-4808-982b-acec20a31dac" class="typing-indicator show">
+        <span>Andrés 3 está escribiendo</span>
+        <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    </div>
