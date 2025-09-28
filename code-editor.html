@@ -767,10 +767,10 @@ body {
     padding: 20px;
 }
 .modal {
-    background: rgba(15, 20, 25, 0.95);
+    background: #2d2d30 ;
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(74, 158, 255, 0.3);
-    padding: 4px;
+    border: 1px solid #2d2d30 ;
+    padding: 3px  6px;
     width: 90%;
     max-width: 500px;
     overflow-y: auto;
@@ -2886,16 +2886,7 @@ select:focus {
     backdrop-filter: blur(5px) !important;
 }
 
-.move-file-modal-container {
-    background: rgba(15, 20, 25, 0.95) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(74, 158, 255, 0.3) !important;
-    border-radius: 12px !important;
-    padding: 30px !important;
-    width: 90% !important;
-    max-width: 500px !important;
-    animation: modalSlideIn 0.3s ease-out !important;
-}
+
 
 .move-file-modal-title {
     color: #4a9eff !important;
@@ -4171,6 +4162,542 @@ select:focus {
         font-size: 13px !important;
     }
 }
+
+
+/* ===================================
+   SISTEMA UNIFICADO DE MODALES - AGREGAR ESTAS CLASES
+   ================================= */
+
+/* === OVERLAY BASE === */
+.unified-modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(8px) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 1000 !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+}
+
+/* === CONTENEDOR MODAL BASE === */
+.unified-modal {
+    background: linear-gradient(145deg, #1f1f1f 0%, #171717 100%) !important;
+    border-radius: 12px !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.8),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #333 !important;
+    overflow: hidden !important;
+    position: relative !important;
+    animation: unifiedModalSlideIn 0.3s ease-out !important;
+}
+
+.unified-modal::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent) !important;
+}
+
+@keyframes unifiedModalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* === HEADER MODAL === */
+.unified-modal-header {
+    padding: 24px 24px 0 24px !important;
+    position: relative !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%) !important;
+}
+
+.unified-modal-title {
+    color: #f8f9fa !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin-bottom: 20px !important;
+    padding-right: 30px !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.unified-close-btn {
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+    background: none !important;
+    border: none !important;
+    color: #666 !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    transition: color 0.3s ease !important;
+}
+
+.unified-close-btn:hover {
+    color: #999 !important;
+}
+
+/* === VARIANTES DE HEADER SEGÚN TIPO === */
+.unified-modal-header.create-type .unified-modal-title {
+    color: #4a9eff !important;
+}
+
+.unified-modal-header.warning-type .unified-modal-title {
+    color: #0066cc  !important;
+}
+
+.unified-modal-header.danger-type .unified-modal-title {
+    color: #ef4444 !important;
+}
+
+.unified-modal-header.success-type .unified-modal-title {
+    color: #0066cc  !important;
+}
+
+/* === SECCIÓN DE ADVERTENCIA (SOLO PARA MODALES PELIGROSOS) === */
+.unified-warning-section {
+    background: linear-gradient(135deg, 
+        rgba(255, 107, 74, 0.15) 0%, 
+        rgba(220, 53, 69, 0.08) 100%) !important;
+    border-left: 3px solid #ff6b4a !important;
+    border-bottom: 1px solid rgba(255, 107, 74, 0.2) !important;
+    padding: 18px 24px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    position: relative !important;
+}
+
+.unified-warning-section::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 107, 74, 0.3), 
+        transparent) !important;
+}
+
+.unified-warning-icon {
+    background: linear-gradient(135deg, #ff6b4a 0%, #e55347 100%) !important;
+    color: #000000 !important;
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    flex-shrink: 0 !important;
+    margin-top: 1px !important;
+    box-shadow: 
+        0 2px 4px rgba(255, 107, 74, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.unified-warning-content h3 {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-bottom: 4px !important;
+}
+
+.unified-warning-content p {
+    color: #cccccc !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+}
+
+/* === BODY MODAL === */
+.unified-modal-body {
+    padding: 20px !important;
+}
+
+.unified-confirmation-text {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    margin-bottom: 24px !important;
+    line-height: 1.4 !important;
+}
+
+/* === FORMULARIOS === */
+.unified-form-group {
+    margin-bottom: 20px !important;
+}
+
+.unified-form-label {
+    display: block !important;
+    color: #ffffff !important;
+    margin-bottom: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.unified-form-input,
+.unified-form-select,
+.unified-form-textarea {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: white !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+}
+
+.unified-form-input:focus,
+.unified-form-select:focus,
+.unified-form-textarea:focus {
+    outline: none !important;
+    border-color: #4a9eff !important;
+    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.unified-form-textarea {
+    resize: vertical !important;
+    min-height: 100px !important;
+}
+
+.unified-form-help {
+    color: #8892a6 !important;
+    font-size: 12px !important;
+    margin-top: 5px !important;
+    display: block !important;
+}
+
+.unified-form-checkbox-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+}
+
+.unified-form-checkbox {
+    margin: 0 !important;
+}
+
+/* === CAJAS DE INFORMACIÓN === */
+.unified-info-box {
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    margin-bottom: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-size: 14px !important;
+}
+
+.unified-info-box.primary {
+    background: rgba(74, 158, 255, 0.1) !important;
+    border: 1px solid rgba(74, 158, 255, 0.2) !important;
+    color: #4a9eff !important;
+}
+
+.unified-info-box.success {
+   background: rgba(255, 255, 255, 0.05) !important;
+   border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #7b7b7b  !important;
+}
+
+.unified-info-box.warning {
+    background: rgba(251, 191, 36, 0.1) !important;
+    border: 1px solid rgba(251, 191, 36, 0.2) !important;
+    color: #fbbf24 !important;
+}
+
+.unified-info-box.danger {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.2) !important;
+    color: #ef4444 !important;
+}
+
+/* === ACCIONES/BOTONES === */
+.unified-modal-actions {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+    margin-top: 20px !important;
+    padding: 15px;
+}
+
+.unified-btn {
+    padding: 12px 24px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    flex: 1 !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    height: 40px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+.unified-btn::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.1), 
+        transparent) !important;
+    transition: left 0.5s !important;
+}
+
+.unified-btn:hover::before {
+    left: 100% !important;
+}
+
+/* === VARIANTES DE BOTONES === */
+.unified-btn.cancel {
+    background: linear-gradient(135deg, #454545 0%, #363636 100%) !important;
+    color: #f8f9fa !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.unified-btn.cancel:hover {
+    background: linear-gradient(135deg, #525252 0%, #424242 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.unified-btn.primary {
+    background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+        0 2px 4px rgba(74, 158, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.unified-btn.primary:hover {
+    background: linear-gradient(135deg, #5aa8ff 0%, #0080ff 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 
+        0 4px 8px rgba(74, 158, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.unified-btn.success {
+    background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+}
+
+.unified-btn.success:hover {
+    background-color:   linear-gradient(135deg, #4a9eff 0%, #0066cc 100%) !important;
+    transform: translateY(-1px) !important;
+
+}
+
+.unified-btn.warning {
+    background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.unified-btn.warning:hover {
+    background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.unified-btn.danger {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 
+        0 2px 4px rgba(220, 53, 69, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.unified-btn.danger:hover {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 
+        0 4px 8px rgba(220, 53, 69, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.unified-btn:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+.unified-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* === MODALES ESPECÍFICOS === */
+
+/* Modal amplio para IA */
+.unified-modal.ai-modal {
+    max-width: 600px !important;
+    width: 95% !important;
+}
+
+.unified-modal.ai-modal .unified-form-textarea {
+    min-height: 120px !important;
+}
+
+/* Modal de confirmación simple */
+.unified-modal.confirmation-modal {
+    max-width: 350px !important;
+}
+
+/* Modal de formulario */
+.unified-modal.form-modal {
+    max-width: 480px !important;
+}
+
+/* === TEMA CLARO === */
+[data-theme="light"] .unified-modal {
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light"] .unified-modal::before {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent) !important;
+}
+
+[data-theme="light"] .unified-modal-header {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, transparent 100%) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .unified-modal-title {
+    color: #1e293b !important;
+    text-shadow: none !important;
+}
+
+[data-theme="light"] .unified-close-btn {
+    color: #64748b !important;
+}
+
+[data-theme="light"] .unified-close-btn:hover {
+    color: #374151 !important;
+}
+
+[data-theme="light"] .unified-confirmation-text,
+[data-theme="light"] .unified-form-label {
+    color: #1e293b !important;
+}
+
+[data-theme="light"] .unified-form-input,
+[data-theme="light"] .unified-form-select,
+[data-theme="light"] .unified-form-textarea {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="light"] .unified-form-input:focus,
+[data-theme="light"] .unified-form-select:focus,
+[data-theme="light"] .unified-form-textarea:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    background: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .unified-btn.cancel {
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%) !important;
+    color: #374151 !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .unified-btn.cancel:hover {
+    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%) !important;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .unified-modal {
+        width: 95% !important;
+        max-width: none !important;
+        margin: 20px !important;
+    }
+    
+    .unified-modal-header {
+        padding: 20px 20px 0 20px !important;
+    }
+    
+    .unified-modal-body {
+        padding: 15px !important;
+    }
+    
+    .unified-modal-actions {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .unified-btn {
+        flex: none !important;
+        width: 100% !important;
+    }
+    
+    .unified-modal.ai-modal {
+        width: 98% !important;
+        height: 90vh !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+}
         </style>
 
 
@@ -4317,9 +4844,13 @@ select:focus {
                 <span>New File</span>
                 <span class="menu-shortcut">Ctrl+N</span>
             </div>
+            <div class="menu-dropdown-item" onclick="triggerFileOpen()">
+               <span>Open File</span>
+               <span class="menu-shortcut">Ctrl+O</span>
+            </div>
             <div class="menu-dropdown-item" onclick="triggerFolderUpload()">
                 <span>Open Folder...</span>
-                <span class="menu-shortcut">Ctrl+K Ctrl+O</span>
+                <span class="menu-shortcut">Ctrl+K </span>
             </div>
             <div class="menu-separator"></div>
             <div class="menu-dropdown-item" onclick="saveCurrentFile()">
@@ -4425,7 +4956,7 @@ select:focus {
                 <span>Explorer</span>
                 <span class="menu-shortcut">Ctrl+Shift+E</span>
             </div>
-            <div class="menu-dropdown-item" onclick="toggleTerminal()">
+            <div class="menu-dropdown-item" onclick="toggleTerminal()" style="display: none;">
                 <span>Terminal</span>
                 <span class="menu-shortcut">Ctrl+`</span>
             </div>
@@ -4620,33 +5151,7 @@ select:focus {
 
     <!-- Modal para nuevo archivo -->
     <!-- Modal para nuevo archivo -->
-<div class="new-file-modal-overlay" id="new-file-modal" style="display: none;">
-    <div class="new-file-modal">
-        <h3 class="new-file-modal-title">Crear Nuevo Archivo</h3>
-        <div class="new-file-modal-content">
-            <div class="new-file-form-group">
-                <label class="new-file-label">Nombre del archivo:</label>
-                <input type="text" class="new-file-input" id="new-file-name" placeholder="ej: app.py, server.js, style.css, component.vue, etc.">
-                <small class="new-file-help">Puedes usar cualquier extensión (.py, .java, .cpp, .rb, .go, .php, etc.)</small>
-            </div>
-            <div class="new-file-form-group">
-                <label class="new-file-label">Carpeta destino:</label>
-                <select class="new-file-select" id="new-file-folder">
-                    <option value="/">/</option>
-                </select>
-            </div>
-            <div class="new-file-form-group">
-                <label class="new-file-checkbox-label">
-                    <input type="checkbox" class="new-file-checkbox" id="is-folder-checkbox"> Es una carpeta
-                </label>
-            </div>
-        </div>
-        <div class="new-file-modal-actions">
-            <button class="new-file-cancel-btn" onclick="closeNewFileModal()">Cancelar</button>
-            <button class="new-file-create-btn" onclick="createNewFile()">Crear</button>
-        </div>
-    </div>
-</div>
+
 
     <!-- Modal IA Contextual Mejorado -->
 <div class="modal-overlay" id="ai-contextual-modal" style="display: none;">
@@ -4785,47 +5290,54 @@ function toggleLanguageDropdown() {
 
 // Funciones de repositorio optimizadas
 
+
 function showCreateRepositoryModal() {
-    const existingModal = document.querySelector('.repo-modal-overlay');
+    const existingModal = document.querySelector('.unified-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
     const modal = document.createElement('div');
-    modal.className = 'repo-modal-overlay';
+    modal.className = 'unified-modal-overlay';
     modal.innerHTML = `
-        <div class="repo-modal">
-            <h3>Crear Nuevo Repositorio</h3>
-            <div class="repo-modal-content">
-                <div class="repo-form-group">
-                    <label>Nombre del repositorio:</label>
-                    <input type="text" id="repo-name" placeholder="mi-proyecto-web">
+        <div class="unified-modal form-modal">
+            <div class="unified-modal-header create-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas fa-code-branch"></i>
+                    Crear Nuevo Repositorio
+                </h3>
+                <button class="unified-close-btn" onclick="this.closest('.unified-modal-overlay').remove()">×</button>
+            </div>
+            
+            <div class="unified-modal-body">
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Nombre del repositorio:</label>
+                    <input type="text" class="unified-form-input" id="repo-name" placeholder="mi-proyecto-web">
+                    <small class="unified-form-help">Solo letras, números, guiones y guiones bajos</small>
                 </div>
-                <div class="repo-form-group">
-                    <label>Descripción (opcional):</label>
-                    <input type="text" id="repo-description" placeholder="Descripción del repositorio">
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Descripción (opcional):</label>
+                    <input type="text" class="unified-form-input" id="repo-description" placeholder="Descripción del repositorio">
                 </div>
             </div>
-            <div class="repo-modal-actions">
-                <button class="repo-cancel-btn" id="cancel-repo-btn">Cancelar</button>
-                <button class="repo-create-btn" id="create-repo-btn">Crear</button>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="this.closest('.unified-modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn primary" onclick="createRepository(); this.closest('.unified-modal-overlay').remove();">
+                    <i class="fas fa-plus"></i> Crear
+                </button>
             </div>
         </div>
     `;
     
     document.body.appendChild(modal);
-    
-    document.getElementById('cancel-repo-btn').onclick = () => {
-        modal.remove();
-    };
-    
-    document.getElementById('create-repo-btn').onclick = async () => {
-        await createRepository();
-        modal.remove();
-    };
-    
     document.getElementById('repo-name').focus();
 }
+
+
 
 async function createRepository() {
     const name = document.getElementById('repo-name').value.trim();
@@ -4865,48 +5377,58 @@ function openRepository(repository) {
     loadRepositoryFiles(repository.id);
 }
 
+
+
+
 function showDeleteRepositoryModal(repository) {
     if (!['owner', 'admin'].includes(currentUserRole)) {
         showToast('No tienes permisos para eliminar repositorios', 'error');
         return;
     }
 
-    const existingModal = document.querySelector('.delete-repo-modal');
+    const existingModal = document.querySelector('.unified-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
     const modal = document.createElement('div');
-    modal.className = 'modal-overlay delete-repo-modal';
+    modal.className = 'unified-modal-overlay';
     modal.innerHTML = `
-        <div class="modal" style="border-color: rgba(239, 68, 68, 0.3);">
-            <h3 style="color: #ef4444; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-exclamation-triangle"></i>
-                Eliminar Repositorio
-            </h3>
-            <div class="modal-content">
-                <p style="color: #ffffff; margin-bottom: 15px; line-height: 1.5;">
-                    Esta acción <strong>eliminará permanentemente</strong> el repositorio 
-                    <strong>"${repository.name}"</strong> y todos sus archivos.
-                </p>
-                <p style="color: #ef4444; margin-bottom: 20px; font-size: 14px;">
-                    Esta acción NO se puede deshacer.
-                </p>
-                <div class="form-group">
-                    <label style="color: #ffffff;">
-                        Para confirmar, escribe <strong>eliminar</strong> en el campo:
-                    </label>
-                    <input type="text" id="delete-confirmation" placeholder="eliminar" 
-                           style="margin-top: 8px;" autocomplete="off">
+        <div class="unified-modal confirmation-modal">
+            <div class="unified-modal-header danger-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Eliminar Repositorio
+                </h3>
+                <button class="unified-close-btn" onclick="this.closest('.unified-modal-overlay').remove()">×</button>
+            </div>
+            
+            <div class="unified-warning-section">
+                <div class="unified-warning-icon">!</div>
+                <div class="unified-warning-content">
+                    <h3>Acción irreversible</h3>
+                    <p>Esta acción eliminará permanentemente todos los archivos y datos del repositorio.</p>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="cancel-btn" id="cancel-delete-btn">Cancelar</button>
-                <button class="delete-btn" id="confirm-delete-btn" disabled style="
-                    background: rgba(239, 68, 68, 0.5);
-                    color: white;
-                    cursor: not-allowed;
-                ">
+            
+            <div class="unified-modal-body">
+                <p class="unified-confirmation-text">
+                    Estás a punto de eliminar el repositorio <strong>"${repository.name}"</strong> y todos sus archivos.
+                </p>
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-label">
+                        Para confirmar, escribe <strong>eliminar</strong> en el campo:
+                    </label>
+                    <input type="text" class="unified-form-input" id="delete-confirmation" placeholder="eliminar" autocomplete="off">
+                </div>
+            </div>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="this.closest('.unified-modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn danger" id="confirm-delete-btn" disabled onclick="deleteRepositoryFromModal('${repository.id}')">
                     <i class="fas fa-trash"></i> Eliminar Repositorio
                 </button>
             </div>
@@ -4917,33 +5439,37 @@ function showDeleteRepositoryModal(repository) {
     
     const confirmationInput = document.getElementById('delete-confirmation');
     const confirmBtn = document.getElementById('confirm-delete-btn');
-    const cancelBtn = document.getElementById('cancel-delete-btn');
     
     confirmationInput.oninput = () => {
         const isValid = confirmationInput.value.toLowerCase().trim() === 'eliminar';
+        confirmBtn.disabled = !isValid;
         
         if (isValid) {
-            confirmBtn.disabled = false;
-            confirmBtn.style.background = '#ef4444';
+            confirmBtn.style.opacity = '1';
             confirmBtn.style.cursor = 'pointer';
         } else {
-            confirmBtn.disabled = true;
-            confirmBtn.style.background = 'rgba(239, 68, 68, 0.5)';
+            confirmBtn.style.opacity = '0.5';
             confirmBtn.style.cursor = 'not-allowed';
-        }
-    };
-    
-    cancelBtn.onclick = () => modal.remove();
-    
-    confirmBtn.onclick = async () => {
-        if (confirmationInput.value.toLowerCase().trim() === 'eliminar') {
-            await deleteRepository(repository);
-            modal.remove();
         }
     };
     
     confirmationInput.focus();
 }
+
+
+function deleteRepositoryFromModal(repositoryId) {
+    const repository = projectRepositories.find(r => r.id === repositoryId);
+    if (!repository) {
+        showToast('Repositorio no encontrado', 'error');
+        return;
+    }
+    
+    const modal = document.querySelector('.unified-modal-overlay');
+    modal.remove();
+    
+    deleteRepository(repository);
+}
+
 
 async function deleteRepository(repository) {
     try {
@@ -5008,39 +5534,76 @@ function showNewFileModal() {
         return;
     }
 
-    const folderSelect = document.getElementById('new-file-folder');
-    if (folderSelect && selectedRepository) {
-        folderSelect.innerHTML = '<option value="/">/</option>';
-        
-        const folders = projectFiles.filter(f => f.is_folder && f.repository_id === selectedRepository.id);
-        folders.forEach(folder => {
-            const option = document.createElement('option');
-            option.value = folder.file_path;
-            option.textContent = folder.file_path;
-            folderSelect.appendChild(option);
-        });
+    const existingModal = document.querySelector('.unified-modal-overlay');
+    if (existingModal) {
+        existingModal.remove();
     }
 
-    const modal = document.getElementById('new-file-modal');
-    const nameInput = document.getElementById('new-file-name');
+    // Construir opciones de carpetas
+    let folderOptions = '<option value="/">/</option>';
+    const folders = projectFiles.filter(f => f.is_folder && f.repository_id === selectedRepository.id);
+    folders.forEach(folder => {
+        folderOptions += `<option value="${folder.file_path}">${folder.file_path}</option>`;
+    });
+
+    const modal = document.createElement('div');
+    modal.className = 'unified-modal-overlay';
+    modal.innerHTML = `
+        <div class="unified-modal form-modal">
+            <div class="unified-modal-header create-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas fa-file-plus"></i>
+                    Crear Nuevo Archivo
+                </h3>
+                <button class="unified-close-btn" onclick="closeNewFileModal()">×</button>
+            </div>
+            
+            <div class="unified-modal-body">
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Nombre del archivo:</label>
+                    <input type="text" class="unified-form-input" id="new-file-name" placeholder="ej: app.py, server.js, style.css">
+                    <small class="unified-form-help">Puedes usar cualquier extensión (.py, .java, .cpp, .rb, .go, .php, etc.)</small>
+                </div>
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Carpeta destino:</label>
+                    <select class="unified-form-select" id="new-file-folder">
+                        ${folderOptions}
+                    </select>
+                </div>
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-checkbox-wrapper">
+                        <input type="checkbox" class="unified-form-checkbox" id="is-folder-checkbox">
+                        Es una carpeta
+                    </label>
+                </div>
+            </div>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="closeNewFileModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn success" onclick="createNewFile()">
+                    <i class="fas fa-plus"></i> Crear
+                </button>
+            </div>
+        </div>
+    `;
     
-    if (modal) {
-        modal.style.display = 'flex';
-        setTimeout(() => {
-            if (nameInput) nameInput.focus();
-        }, 100);
-    }
+    document.body.appendChild(modal);
+    setTimeout(() => {
+        document.getElementById('new-file-name').focus();
+    }, 100);
 }
+
+
 
 function closeNewFileModal() {
-    const modal = document.getElementById('new-file-modal');
-    const nameInput = document.getElementById('new-file-name');
-    const checkboxInput = document.getElementById('is-folder-checkbox');
-    
-    if (modal) modal.style.display = 'none';
-    if (nameInput) nameInput.value = '';
-    if (checkboxInput) checkboxInput.checked = false;
+    const modal = document.querySelector('.unified-modal-overlay');
+    if (modal) modal.remove();
 }
+
 
 async function createNewFile() {
     const nameInput = document.getElementById('new-file-name');
@@ -5048,6 +5611,7 @@ async function createNewFile() {
     const checkboxInput = document.getElementById('is-folder-checkbox');
     
     if (!nameInput || !folderSelect || !checkboxInput) {
+        console.error('Elementos del formulario no encontrados');
         showToast('Error en el formulario', 'error');
         return;
     }
@@ -5115,9 +5679,114 @@ async function createNewFile() {
 
     } catch (error) {
         console.error('Error creating file:', error);
-        showToast('Error creando el archivo', 'error');
+        showToast('Error creando el archivo: ' + error.message, 'error');
     }
 }
+
+// Función para abrir archivo individual con todos los tipos soportados
+function triggerFileOpen() {
+    const extensions = [
+        // Web Technologies
+        '.html', '.htm', '.xhtml', '.css', '.scss', '.sass', '.less', '.js', '.jsx', '.mjs', '.ts', '.tsx', '.vue', '.svelte', '.astro',
+        // Backend Languages
+        '.py', '.pyw', '.java', '.class', '.jsp', '.php', '.php3', '.php4', '.php5', '.php7', '.phtml', '.rb', '.rbw', '.gem', '.rake',
+        '.go', '.rs', '.swift', '.kt', '.kts', '.scala', '.sc', '.dart', '.lua', '.perl', '.pl', '.pm',
+        // System Programming
+        '.c', '.h', '.cpp', '.cxx', '.cc', '.hpp', '.hxx', '.cs', '.vb', '.fs', '.fsx', '.fsi',
+        // Functional Languages
+        '.hs', '.lhs', '.elm', '.ml', '.mli', '.clj', '.cljs', '.cljc', '.erl', '.hrl', '.ex', '.exs',
+        // Scripting
+        '.sh', '.bash', '.zsh', '.fish', '.ps1', '.psm1', '.bat', '.cmd',
+        // Data & Config
+        '.json', '.jsonc', '.json5', '.xml', '.xsl', '.xsd', '.yml', '.yaml', '.toml', '.ini', '.cfg', '.conf', '.properties',
+        // Databases
+        '.sql', '.mysql', '.pgsql', '.plsql', '.tsql',
+        // Markup & Documentation
+        '.md', '.markdown', '.mdown', '.mkd', '.rst', '.tex', '.latex', '.org',
+        // Mobile Development
+        '.m', '.mm', '.gradle', '.groovy', '.gvy',
+        // Other Languages
+        '.r', '.R', '.rmd', '.matlab', '.jl', '.nim', '.nims', '.cr', '.zig', '.v', '.sol',
+        // Templates
+        '.hbs', '.handlebars', '.mustache', '.twig', '.liquid', '.ejs', '.pug', '.jade',
+        // Docker & DevOps
+        '.dockerfile', '.dockerignore', '.vagrantfile', '.makefile', '.make',
+        // Version Control
+        '.gitignore', '.gitattributes', '.gitmodules', '.hgignore',
+        // Package Managers
+        '.package', '.composer', '.bower', '.yarn', '.lock',
+        // Assembly
+        '.asm', '.s', '.nasm',
+        // Text files
+        '.txt', '.log', '.readme'
+    ];
+    
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = extensions.join(',');
+    input.onchange = handleSingleFileUpload;
+    input.click();
+    closeAllMenus();
+}
+
+async function handleSingleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!selectedRepository) {
+        showToast('Selecciona un repositorio primero para abrir archivos', 'error');
+        return;
+    }
+    
+    try {
+        showToast('Subiendo archivo...', 'info');
+        
+        const content = await readFileContent(file);
+        const fileType = getFileTypeFromName(file.name);
+        const fullPath = `/${file.name}`;
+        
+        // Verificar si ya existe
+        const existingFile = projectFiles.find(f => f.file_path === fullPath);
+        if (existingFile) {
+            showToast('Ya existe un archivo con ese nombre', 'error');
+            return;
+        }
+        
+        const { data, error } = await supabaseClient
+            .from('project_files')
+            .insert([{
+                project_id: currentProject.id,
+                repository_id: selectedRepository.id,
+                file_name: file.name,
+                file_path: fullPath,
+                file_type: fileType,
+                content: content,
+                is_folder: false,
+                created_by: currentUser.id
+            }])
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        showToast('Archivo abierto correctamente');
+        await loadRepositoryFiles(selectedRepository.id);
+        
+        // Abrir el archivo automáticamente
+        if (data) {
+            openFile(data);
+        }
+        
+    } catch (error) {
+        console.error('Error opening file:', error);
+        showToast('Error abriendo archivo: ' + error.message, 'error');
+    }
+    
+    // Limpiar el input
+    event.target.value = '';
+}
+
+
 
 function getDefaultContent(fileType) {
     const templates = {
@@ -5931,30 +6600,44 @@ function showContextMenu(event, file) {
     }, 100);
 }
 
-// 3. FUNCIÓN PARA RENOMBRAR
+
 function showRenameModal(file) {
-    const existingModal = document.querySelector('.rename-modal-wrapper');
+    const existingModal = document.querySelector('.unified-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
     const modal = document.createElement('div');
-    modal.className = 'rename-modal-wrapper';
+    modal.className = 'unified-modal-overlay';
     modal.innerHTML = `
-        <div class="rename-modal-container">
-            <h3 class="rename-modal-title">
-                <i class="fas ${file.is_folder ? 'fa-folder' : 'fa-file'}"></i>
-                Renombrar ${file.is_folder ? 'Carpeta' : 'Archivo'}
-            </h3>
-            <div class="rename-modal-content">
-                <div class="rename-form-group">
-                    <label class="rename-label">Nuevo nombre:</label>
-                    <input type="text" class="rename-input" id="rename-input" value="${file.file_name}">
+        <div class="unified-modal form-modal">
+            <div class="unified-modal-header warning-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas ${file.is_folder ? 'fa-folder' : 'fa-file'}"></i>
+                    Renombrar ${file.is_folder ? 'Carpeta' : 'Archivo'}
+                </h3>
+                <button class="unified-close-btn" onclick="this.closest('.unified-modal-overlay').remove()">×</button>
+            </div>
+            
+            <div class="unified-modal-body">
+                <div class="unified-info-box primary">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Renombrando: <strong>${file.file_name}</strong></span>
+                </div>
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Nuevo nombre:</label>
+                    <input type="text" class="unified-form-input" id="rename-input" value="${file.file_name}">
                 </div>
             </div>
-            <div class="rename-modal-actions">
-                <button class="rename-cancel-btn" id="cancel-rename-btn">Cancelar</button>
-                <button class="rename-create-btn" id="confirm-rename-btn">Renombrar</button>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="this.closest('.unified-modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn warning" onclick="renameFileFromModal('${file.id}', '${file.is_folder}')">
+                    <i class="fas fa-edit"></i> Renombrar
+                </button>
             </div>
         </div>
     `;
@@ -5962,9 +6645,7 @@ function showRenameModal(file) {
     document.body.appendChild(modal);
     
     const input = document.getElementById('rename-input');
-    const cancelBtn = document.getElementById('cancel-rename-btn');
-    const confirmBtn = document.getElementById('confirm-rename-btn');
-    
+    // Seleccionar nombre sin extensión
     const dotIndex = file.file_name.lastIndexOf('.');
     if (dotIndex > 0 && !file.is_folder) {
         input.setSelectionRange(0, dotIndex);
@@ -5973,15 +6654,28 @@ function showRenameModal(file) {
     }
     input.focus();
     
-    cancelBtn.onclick = () => modal.remove();
-    confirmBtn.onclick = () => renameFile(file, input.value.trim(), modal);
-    
+    // Enter para confirmar
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            renameFile(file, input.value.trim(), modal);
+            renameFileFromModal(file.id, file.is_folder);
         }
     });
 }
+
+function renameFileFromModal(fileId, isFolder) {
+    const newName = document.getElementById('rename-input').value.trim();
+    const file = projectFiles.find(f => f.id === fileId);
+    
+    if (!file) {
+        showToast('Archivo no encontrado', 'error');
+        return;
+    }
+    
+    const modal = document.querySelector('.unified-modal-overlay');
+    renameFile(file, newName, { remove: () => modal.remove() });
+}
+
+
 
 async function renameFile(file, newName, modal) {
     if (!newName || newName === file.file_name) {
@@ -6042,62 +6736,75 @@ function showMoveFileModal(file) {
         return;
     }
 
-    const existingModal = document.querySelector('.move-file-modal-wrapper');
+    const existingModal = document.querySelector('.unified-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
-    const modal = document.createElement('div');
-    modal.className = 'move-file-modal-wrapper';
-    modal.innerHTML = `
-        <div class="move-file-modal-container">
-            <h3 class="move-file-modal-title">
-                <i class="fas fa-arrows-alt"></i>
-                Mover Archivo
-            </h3>
-            <div class="move-file-modal-content">
-                <div class="move-file-form-group">
-                    <label class="move-file-label">Archivo:</label>
-                    <div class="move-file-display-box">
-                        <i class="fas ${getFileIcon(file.file_type)}"></i>
-                        ${file.file_name}
-                    </div>
-                </div>
-                <div class="move-file-form-group">
-                    <label class="move-file-label">Mover a carpeta:</label>
-                    <select id="move-folder-select" class="move-file-select">
-                        <option value="/">/</option>
-                    </select>
-                </div>
-            </div>
-            <div class="move-file-modal-actions">
-                <button class="move-file-cancel-btn" id="cancel-move-btn">Cancelar</button>
-                <button class="move-file-confirm-btn" id="confirm-move-btn">Mover</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    const select = document.getElementById('move-folder-select');
+    // Construir opciones de carpetas
+    let folderOptions = '<option value="/">/</option>';
     const folders = projectFiles.filter(f => 
         f.is_folder && 
         f.repository_id === selectedRepository?.id &&
         f.file_path !== file.file_path
     );
-    
     folders.forEach(folder => {
-        const option = document.createElement('option');
-        option.value = folder.file_path;
-        option.textContent = folder.file_path;
-        select.appendChild(option);
+        folderOptions += `<option value="${folder.file_path}">${folder.file_path}</option>`;
     });
+
+    const modal = document.createElement('div');
+    modal.className = 'unified-modal-overlay';
+    modal.innerHTML = `
+        <div class="unified-modal form-modal">
+            <div class="unified-modal-header create-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas fa-arrows-alt"></i>
+                    Mover Archivo
+                </h3>
+                <button class="unified-close-btn" onclick="this.closest('.unified-modal-overlay').remove()">×</button>
+            </div>
+            
+            <div class="unified-modal-body">
+                <div class="unified-info-box primary">
+                    <i class="fas ${getFileIcon(file.file_type)}"></i>
+                    <span><strong>${file.file_name}</strong></span>
+                </div>
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Mover a carpeta:</label>
+                    <select class="unified-form-select" id="move-folder-select">
+                        ${folderOptions}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="this.closest('.unified-modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn primary" onclick="moveFileFromModal('${file.id}')">
+                    <i class="fas fa-arrows-alt"></i> Mover
+                </button>
+            </div>
+        </div>
+    `;
     
-    document.getElementById('cancel-move-btn').onclick = () => modal.remove();
-    document.getElementById('confirm-move-btn').onclick = () => {
-        moveFile(file, select.value, modal);
-    };
+    document.body.appendChild(modal);
 }
+
+function moveFileFromModal(fileId) {
+    const targetFolder = document.getElementById('move-folder-select').value;
+    const file = projectFiles.find(f => f.id === fileId);
+    
+    if (!file) {
+        showToast('Archivo no encontrado', 'error');
+        return;
+    }
+    
+    const modal = document.querySelector('.unified-modal-overlay');
+    moveFile(file, targetFolder, { remove: () => modal.remove() });
+}
+
 
 async function moveFile(file, targetFolder, modal) {
     try {
@@ -6148,88 +6855,106 @@ function showNewFileModalInFolder(folder) {
     showNewFileModal();
 }
 
+
+
 function showNewFolderModalInFolder(parentFolder) {
-    const existingModal = document.querySelector('.new-folder-modal-overlay');
+    const existingModal = document.querySelector('.unified-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
     const modal = document.createElement('div');
-    modal.className = 'new-folder-modal-overlay';
+    modal.className = 'unified-modal-overlay';
     modal.innerHTML = `
-        <div class="new-folder-modal">
-            <h3 class="new-folder-modal-title">
-                <i class="fas fa-folder-plus"></i>
-                Crear Nueva Carpeta
-            </h3>
-            <div class="new-folder-modal-content">
-                <div class="new-folder-form-group">
-                    <label class="new-folder-label">Nombre de la carpeta:</label>
-                    <input type="text" class="new-folder-input" id="new-folder-name" placeholder="mi-carpeta">
+        <div class="unified-modal form-modal">
+            <div class="unified-modal-header success-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas fa-folder-plus"></i>
+                    Crear Nueva Carpeta
+                </h3>
+                <button class="unified-close-btn" onclick="this.closest('.unified-modal-overlay').remove()">×</button>
+            </div>
+            
+            <div class="unified-modal-body">
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Nombre de la carpeta:</label>
+                    <input type="text" class="unified-form-input" id="new-folder-name" placeholder="mi-carpeta">
                 </div>
-                <div class="new-folder-form-group">
-                    <label class="new-folder-label">Carpeta padre:</label>
-                    <div class="new-folder-parent-display">
-                        <i class="fas fa-folder"></i>
-                        ${parentFolder.file_path}
-                    </div>
+                
+                <div class="unified-info-box success">
+                    <i class="fas fa-folder"></i>
+                    <span>Se creará en: <strong>${parentFolder.file_path}</strong></span>
                 </div>
             </div>
-            <div class="new-folder-modal-actions">
-                <button class="new-folder-cancel-btn" id="cancel-new-folder-btn">Cancelar</button>
-                <button class="new-folder-create-btn" id="create-folder-btn">Crear</button>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="this.closest('.unified-modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn success" onclick="createFolderFromModal('${parentFolder.file_path}')">
+                    <i class="fas fa-folder-plus"></i> Crear
+                </button>
             </div>
         </div>
     `;
     
     document.body.appendChild(modal);
+    document.getElementById('new-folder-name').focus();
+}
+
+
+function createFolderFromModal(parentPath) {
+    const folderName = document.getElementById('new-folder-name').value.trim();
+    if (!folderName) {
+        showToast('Ingresa un nombre para la carpeta', 'error');
+        return;
+    }
+
+    const newPath = `${parentPath}/${folderName}`;
     
-    const input = document.getElementById('new-folder-name');
-    const cancelBtn = document.getElementById('cancel-new-folder-btn');
-    const createBtn = document.getElementById('create-folder-btn');
+    // Crear carpeta usando la función existente
+    createNewFolderAtPath(folderName, newPath);
     
-    input.focus();
-    
-    cancelBtn.onclick = () => modal.remove();
-    
-    createBtn.onclick = async () => {
-        const folderName = input.value.trim();
-        if (!folderName) {
-            showToast('Ingresa un nombre para la carpeta', 'error');
+    const modal = document.querySelector('.unified-modal-overlay');
+    modal.remove();
+}
+
+
+async function createNewFolderAtPath(folderName, fullPath) {
+    try {
+        const existingFolder = projectFiles.find(f => f.file_path === fullPath);
+        if (existingFolder) {
+            showToast('Ya existe una carpeta con ese nombre', 'error');
             return;
         }
 
-        const newPath = `${parentFolder.file_path}/${folderName}`;
+        const { error } = await supabaseClient
+            .from('project_files')
+            .insert([{
+                project_id: currentProject.id,
+                repository_id: selectedRepository.id,
+                file_name: folderName,
+                file_path: fullPath,
+                file_type: 'folder',
+                content: '',
+                is_folder: true,
+                created_by: currentUser.id
+            }]);
+
+        if (error) throw error;
+
+        showToast('Carpeta creada correctamente');
         
-        try {
-            const { error } = await supabaseClient
-                .from('project_files')
-                .insert([{
-                    project_id: currentProject.id,
-                    repository_id: selectedRepository.id,
-                    file_name: folderName,
-                    file_path: newPath,
-                    file_type: 'folder',
-                    content: '',
-                    is_folder: true,
-                    created_by: currentUser.id
-                }]);
-
-            if (error) throw error;
-
-            showToast('Carpeta creada correctamente');
-            modal.remove();
-            
-            if (selectedRepository) {
-                await loadRepositoryFiles(selectedRepository.id);
-            }
-
-        } catch (error) {
-            console.error('Error creating folder:', error);
-            showToast('Error creando la carpeta', 'error');
+        if (selectedRepository) {
+            await loadRepositoryFiles(selectedRepository.id);
         }
-    };
+
+    } catch (error) {
+        console.error('Error creating folder:', error);
+        showToast('Error creando la carpeta', 'error');
+    }
 }
+
 
 async function deleteFile(file) {
     const isFolder = file.is_folder;
@@ -9484,16 +10209,7 @@ missingStyles.textContent = `
     backdrop-filter: blur(5px);
 }
 
-.rename-modal-container, .move-file-modal-container, .new-folder-modal, .repo-modal {
-    background: linear-gradient(135deg, rgba(15, 20, 25, 0.95) 0%, rgba(26, 35, 50, 0.95) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(74, 158, 255, 0.3);
-    border-radius: 16px;
-    padding: 30px;
-    width: 90%;
-    max-width: 450px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
+
 
 .rename-modal-title, .move-file-modal-title, .new-folder-modal-title {
     color: #4a9eff;
@@ -9595,58 +10311,6 @@ document.head.appendChild(missingStyles);
 // ================================
 
 // Modal para renombrar archivos/carpetas
-function showRenameModal(file) {
-    const existingModal = document.querySelector('.rename-modal-wrapper');
-    if (existingModal) {
-        existingModal.remove();
-    }
-
-    const modal = document.createElement('div');
-    modal.className = 'rename-modal-wrapper';
-    modal.innerHTML = `
-        <div class="rename-modal-container">
-            <h3 class="rename-modal-title">
-                <i class="fas ${file.is_folder ? 'fa-folder' : 'fa-file'}"></i>
-                Renombrar ${file.is_folder ? 'Carpeta' : 'Archivo'}
-            </h3>
-            <div class="rename-modal-content">
-                <div class="rename-form-group">
-                    <label class="rename-label">Nuevo nombre:</label>
-                    <input type="text" class="rename-input" id="rename-input" value="${file.file_name}">
-                </div>
-            </div>
-            <div class="rename-modal-actions">
-                <button class="rename-cancel-btn" id="cancel-rename-btn">Cancelar</button>
-                <button class="rename-create-btn" id="confirm-rename-btn">Renombrar</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    const input = document.getElementById('rename-input');
-    const cancelBtn = document.getElementById('cancel-rename-btn');
-    const confirmBtn = document.getElementById('confirm-rename-btn');
-    
-    // Seleccionar el nombre sin la extensión
-    const dotIndex = file.file_name.lastIndexOf('.');
-    if (dotIndex > 0 && !file.is_folder) {
-        input.setSelectionRange(0, dotIndex);
-    } else {
-        input.select();
-    }
-    input.focus();
-    
-    cancelBtn.onclick = () => modal.remove();
-    confirmBtn.onclick = () => renameFile(file, input.value.trim(), modal);
-    
-    // Enter para confirmar
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            renameFile(file, input.value.trim(), modal);
-        }
-    });
-}
 
 async function renameFile(file, newName, modal) {
     if (!newName || newName === file.file_name) {
@@ -9763,69 +10427,84 @@ async function renameFile(file, newName, modal) {
 }
 
 // Modal para mover archivos
+
+
 function showMoveFileModal(file) {
     if (file.is_folder) {
         showToast('No se pueden mover carpetas aún', 'error');
         return;
     }
 
-    const existingModal = document.querySelector('.move-file-modal-wrapper');
+    const existingModal = document.querySelector('.unified-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
-    const modal = document.createElement('div');
-    modal.className = 'move-file-modal-wrapper';
-    modal.innerHTML = `
-        <div class="move-file-modal-container">
-            <h3 class="move-file-modal-title">
-                <i class="fas fa-arrows-alt"></i>
-                Mover Archivo
-            </h3>
-            <div class="move-file-modal-content">
-                <div class="move-file-form-group">
-                    <label class="move-file-label">Archivo:</label>
-                    <div class="move-file-display-box">
-                        <i class="fas ${getFileIcon(file.file_type)}"></i>
-                        ${file.file_name}
-                    </div>
-                </div>
-                <div class="move-file-form-group">
-                    <label class="move-file-label">Mover a carpeta:</label>
-                    <select id="move-folder-select" class="move-file-select">
-                        <option value="/">/</option>
-                    </select>
-                </div>
-            </div>
-            <div class="move-file-modal-actions">
-                <button class="move-file-cancel-btn" id="cancel-move-btn">Cancelar</button>
-                <button class="move-file-confirm-btn" id="confirm-move-btn">Mover</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // Llenar opciones de carpetas
-    const select = document.getElementById('move-folder-select');
+    // Construir opciones de carpetas
+    let folderOptions = '<option value="/">/</option>';
     const folders = projectFiles.filter(f => 
         f.is_folder && 
         f.repository_id === selectedRepository?.id &&
         f.file_path !== file.file_path
     );
-    
     folders.forEach(folder => {
-        const option = document.createElement('option');
-        option.value = folder.file_path;
-        option.textContent = folder.file_path;
-        select.appendChild(option);
+        folderOptions += `<option value="${folder.file_path}">${folder.file_path}</option>`;
     });
+
+    const modal = document.createElement('div');
+    modal.className = 'unified-modal-overlay';
+    modal.innerHTML = `
+        <div class="unified-modal form-modal">
+            <div class="unified-modal-header create-type">
+                <h3 class="unified-modal-title">
+                    <i class="fas fa-arrows-alt"></i>
+                    Mover Archivo
+                </h3>
+                <button class="unified-close-btn" onclick="this.closest('.unified-modal-overlay').remove()">×</button>
+            </div>
+            
+            <div class="unified-modal-body">
+                <div class="unified-info-box primary">
+                    <i class="fas ${getFileIcon(file.file_type)}"></i>
+                    <span><strong>${file.file_name}</strong></span>
+                </div>
+                
+                <div class="unified-form-group">
+                    <label class="unified-form-label">Mover a carpeta:</label>
+                    <select class="unified-form-select" id="move-folder-select">
+                        ${folderOptions}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="unified-modal-actions">
+                <button class="unified-btn cancel" onclick="this.closest('.unified-modal-overlay').remove()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button class="unified-btn primary" onclick="moveFileFromModal('${file.id}')">
+                    <i class="fas fa-arrows-alt"></i> Mover
+                </button>
+            </div>
+        </div>
+    `;
     
-    document.getElementById('cancel-move-btn').onclick = () => modal.remove();
-    document.getElementById('confirm-move-btn').onclick = () => {
-        moveFile(file, select.value, modal);
-    };
+    document.body.appendChild(modal);
 }
+
+function moveFileFromModal(fileId) {
+    const targetFolder = document.getElementById('move-folder-select').value;
+    const file = projectFiles.find(f => f.id === fileId);
+    
+    if (!file) {
+        showToast('Archivo no encontrado', 'error');
+        return;
+    }
+    
+    const modal = document.querySelector('.unified-modal-overlay');
+    moveFile(file, targetFolder, { remove: () => modal.remove() });
+}
+
+
 
 // Función para mover archivo
 async function moveFile(file, targetFolder, modal) {
@@ -10493,6 +11172,10 @@ function setupKeyboardShortcuts() {
                 showNewFileModal();
             }
         }
+        if (e.ctrlKey && e.key === 'o' && !e.shiftKey) {
+    e.preventDefault();
+    triggerFileOpen();
+}
         
         // Ctrl+S - Guardar
         if (e.ctrlKey && e.key === 's' && !e.shiftKey) {
@@ -10654,7 +11337,7 @@ function showToast(message, type = 'success') {
 
 .modal-actions .cancel-btn,
 .modal-actions .create-btn {
-    padding: 1px ;
+    padding: 5px ;
     font-size: 10px;
 
     transition: all 0.3s ease;
