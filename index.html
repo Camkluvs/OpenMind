@@ -10,7 +10,6 @@
     <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
     <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/noti.css">
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="css/variables.css">
@@ -48,25 +47,8 @@
             </nav>
 
             <div id="header-content">
-    <div class="loading-spinner"></div>
-    
-    <!-- Notificaciones -->
-    <div class="notifications-container" style="display: none;">
-        <button class="control-btn notifications-btn" onclick="toggleNotifications()">
-            <i class="fas fa-bell"></i>
-            <span class="notification-count" id="notificationCount" style="display: none;">0</span>
-        </button>
-        <div class="notifications-dropdown" id="notificationsDropdown">
-            <div class="notifications-header">
-                <h4>Notificaciones</h4>
+                <div class="loading-spinner"></div>
             </div>
-            <div class="notifications-list" id="notificationsList">
-                <div class="notification-item loading">Cargando...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
         </div>
     </header>
 
@@ -83,7 +65,7 @@
             </p>
             
             <div class="hero-buttons">
-                <a href="contact.html" class="primary-btn">
+                <a href="login.html" class="primary-btn">
                    Contáctanos <i class="fas fa-arrow-right"></i>
                 </a>
                 <a href="#features" class="secondary-btn">
@@ -93,7 +75,7 @@
         </section>
 
         <!-- Forums Section -->
-        <section class="diagonal-section">
+        <section class="diagonal-section" id="services">
             <div class="diagonal-content">
                 <div class="diagonal-text scroll-animate">
                     <span class="diagonal-badge">Foros de Discusión</span>
@@ -295,16 +277,16 @@
                     <div class="feature-icon">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <h3 class="feature-title">Chat y Video</h3>
-                    <p class="feature-description">Comunicación fluida del equipo con videollamadas integradas.</p>
+                    <h3 class="feature-title">LLamadas y chat</h3>
+                    <p class="feature-description">Comunicación fluida del equipo con llamadas integradas.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-tasks"></i>
                     </div>
-                    <h3 class="feature-title">Gestión de Proyectos</h3>
-                    <p class="feature-description">Tableros Kanban avanzados y gestión inteligente de sprints.</p>
+                    <h3 class="feature-title">Servicio de Integraciones</h3>
+                    <p class="feature-description">Integraciones de terceros (third-party integrations).</p>
                 </div>
 
                 <div class="feature-card">
@@ -319,8 +301,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-cloud"></i>
                     </div>
-                    <h3 class="feature-title">Despliegue Automático</h3>
-                    <p class="feature-description">CI/CD inteligente con despliegue automático.</p>
+                    <h3 class="feature-title">Guardado Local</h3>
+                    <p class="feature-description">Crea copias de seguridad local para guardar tu progreso.</p>
                 </div>
             </div>
         </section>
@@ -338,29 +320,28 @@
                     </div>
                     <h3 class="process-title">Análisis inteligente</h3>
                     <p class="process-description">
-                        Evaluamos sus necesidades e identificamos soluciones de IA para optimizar los flujos de trabajo y mejorar la eficiencia.
-                    </p>
+                        Crea foros donde tu equipo de trabajo pueda debatir ideas y que la Inteligencia artificial se encargue de evaluar sus necesidades e identificar soluciones para optimizar el flujos de trabajo, la toma decisiones.
                     <div class="process-visual">
                         <div class="analysis-chart">
                             <div class="chart-item">
                                 <i class="fas fa-shield-alt"></i>
-                                <span>Comprobación del sistema</span>
+                                <span>Foros seguros</span>
                             </div>
                             <div class="chart-item">
                                 <i class="fas fa-cogs"></i>
-                                <span>Comprobación de procesos</span>
+                                <span>Evaluacion de necesidades</span>
                             </div>
                             <div class="chart-item">
                                 <i class="fas fa-tachometer-alt"></i>
-                                <span>Comprobación de velocidad</span>
+                                <span>Optimizacion de flujo</span>
                             </div>
                             <div class="chart-item">
                                 <i class="fas fa-hand-paper"></i>
-                                <span>Trabajo manual</span>
+                                <span>Identiicacion de soluciones</span>
                             </div>
                             <div class="chart-item">
                                 <i class="fas fa-redo-alt"></i>
-                                <span>Tarea repetitiva</span>
+                                <span>Decisiones asistidas</span>
                             </div>
                         </div>
                         <div class="analysis-indicator">
@@ -375,9 +356,9 @@
                     <div class="process-header">
                         <span class="process-step">Paso 2</span>
                     </div>
-                    <h3 class="process-title">Desarrollo de IA</h3>
+                    <h3 class="process-title">Codificación</h3>
                     <p class="process-description">
-                        Nuestro equipo construye sistemas de automatización inteligentes adaptados a sus procesos comerciales.
+                        Utiliza el editor de código en tiempo real para que desarrolles proyectos y codifiques en tiempo real junto a tu equipo de trabajo. Con autocompletado inteligente y sincronización instantánea entre todos los participantes.
                     </p>
                     <div class="process-visual">
                         <div class="code-editor-mini">
@@ -418,9 +399,9 @@
                     <div class="process-header">
                         <span class="process-step">Paso 3</span>
                     </div>
-                    <h3 class="process-title">Integración perfecta</h3>
+                    <h3 class="process-title">IAsistente Personal IA</h3>
                     <p class="process-description">
-                        Integramos sin problemas las soluciones de IA en su infraestructura existente con una interrupción mínima.
+                       Conversa libremente con nuestra Inteligencia Artificial sobre cualquier tema, obteniendo respuestas inmediatas, asistencia personalizada y soluciones adaptadas a tus necesidades específicas.
                     </p>
                     <div class="process-visual">
                         <div class="integration-diagram">
@@ -428,7 +409,7 @@
                                 <div class="integration-circle our-solution">
                                     <i class="fas fa-robot"></i>
                                 </div>
-                                <span>Nuestra solución</span>
+                                <span>Nuestra Sugerencias</span>
                             </div>
                             <div class="integration-arrow">
                                 <div class="arrow-line"></div>
@@ -436,9 +417,9 @@
                             </div>
                             <div class="integration-item">
                                 <div class="integration-circle your-platform">
-                                    <i class="fas fa-cube"></i>
+                                    <i class="fas fa-brain"></i>
                                 </div>
-                                <span>Tu pia</span>
+                                <span>Tu ideas</span>
                             </div>
                         </div>
                     </div>
@@ -469,8 +450,8 @@
                                 <div class="status-item">
                                     <i class="fas fa-cogs"></i>
                                     <div class="status-info">
-                                        <span class="status-title">Sistema de flujo de trabajo</span>
-                                        <span class="status-subtitle">Actualización disponible.</span>
+                                        <span class="status-title">Maximizacion en el flujo de trabajo</span>
+                                        <span class="status-subtitle"></span>
                                     </div>
                                     <div class="status-indicator ready">
                                         <i class="fas fa-arrow-up"></i>
@@ -479,8 +460,8 @@
                                 <div class="status-item">
                                     <i class="fas fa-filter"></i>
                                     <div class="status-info">
-                                        <span class="status-title">Sistema de ventas</span>
-                                        <span class="status-subtitle">Hasta la fecha</span>
+                                        <span class="status-title"></span>
+                                        <span class="status-subtitle"></span>
                                     </div>
                                     <div class="status-indicator complete">
                                         <i class="fas fa-check"></i>
@@ -577,9 +558,8 @@
                         <h4>Enlaces</h4>
                         <ul>
                             <li><a href="#services">Servicios</a></li>
-                            <li><a href="#process">Proceso</a></li>
-                            <li><a href="#features">Estudios de caso</a></li>
-                            <li><a href="#pricing">Beneficios</a></li>
+                            <li><a href="#process">procesos</a></li>
+                            <li><a href="benefits.html">Beneficios</a></li>
                             <li><a href="#pricing">Precios</a></li>
                         </ul>
                     </div>
@@ -588,10 +568,8 @@
                         <h4>Páginas</h4>
                         <ul>
                             <li><a href="#home">Hogar</a></li>
-                            <li><a href="#about">Acerca de</a></li>
-                            <li><a href="blog.html">Blog</a></li>
+                            <li><a href="about.html">Nosotros</a></li>
                             <li><a href="contact.html">Contacto</a></li>
-                            <li><a href="404.html">404</a></li>
                         </ul>
                     </div>
                     
@@ -623,6 +601,5 @@
     <script src="js/auth.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/noti.js"></script>
 </body>
 </html>
