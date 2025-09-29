@@ -1999,6 +1999,48 @@ body {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     border-color: #3b82f6;
 }
+
+/* Scrollbar para contenido de repositorio */
+[id^="repo-content-"]::-webkit-scrollbar {
+    width: 4px;
+}
+
+[id^="repo-content-"]::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+}
+
+[id^="repo-content-"]::-webkit-scrollbar-thumb {
+    background: rgba(74, 158, 255, 0.3);
+    border-radius: 2px;
+}
+
+[id^="repo-content-"]::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 158, 255, 0.5);
+}
+
+/* Header de repositorio mejorado */
+.repository-header-selector:hover {
+    background: rgba(74, 158, 255, 0.15) !important;
+    border-color: rgba(74, 158, 255, 0.3) !important;
+}
+
+/* Agregar al final de tu CSS */
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    background: #4a9eff;
+    animation: blink 1s infinite;
+    margin-left: 2px;
+}
+
+
     </style>
 </head>
 
@@ -2293,6 +2335,13 @@ body {
         let isAITyping = false;
 let currentConversation = null;
 let conversations = [];
+
+// 1. AGREGAR estas variables globales al inicio del script (junto con las otras):
+let partialMessages = new Map(); // Para guardar mensajes parciales
+let currentPartialMessageId = null;
+// Agregar al inicio de tu script, con las otras variables globales
+let abortController = null;
+let typewriterInterval = null;
         let currentTheme = localStorage.getItem('theme') || 'dark';
         let currentLanguage = localStorage.getItem('language') || 'es';
 
@@ -2495,10 +2544,37 @@ loadConversations();
         }
 
     // REEMPLAZAR tu función sendMessage con esta:
-async function sendMessage(message) {
+
+
+    async function sendMessage(message) {
     // Si no hay conversación, crear una nueva
     if (!currentConversation) {
         await createNewConversation();
+    }
+
+    // Construir mensaje con archivos si hay alguno seleccionado
+    let fullMessage = message;
+    const attachedFiles = [...selectedFiles];
+    
+    if (selectedFiles.length > 0) {
+        fullMessage += '\n\n**Archivos adjuntos:**\n';
+        
+        for (const file of selectedFiles) {
+            try {
+                const { data: fileData, error } = await supabaseClient
+                    .from('project_files')
+                    .select('content')
+                    .eq('id', file.id)
+                    .single();
+
+                if (error) throw error;
+
+                fullMessage += `\n**${file.file_name}** (${file.file_type}):\n\`\`\`${file.file_type}\n${fileData.content || '// Archivo vacío'}\n\`\`\`\n`;
+            } catch (error) {
+                console.error('Error loading file content:', error);
+                fullMessage += `\n**${file.file_name}**: Error cargando contenido\n`;
+            }
+        }
     }
 
     // Ocultar mensaje de bienvenida
@@ -2507,11 +2583,16 @@ async function sendMessage(message) {
         welcomeMessage.style.display = 'none';
     }
 
-    // Agregar mensaje del usuario
-    addMessage(message, 'user');
+    // Agregar mensaje del usuario (inmediato)
+    addMessageWithTypewriter(message, 'user', true, attachedFiles);
+    
+    // Limpiar archivos seleccionados
+    selectedFiles = [];
+    updateSelectedFilesDisplay();
+    closeFileSelector();
     
     // Guardar en base de datos
-    await saveMessageToDB(message, 'user');
+    await saveMessageToDB(fullMessage, 'user');
     
     // Actualizar título si es primera vez
     await updateConversationTitle(message);
@@ -2520,6 +2601,9 @@ async function sendMessage(message) {
     showTypingIndicator();
 
     try {
+        // Crear AbortController para poder cancelar
+        abortController = new AbortController();
+
         // Obtener historial de la conversación
         const { data: messageHistory } = await supabaseClient
             .from('ai_messages')
@@ -2534,12 +2618,13 @@ async function sendMessage(message) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ 
-                prompt: message,
+                prompt: fullMessage,
                 conversationHistory: messageHistory?.map(msg => ({
                     role: msg.message_type === 'user' ? 'user' : 'assistant',
                     content: msg.content
                 })) || []
-            })
+            }),
+            signal: abortController.signal // Agregar señal de abort
         });
 
         if (!response.ok) {
@@ -2551,9 +2636,10 @@ async function sendMessage(message) {
         hideTypingIndicator();
 
         if (result.success && result.reply) {
-            addMessage(result.reply, 'ai');
+            // Usar efecto typewriter para la respuesta de IA
+            addMessageWithTypewriter(result.reply, 'ai');
             await saveMessageToDB(result.reply, 'assistant');
-            await loadConversations(); // Actualizar lista
+            await loadConversations();
         } else {
             throw new Error('Respuesta inesperada del servidor');
         }
@@ -2561,11 +2647,18 @@ async function sendMessage(message) {
     } catch (error) {
         console.error('Error communicating with AI:', error);
         hideTypingIndicator();
-        addMessage('Lo siento, hubo un error al procesar tu mensaje. Por favor, inténtalo de nuevo.', 'ai');
+        
+        if (error.name === 'AbortError') {
+            // La petición fue cancelada, no mostrar error
+            return;
+        }
+        
+        addMessageWithTypewriter('Lo siento, hubo un error al procesar tu mensaje. Por favor, inténtalo de nuevo.', 'ai');
         showToast('Error al comunicarse con la IA', 'error');
+    } finally {
+        abortController = null;
     }
 }
-  
 
 // REEMPLAZAR tu función addMessage con esta versión SIMPLE:
 function addMessage(content, sender, shouldSave = true, attachedFiles = []) {
@@ -2760,30 +2853,294 @@ async function showFileModal(file) {
         }
 
         function showTypingIndicator() {
-            isAITyping = true;
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) {
-                indicator.classList.add('show');
-            }
+    isAITyping = true;
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) {
+        indicator.classList.add('show');
+    }
+    
+    // Cambiar el botón a "Detener"
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) {
+        sendBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        sendBtn.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
+        sendBtn.onclick = stopGeneration;
+        sendBtn.disabled = false;
+    }
+}
+
+function hideTypingIndicator() {
+    isAITyping = false;
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) {
+        indicator.classList.remove('show');
+    }
+    
+  
+}
+
+function stopGeneration() {
+    if (abortController) {
+        abortController.abort();
+        abortController = null;
+    }
+    
+    if (typewriterInterval) {
+        clearInterval(typewriterInterval);
+        typewriterInterval = null;
+    }
+    
+    hideTypingIndicator();
+    addMessage('⏹️ Generación detenida por el usuario', 'ai');
+    showToast('Generación detenida', 'info');
+}
+
+
+function completeMessage(messageId) {
+    const partialData = partialMessages.get(messageId);
+    if (!partialData) return;
+    
+    // Mostrar contenido completo sin cursor
+    partialData.messageText.innerHTML = formatMessage(partialData.fullContent);
+    
+    // Restaurar estado
+    isAITyping = false;
+    restoreSendButton();
+    currentPartialMessageId = null;
+    
+    // Guardar mensaje completo en BD y historial
+    if (partialData.shouldSave) {
+        saveMessageToDB(partialData.fullContent, 'assistant');
+        chatHistory.push({ 
+            content: partialData.fullContent, 
+            sender: 'ai', 
+            timestamp: new Date(), 
+            attachedFiles: partialData.attachedFiles 
+        });
+    }
+    
+    // Limpiar datos parciales
+    partialMessages.delete(messageId);
+    
+    if (typewriterInterval) {
+        clearTimeout(typewriterInterval);
+        typewriterInterval = null;
+    }
+}
+
+function stopTypewriter() {
+    isAITyping = false;
+    
+    if (typewriterInterval) {
+        clearTimeout(typewriterInterval);
+        typewriterInterval = null;
+    }
+    
+    // Mostrar botón de continuar si hay mensaje parcial
+    if (currentPartialMessageId) {
+        showContinueButton();
+    } else {
+        restoreSendButton();
+    }
+    
+    showToast('Escritura pausada', 'info');
+}
+
+function showContinueButton() {
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) {
+        sendBtn.innerHTML = '<i class="fas fa-play"></i>';
+        sendBtn.style.background = 'linear-gradient(45deg, #22c55e, #16a34a)';
+        sendBtn.onclick = continueTypewriter;
+        sendBtn.disabled = false;
+    }
+}
+
+function continueTypewriter() {
+    if (!currentPartialMessageId) return;
+    
+    const partialData = partialMessages.get(currentPartialMessageId);
+    if (!partialData) return;
+    
+    // Reactivar typing
+    isAITyping = true;
+    showStopButton();
+    
+    // Continuar desde donde se quedó
+    const content = partialData.fullContent;
+    let currentIndex = partialData.currentIndex;
+    const messageText = partialData.messageText;
+    const messageId = currentPartialMessageId;
+    
+    function typeNextCharacter() {
+        const partialData = partialMessages.get(messageId);
+        if (!partialData) return;
+        
+        if (currentIndex < content.length && isAITyping) {
+            currentIndex++;
+            partialData.currentIndex = currentIndex;
             
-            const sendBtn = document.getElementById('sendBtn');
-            if (sendBtn) {
-                sendBtn.disabled = true;
+            const currentText = content.substring(0, currentIndex);
+            messageText.innerHTML = formatMessage(currentText) + '<span class="typing-cursor"></span>';
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            const char = content[currentIndex - 1];
+            let delay = 15;
+            
+            if (char === '.' || char === '!' || char === '?') delay = 150;
+            if (char === ',') delay = 80;
+            if (char === '\n') delay = 50;
+            
+            typewriterInterval = setTimeout(typeNextCharacter, delay);
+        } else {
+            completeMessage(messageId);
+        }
+    }
+    
+    typewriterInterval = setTimeout(typeNextCharacter, 50);
+}
+
+
+function addMessageWithTypewriter(content, sender, shouldSave = true, attachedFiles = []) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const messageElement = document.createElement('div');
+    messageElement.className = `chat-message ${sender}`;
+
+    const avatar = document.createElement('div');
+    avatar.className = `message-avatar ${sender}`;
+    avatar.innerHTML = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+
+    // Si hay archivos adjuntos, mostrarlos
+    if (attachedFiles && attachedFiles.length > 0) {
+        attachedFiles.forEach(file => {
+            const fileTag = document.createElement('div');
+            fileTag.className = 'attached-file-simple';
+            fileTag.innerHTML = `<i class="fas ${getFileIcon(file.file_type)}"></i> ${file.file_name}`;
+            fileTag.onclick = () => showFileModal(file);
+            messageContent.appendChild(fileTag);
+        });
+    }
+
+    const messageText = document.createElement('div');
+    messageText.className = 'message-text';
+    
+    const messageTime = document.createElement('div');
+    messageTime.className = 'message-time';
+    messageTime.textContent = new Date().toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    messageContent.appendChild(messageText);
+    messageContent.appendChild(messageTime);
+    messageElement.appendChild(avatar);
+    messageElement.appendChild(messageContent);
+    messagesContainer.appendChild(messageElement);
+
+    // APLICAR TYPEWRITER SOLO PARA IA
+    if (sender === 'ai') {
+        let currentIndex = 0;
+        const messageId = Date.now().toString(); // ID único para este mensaje
+        currentPartialMessageId = messageId;
+        
+        // Guardar mensaje completo para referencia
+        partialMessages.set(messageId, {
+            fullContent: content,
+            currentIndex: 0,
+            messageElement: messageElement,
+            messageText: messageText,
+            attachedFiles: attachedFiles,
+            shouldSave: shouldSave
+        });
+        
+        // ACTIVAR MODO TYPING
+        isAITyping = true;
+        showStopButton();
+        
+        // Mostrar cursor inicial
+        messageText.innerHTML = '<span class="typing-cursor"></span>';
+        
+        function typeNextCharacter() {
+            const partialData = partialMessages.get(messageId);
+            if (!partialData) return; // Mensaje eliminado
+            
+            if (currentIndex < content.length && isAITyping) {
+                currentIndex++;
+                partialData.currentIndex = currentIndex; // Actualizar progreso
+                
+                // Mostrar texto actual + cursor
+                const currentText = content.substring(0, currentIndex);
+                messageText.innerHTML = formatMessage(currentText) + '<span class="typing-cursor"></span>';
+                
+                // Scroll automático
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // Continuar escribiendo
+                const char = content[currentIndex - 1];
+                let delay = 15;
+                
+                if (char === '.' || char === '!' || char === '?') delay = 150;
+                if (char === ',') delay = 80;
+                if (char === '\n') delay = 50;
+                
+                typewriterInterval = setTimeout(typeNextCharacter, delay);
+            } else {
+                // TERMINAR - completar mensaje
+                completeMessage(messageId);
             }
         }
 
-        function hideTypingIndicator() {
-            isAITyping = false;
-            const indicator = document.getElementById('typingIndicator');
-            if (indicator) {
-                indicator.classList.remove('show');
-            }
-            
-            const sendBtn = document.getElementById('sendBtn');
-            if (sendBtn) {
-                sendBtn.disabled = false;
-            }
-        }
+        // Iniciar efecto typewriter
+        typewriterInterval = setTimeout(typeNextCharacter, 50);
+    } else {
+        // Para mensajes del usuario, mostrar inmediatamente
+        messageText.innerHTML = formatMessage(content);
+    }
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    if (shouldSave && sender !== 'ai') { // No guardar IA hasta completar
+        chatHistory.push({ content, sender, timestamp: new Date(), attachedFiles });
+    }
+}
+
+
+function showStopButton() {
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) {
+        sendBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        sendBtn.style.background = 'linear-gradient(45deg, #ef4444, #dc2626)';
+        sendBtn.onclick = stopTypewriter;
+        sendBtn.disabled = false;
+    }
+}
+
+function restoreSendButton() {
+    const sendBtn = document.getElementById('sendBtn');
+    if (sendBtn) {
+        sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+        sendBtn.style.background = 'linear-gradient(45deg, #4a9eff, #0066cc)';
+        sendBtn.onclick = null;
+        sendBtn.disabled = false;
+    }
+}
+
+function stopTypewriter() {
+    isAITyping = false;
+    
+    if (typewriterInterval) {
+        clearTimeout(typewriterInterval);
+        typewriterInterval = null;
+    }
+    
+    restoreSendButton();
+    showToast('Escritura detenida', 'info');
+}
 
         function sendQuickMessage(message) {
             const input = document.getElementById('chatInput');
@@ -3032,19 +3389,21 @@ async function loadConversationMessages() {
 
         clearChatMessages();
         
+        // Limpiar mensajes parciales al cambiar conversación
+        partialMessages.clear();
+        currentPartialMessageId = null;
+        
         if (data && data.length > 0) {
             document.getElementById('welcomeMessage').style.display = 'none';
             data.forEach(message => {
-                // Detectar si el mensaje tiene archivos adjuntos
+                // Detectar archivos adjuntos
                 let cleanContent = message.content;
                 let extractedFiles = [];
                 
-                // Si el contenido tiene "**Archivos adjuntos:**"
                 if (message.content.includes('**Archivos adjuntos:**')) {
                     const parts = message.content.split('**Archivos adjuntos:**');
-                    cleanContent = parts[0].trim(); // Solo el mensaje original
+                    cleanContent = parts[0].trim();
                     
-                    // Extraer nombres de archivos del contenido
                     const filesSection = parts[1];
                     const fileMatches = filesSection.match(/\*\*(.*?)\*\* \((.*?)\):/g);
                     
@@ -3055,12 +3414,13 @@ async function loadConversationMessages() {
                             return {
                                 file_name: nameMatch ? nameMatch[1] : 'archivo',
                                 file_type: typeMatch ? typeMatch[1] : 'txt',
-                                id: Math.random().toString() // ID temporal para el modal
+                                id: Math.random().toString()
                             };
                         });
                     }
                 }
                 
+                // USAR addMessage() para historial (SIN typewriter)
                 addMessage(
                     cleanContent, 
                     message.message_type === 'user' ? 'user' : 'ai', 
@@ -3075,7 +3435,6 @@ async function loadConversationMessages() {
         console.error('Error loading messages:', error);
     }
 }
-
 
 async function saveMessageToDB(content, messageType) {
     if (!currentConversation) return;
@@ -3242,27 +3601,136 @@ function closeFileSelector() {
     container.style.display = 'none';
 }
 
+
+// REEMPLAZAR la función loadProjectFilesForSelector
 async function loadProjectFilesForSelector() {
     const content = document.getElementById('fileSelectorContent');
     content.innerHTML = '<div class="file-selector-loading"><i class="fas fa-spinner fa-spin"></i> Cargando archivos...</div>';
     
     try {
-        const { data: files, error } = await supabaseClient
+        // 1. Cargar repositorios del proyecto
+        const { data: repositories, error: repoError } = await supabaseClient
+            .from('repositories')
+            .select('*')
+            .eq('project_id', currentProject.id)
+            .order('name', { ascending: true });
+
+        if (repoError) throw repoError;
+
+        // 2. Cargar archivos del proyecto
+        const { data: files, error: filesError } = await supabaseClient
             .from('project_files')
             .select('*')
             .eq('project_id', currentProject.id)
             .order('file_path', { ascending: true });
 
-        if (error) throw error;
+        if (filesError) throw filesError;
 
         projectFilesList = files || [];
-        renderFileSelector();
+        const projectRepositories = repositories || [];
+        
+        renderFileSelectorByRepository(projectRepositories, projectFilesList);
         
     } catch (error) {
         console.error('Error loading files for selector:', error);
         content.innerHTML = '<div class="file-selector-loading" style="color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Error cargando archivos</div>';
     }
 }
+
+// NUEVA función para renderizar por repositorio
+function renderFileSelectorByRepository(repositories, files) {
+    const content = document.getElementById('fileSelectorContent');
+    content.innerHTML = '';
+    
+    if (repositories.length === 0) {
+        content.innerHTML = '<div class="file-selector-loading"><i class="fas fa-code-branch"></i> No hay repositorios en el proyecto</div>';
+        return;
+    }
+
+    repositories.forEach(repo => {
+        // Filtrar archivos de este repositorio
+        const repoFiles = files.filter(f => f.repository_id === repo.id);
+        
+        // Header del repositorio
+        const repoHeader = document.createElement('div');
+        repoHeader.className = 'repository-header-selector';
+        repoHeader.style.cssText = `
+            padding: 12px;
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            
+        `;
+        
+        repoHeader.innerHTML = `
+    <i class="fas fa-code-branch" style="color: #4a9eff;"></i>
+    <span style="color: #ffffff; font-weight: 600; font-size: 14px;">${repo.name}</span>
+    <span style="color: #8892a6; font-size: 12px; margin-left: auto;">${repoFiles.filter(f => !f.is_folder).length} archivos</span>
+    <i class="fas fa-chevron-right" id="chevron-${repo.id}" style="color: #8892a6; transition: transform 0.3s ease;"></i>
+`;
+        
+        content.appendChild(repoHeader);
+        
+        // Contenedor de archivos del repositorio
+        const repoContent = document.createElement('div');
+        repoContent.id = `repo-content-${repo.id}`;
+        repoContent.style.cssText = `
+            margin-bottom: 16px;
+            padding-left: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            border-left: 2px solid rgba(74, 158, 255, 0.2);
+            margin-left: 12px;
+            display: none;  /* ← AGREGAR ESTA LÍNEA */
+
+        `;
+        
+        if (repoFiles.length === 0) {
+            repoContent.innerHTML = `
+                <div style="padding: 12px; color: #8892a6; font-style: italic; font-size: 12px;">
+                    <i class="fas fa-folder-open"></i> Repositorio vacío
+                </div>
+            `;
+        } else {
+            // Construir árbol de archivos para este repositorio
+            const fileTree = buildFileTreeForSelector(repoFiles);
+            renderFileTreeForSelector(fileTree, repoContent, 0);
+        }
+        
+        content.appendChild(repoContent);
+        
+        // Toggle para mostrar/ocultar archivos del repositorio
+        repoHeader.addEventListener('click', () => {
+            const isVisible = repoContent.style.display !== 'none';
+            const chevron = document.getElementById(`chevron-${repo.id}`);
+            
+            if (isVisible) {
+                repoContent.style.display = 'none';
+                chevron.style.transform = 'rotate(-90deg)';
+            } else {
+                repoContent.style.display = 'block';
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        });
+        
+        // Hover effects
+        repoHeader.addEventListener('mouseenter', () => {
+            repoHeader.style.background = 'rgba(74, 158, 255, 0.15)';
+        });
+        
+        repoHeader.addEventListener('mouseleave', () => {
+            repoHeader.style.background = 'rgba(74, 158, 255, 0.1)';
+        });
+    });
+}
+
+
 
 function renderFileSelector() {
     const content = document.getElementById('fileSelectorContent');
@@ -3642,7 +4110,7 @@ async function sendMessage(message) {
         hideTypingIndicator();
 
         if (result.success && result.reply) {
-            addMessage(result.reply, 'ai');
+            addMessageWithTypewriter(result.reply, 'ai');
             await saveMessageToDB(result.reply, 'assistant');
             await loadConversations();
         } else {
@@ -3652,7 +4120,7 @@ async function sendMessage(message) {
     } catch (error) {
         console.error('Error communicating with AI:', error);
         hideTypingIndicator();
-        addMessage('Lo siento, hubo un error al procesar tu mensaje. Por favor, inténtalo de nuevo.', 'ai');
+        addMessageWithTypewriter('Lo siento, hubo un error al procesar tu mensaje. Por favor, inténtalo de nuevo.', 'ai');
         showToast('Error al comunicarse con la IA', 'error');
     }
 }
