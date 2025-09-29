@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beneficios - OpenMind AI</title>
+    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/sections.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/benefits.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="stars-container" id="starsContainer"></div>
+    <div class="purple-orb"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <a href="index.html" style="text-decoration: none; color: inherit;">OpenMind AI</a>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">Nosotros</a>
+                <a href="benefits.html" class="nav-link active">Beneficios</a>
+                <a href="index.html#pricing" class="nav-link">Precios</a>
+            </nav>
+
+            <div id="header-content">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Hero Section -->
+        <section class="benefits-hero">
+            <div class="benefits-hero-content">
+                <span class="benefits-badge">BENEFICIOS CLAVE</span>
+                <h1 class="benefits-title">Los beneficios clave de la IA<br>para el crecimiento de tu negocio</h1>
+                <p class="benefits-description">
+                    Descubre cómo la automatización con IA mejora la eficiencia, reduce costos y impulsa el crecimiento empresarial con procesos más inteligentes y rápidos.
+                </p>
+            </div>
+        </section>
+
+        <!-- Benefits Grid -->
+        <section class="section benefits-section">
+            <div class="benefits-grid">
+                <!-- Benefit 1 -->
+                <div class="benefit-card scroll-animate stagger-animation">
+                    <div class="benefit-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Mayor Productividad</h3>
+                    <p>Obtén análisis impulsados por IA para mejorar la toma de decisiones y el desarrollo de tus proyectos.</p>
+                </div>
+
+                <!-- Benefit 2 -->
+                <div class="benefit-card scroll-animate stagger-animation">
+                    <div class="benefit-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Mejor Experiencia del Cliente</h3>
+                    <p>Las interacciones personalizadas con IA mejoran los tiempos de respuesta y la satisfacción en general.</p>
+                </div>
+
+                <!-- Benefit 3 -->
+                <div class="benefit-card scroll-animate stagger-animation">
+                    <div class="benefit-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Disponibilidad</h3>
+                    <p>Los sistemas impulsados por IA operan las 24 horas del día, asegurando soporte y ejecución sin interrupciones dependiendo tu plan.</p>
+                </div>
+
+                <!-- Benefit 4 -->
+                <div class="benefit-card scroll-animate stagger-animation">
+                    <div class="benefit-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3>Reducción de Costos</h3>
+                    <p>La automatización con IA minimiza el trabajo manual, reduce los costos operativos y optimiza la asignación de recursos para una mejor rentabilidad.</p>
+                </div>
+
+                <!-- Benefit 5 -->
+                <div class="benefit-card scroll-animate stagger-animation">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Manejo de datos</h3>
+                    <p>Aprovecha la IA para analizar grandes conjuntos de datos, identificar tendencias y tomar decisiones más inteligentes, rápidas y precisas.</p>
+                </div>
+
+                <!-- Benefit 6 -->
+                <div class="benefit-card scroll-animate stagger-animation">
+                    <div class="benefit-icon">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </div>
+                    <h3>Escalabilidad y Crecimiento</h3>
+                    <p>La IA se adapta a las necesidades de tu proyecto, permitiéndote escalar eficientemente sin aumentar los costos de mano de obra.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="section stats-section">
+            <div class="stats-container">
+                <div class="stats-content scroll-animate">
+                    <h2>OpenMind AI en números</h2>
+                    <p>Resultados comprobados que hablan por sí mismos</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item scroll-animate stagger-animation">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">Aumento en productividad</div>
+                    </div>
+                    <div class="stat-item scroll-animate stagger-animation">
+                        <div class="stat-number">60%</div>
+                        <div class="stat-label">Reducción de costos operativos</div>
+                    </div>
+                    <div class="stat-item scroll-animate stagger-animation">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Disponibilidad garantizada</div>
+                    </div>
+                    <div class="stat-item scroll-animate stagger-animation">
+                        <div class="stat-number">2.5x</div>
+                        <div class="stat-label">Velocidad de procesamiento</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Improvement Section -->
+        <section class="section improvement-section">
+            <div class="improvement-content">
+                <div class="improvement-text scroll-animate">
+                    <span class="section-badge">TRANSFORMACIÓN COLABORATIVA</span>
+                    <h2>Revoluciona tu forma de trabajar</h2>
+                    <p>
+                        OpenMind AI no solo automatiza tareas, transforma completamente la manera en que tu equipo colabora, innova y entrega resultados excepcionales.
+                    </p>
+                    <div class="improvement-features">
+                        <div class="improvement-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Automatización inteligente de flujos de trabajo</span>
+                        </div>
+                        <div class="improvement-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Análisis predictivo para toma de decisiones</span>
+                        </div>
+                        <div class="improvement-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Integración perfecta con herramientas existentes</span>
+                        </div>
+                        <div class="improvement-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Escalabilidad automática según demanda</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="improvement-visual scroll-animate">
+                    <div class="visual-container">
+                        <div class="visual-element">
+                            <div class="progress-circle">
+                                <svg width="120" height="120">
+                                    <circle cx="60" cy="60" r="50" stroke="var(--border-color)" stroke-width="8" fill="transparent"/>
+                                    <circle cx="60" cy="60" r="50" stroke="var(--accent-primary)" stroke-width="8" fill="transparent" 
+                                            stroke-dasharray="314" stroke-dashoffset="94.2" stroke-linecap="round"/>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="progress-number">70%</span>
+                                    <span class="progress-label">Más eficiente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="section cta-section">
+            <div class="cta-content scroll-animate">
+                <h2>¿Listo para transformar tu negocio?</h2>
+                <p>Únete a miles de empresas que ya están aprovechando el poder de la IA con OpenMind.</p>
+                <div class="cta-buttons">
+                    <a href="index.html#pricing" class="primary-btn">
+                        Comienza tu prueba gratuita <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="about.html" class="secondary-btn">
+                        Conocer más
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="logo-text">OpenMind AI</span>
+                    </div>
+                    <p class="footer-description">
+                        Automatice de manera más inteligente, optimice más rápido y crezca más fuerte.
+                    </p>
+                    <div class="newsletter">
+                        <h4>Suscríbete a nuestro boletín</h4>
+                        <div class="newsletter-form">
+                            <input type="email" placeholder="name@email.com" class="newsletter-input">
+                            <button class="newsletter-btn">Subscribir</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Enlaces</h4>
+                        <ul>
+                            <li><a href="#services">Servicios</a></li>
+                            <li><a href="#process">Proceso</a></li>
+                            <li><a href="benefits.html">Beneficios</a></li>
+                            <li><a href="#pricing">Precios</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Páginas</h4>
+                        <ul>
+                            <li><a href="index.html">Hogar</a></li>
+                            <li><a href="about.html">Nosotros</a></li>
+                            <li><a href="contact.html">Contacto</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Sociales</h4>
+                        <ul>
+                            <li><a href="#" target="_blank">Instagram</a></li>
+                            <li><a href="#" target="_blank">Facebook</a></li>
+                            <li><a href="#" target="_blank">LinkedIn</a></li>
+                            <li><a href="#" target="_blank">Twitter</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 OpenMind AI. Todos los derechos reservados.</p>
+                <div class="footer-legal">
+                    <a href="privacy.html">Política de Privacidad</a>
+                    <a href="terms.html">Términos de Servicio</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosotros - OpenMind AI</title>
+    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/i18next@23.7.16/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/sections.css">
+    <link rel="stylesheet" href="css/features.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/about.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="stars-container" id="starsContainer"></div>
+    <div class="purple-orb"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <a href="index.html" style="text-decoration: none; color: inherit;">OpenMind AI</a>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link active">Nosotros</a>
+                <a href="benefits.html" class="nav-link">Beneficios</a>
+                <a href="index.html#pricing" class="nav-link">Precios</a>
+            </nav>
+
+            <div id="header-content">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="about-hero-content">
+                <span class="about-badge">NOSOTROS</span>
+                <h1 class="about-title">Creando el futuro de la automatización inteligente</h1>
+                <p class="about-description">
+                    En OpenMind AI, combinamos la innovación tecnológica con la visión empresarial para desarrollar soluciones de IA que transforman la manera en que las organizaciones trabajan, colaboran y crecen.
+                </p>
+            </div>
+        </section>
+
+        <!-- Mission & Vision Section -->
+        <section class="section mission-vision">
+            <div class="mission-vision-grid">
+                <div class="mission-card scroll-animate">
+                    <div class="card-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Nuestra Misión</h3>
+                    <p>Democratizar el acceso a la inteligencia artificial avanzada, proporcionando herramientas intuitivas que permiten a equipos de todos los tamaños automatizar procesos, optimizar flujos de trabajo y liberar su potencial creativo.</p>
+                </div>
+                
+                <div class="vision-card scroll-animate">
+                    <div class="card-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Nuestra Visión</h3>
+                    <p>Ser la plataforma líder mundial en automatización inteligente colaborativa, donde reunimos herraminetas que impulsan la creatividad colaborativa para impulsar y maximizar ideas </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Story Section -->
+        <section class="section story-section">
+            <div class="story-content scroll-animate">
+                <span class="section-badge">NUESTRA HISTORIA</span>
+                <h2 class="section-title">De una idea audaz a una revolución tecnológica</h2>
+                <div class="story-text">
+                    <p>
+                        OpenMind AI nació en 2025 de la visión compartida de un equipo de desarrolladores que creían firmemente que las mejores ideas nacen de la colaboracion.
+                    </p>
+                    <p>
+                        Después de años trabajando en grandes corporaciones tecnológicas, nuestros fundadores se dieron cuenta de que las soluciones de IA existentes eran demasiado complejas, costosas o limitadas para la mayoría de equipos y empresas. Era momento de cambiar eso.
+                    </p>
+                    <p>
+                        Comenzamos con una simple pregunta: "¿Qué pasaría si la IA pudiera entender realmente cómo trabajan los equipos y adaptarse a sus necesidades específicas?" Esta curiosidad nos llevó a desarrollar nuestra primera versión, que rápidamente evolucionó hacia la plataforma integral que conoces hoy.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="section team-section">
+            <h2 class="section-title scroll-animate">Conoce a nuestro equipo</h2>
+            <p class="section-subtitle scroll-animate">Mentes brillantes trabajando juntas para revolucionar el futuro del trabajo</p>
+            
+            <div class="team-grid">
+                <div class="team-member scroll-animate stagger-animation">
+                    <div class="member-photo">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4>Andres Javiar De Avila</h4>
+                    <span class="member-role">Fundador</span>
+                    <p><p>
+                    <div class="member-social">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <div class="team-member scroll-animate stagger-animation">
+                    <div class="member-photo">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4>Camilo Andres Guerra Gil</h4>
+                    <span class="member-role">Co-fundador</span>
+                    <p></p>
+                    <div class="member-social">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+
+                <div class="team-member scroll-animate stagger-animation">
+                    <div class="member-photo">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h4>Luis Miguel Fonce Guaitero</h4>
+                    <span class="member-role">Co-fundador</span>
+                    <p></p>
+                    <div class="member-social">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-dribbble"></i></a>
+                    </div>
+                </div>
+
+                <div class="team-member scroll-animate stagger-animation">
+                    <div class="member-photo">
+                        <i class="fas fa-user-t"></i>
+                    </div>
+                    <h4>Sajith David Contreras Navarro</h4>
+                    <span class="member-role">Co-fundador</span>
+                    <p></p>
+                    <div class="member-social">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fas fa-graduation-cap"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Values Section -->
+        <section class="section values-section">
+            <h2 class="section-title scroll-animate">Nuestros valores</h2>
+            <div class="values-grid">
+                <div class="value-card scroll-animate stagger-animation">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4>Colaboración</h4>
+                    <p>Creemos que las mejores soluciones nacen del trabajo en equipo, tanto internamente como con nuestros clientes.</p>
+                </div>
+                
+                <div class="value-card scroll-animate stagger-animation">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h4>Innovación</h4>
+                    <p>Constantemente exploramos nuevas fronteras tecnológicas para mantenernos a la vanguardia de la IA.</p>
+                </div>
+                
+                <div class="value-card scroll-animate stagger-animation">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Transparencia</h4>
+                    <p>Operamos con total honestidad y claridad en todas nuestras interacciones y procesos.</p>
+                </div>
+                
+                <div class="value-card scroll-animate stagger-animation">
+                    <div class="value-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h4>Excelencia</h4>
+                    <p>No nos conformamos con lo bueno; siempre buscamos la perfección en cada detalle.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="section cta-section">
+            <div class="cta-content scroll-animate">
+                <h2>¿Listo para transformar tu equipo?</h2>
+                <p>Únete a miles de equipos que ya están usando OpenMind AI para trabajar más inteligentemente.</p>
+                <div class="cta-buttons">
+                    <a href="index.html#pricing" class="primary-btn">Comienza gratis</a>
+                    <a href="index.html#contact" class="secondary-btn">Contáctanos</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="logo-text">OpenMind AI</span>
+                    </div>
+                    <p class="footer-description">
+                        Automatice de manera más inteligente, optimice más rápido y crezca más fuerte.
+                    </p>
+                    <div class="newsletter">
+                        <h4>Suscríbete a nuestro boletín</h4>
+                        <div class="newsletter-form">
+                            <input type="email" placeholder="name@email.com" class="newsletter-input">
+                            <button class="newsletter-btn">Subscribir</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Enlaces</h4>
+                        <ul>
+                            <li><a href="#services">Servicios</a></li>
+                            <li><a href="#process">Proceso</a></li>
+                            <li><a href="benefits.html">Beneficios</a></li>
+                            <li><a href="#pricing">Precios</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Páginas</h4>
+                        <ul>
+                            <li><a href="index.html">Hogar</a></li>
+                            <li><a href="about.html">Nosotros</a></li>
+                            <li><a href="contact.html">Contacto</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4>Sociales</h4>
+                        <ul>
+                            <li><a href="#" target="_blank">Instagram</a></li>
+                            <li><a href="#" target="_blank">Facebook</a></li>
+                            <li><a href="#" target="_blank">LinkedIn</a></li>
+                            <li><a href="#" target="_blank">Twitter</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 OpenMind AI. Todos los derechos reservados.</p>
+                <div class="footer-legal">
+                    <a href="privacy.html">Política de Privacidad</a>
+                    <a href="terms.html">Términos de Servicio</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

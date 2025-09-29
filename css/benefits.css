@@ -1,0 +1,504 @@
+/* css/benefits.css - Estilos para la página de Beneficios */
+
+.benefits-hero {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 40px;
+    position: relative;
+    background: radial-gradient(circle at 20% 50%, rgba(74, 158, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 30%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+}
+
+.benefits-hero-content {
+    max-width: 900px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s ease-out 0.5s forwards;
+}
+
+.benefits-badge {
+    display: inline-block;
+    background: rgba(74, 158, 255, 0.15);
+    border: 1px solid rgba(74, 158, 255, 0.3);
+    color: var(--accent-primary);
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+}
+
+.benefits-title {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.benefits-description {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* Benefits Grid */
+.benefits-section {
+    padding: 100px 40px;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.benefit-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: left;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(74, 158, 255, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.benefit-card:hover::before {
+    left: 100%;
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 20px 60px rgba(74, 158, 255, 0.2);
+}
+
+.benefit-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 24px;
+    background: var(--purple-gradient);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    position: relative;
+    z-index: 1;
+}
+
+.benefit-card h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    position: relative;
+    z-index: 1;
+}
+
+.benefit-card p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 1;
+}
+
+/* Stats Section */
+.stats-section {
+    background: linear-gradient(135deg, rgba(74, 158, 255, 0.05) 0%, rgba(0, 212, 255, 0.03) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 100px 40px;
+}
+
+.stats-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 0%, rgba(74, 158, 255, 0.08) 50%, transparent 100%);
+    transform: skewY(-1deg);
+    transform-origin: top left;
+}
+
+.stats-container {
+    position: relative;
+    z-index: 10;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.stats-content h2 {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stats-content p {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 60px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 48px;
+    font-weight: 800;
+    background: var(--purple-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Process Improvement Section */
+.improvement-section {
+    padding: 100px 40px;
+}
+
+.improvement-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.improvement-text h2 {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.improvement-text p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+}
+
+.improvement-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.improvement-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    color: var(--text-secondary);
+}
+
+.improvement-feature i {
+    color: var(--accent-primary);
+    font-size: 18px;
+    min-width: 20px;
+}
+
+.improvement-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.visual-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visual-element {
+    position: relative;
+}
+
+.progress-circle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-circle svg {
+    transform: rotate(-90deg);
+}
+
+.progress-circle svg circle:last-child {
+    animation: progressAnimation 2s ease-out 1s forwards;
+}
+
+@keyframes progressAnimation {
+    from {
+        stroke-dashoffset: 314;
+    }
+    to {
+        stroke-dashoffset: 94.2;
+    }
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.progress-number {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    margin-bottom: 4px;
+}
+
+.progress-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* CTA Section */
+.cta-section {
+    background: var(--purple-gradient);
+    color: white;
+    text-align: center;
+    padding: 100px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 10;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cta-content h2 {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.cta-content p {
+    font-size: 18px;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.cta-buttons .primary-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.cta-buttons .primary-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.cta-buttons .secondary-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.cta-buttons .secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive styles for benefits page */
+@media (max-width: 968px) {
+    .improvement-content {
+        grid-template-columns: 1fr;
+        gap: 60px;
+        text-align: center;
+    }
+    
+    .improvement-visual {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .benefits-hero {
+        min-height: 60vh;
+        padding: 0 20px;
+    }
+    
+    .benefits-title {
+        font-size: 28px;
+    }
+    
+    .benefits-description {
+        font-size: 16px;
+    }
+    
+    .benefits-section {
+        padding: 80px 20px;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .benefit-card {
+        padding: 30px 25px;
+    }
+    
+    .stats-section {
+        padding: 80px 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+    
+    .stat-number {
+        font-size: 36px;
+    }
+    
+    .improvement-section {
+        padding: 80px 20px;
+    }
+    
+    .improvement-text h2 {
+        font-size: 28px;
+    }
+    
+    .visual-container {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .progress-circle svg {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .cta-section {
+        padding: 80px 20px;
+    }
+    
+    .cta-content h2 {
+        font-size: 28px;
+    }
+    
+    .cta-content p {
+        font-size: 16px;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .benefit-card {
+        padding: 25px 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .stat-number {
+        font-size: 32px;
+    }
+    
+    .improvement-features {
+        text-align: left;
+    }
+}
