@@ -415,6 +415,7 @@
     justify-content: center;
     animation: orbitalRotate 3s linear infinite;
     position: relative;
+    margin-left: 62px;
 }
 
 .ai-orb::before {
