@@ -2474,8 +2474,61 @@ body {
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
+    z-index: -1; /* Para que esté detrás del panel-content */
 }
 
+.settings-panel,
+.participants-panel {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 2000 !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+}
+
+.settings-panel.show,
+.participants-panel.show {
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+.panel-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 1 !important;
+}
+
+.panel-content {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 350px !important;
+    height: 100% !important;
+    background: linear-gradient(145deg, rgba(15, 20, 25, 0.98), rgba(30, 41, 59, 0.95)) !important;
+    backdrop-filter: blur(20px) !important;
+    border-left: 1px solid rgba(74, 158, 255, 0.3) !important;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3) !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    z-index: 2 !important;
+}
+
+.settings-panel.show .panel-content,
+.participants-panel.show .panel-content {
+    transform: translateX(0) !important;
+}
 .panel-content {
     position: absolute;
     top: 0;
@@ -3167,6 +3220,50 @@ body {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     border-color: #3b82f6;
 }
+
+.control-icon-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    margin-left: 4px;
+}
+
+.control-icon-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.control-icon-btn.kick-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.control-icon-btn.kick-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.local-mute-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 </style>
 </head>
 <body>
@@ -3445,6 +3542,9 @@ body {
         let remoteUsers = {};
         let isMuted = false;
         let callStartTime = null;
+        let currentUserRole = null; // 'owner', 'admin', 'member'
+let locallyMutedUsers = new Set(); // Usuarios silenciados localmente
+let forceMutedByOwner = false; // Si el owner me silenció
         let callDurationInterval = null;
         let roomChannel = null;
         let isInChannel = false;
@@ -3556,6 +3656,8 @@ async function initializeApp() {
         await loadProjectInfo();
         await loadAndShowChannels();
         await loadAllChannelParticipantCounts();
+        await loadUserRole();
+console.log('Rol del usuario:', currentUserRole);
         
         updateConnectionStatus('connected', 'Conectado');
         
@@ -3610,11 +3712,71 @@ async function loadAndShowChannels() {
     }
 }
 
+
+async function checkIfForceMuted() {
+    try {
+        const { data } = await supabase
+            .from('voice_channel_controls')
+            .select('*')
+            .eq('channel_id', currentChannelId)
+            .eq('user_id', currentUserId)
+            .eq('action_type', 'mute')
+            .maybeSingle();
+        
+        forceMutedByOwner = !!data;
+        
+        if (forceMutedByOwner && localAudioTrack) {
+            await localAudioTrack.setEnabled(false);
+            isMuted = true;
+            updateMuteButton();
+            showToast('El owner te ha silenciado', 'warning');
+        }
+        
+        return forceMutedByOwner;
+    } catch (error) {
+        console.error('Error verificando mute:', error);
+        return false;
+    }
+}
+
 function showDefaultView() {
     document.getElementById('default-view').style.display = 'flex';
     document.getElementById('channels-main-view').style.display = 'none';
     document.getElementById('call-view').style.display = 'none';
 }
+
+
+
+async function loadUserRole() {
+    try {
+        // Obtener el proyecto actual
+        const { data: project } = await supabase
+            .from('projects')
+            .select('owner_id')
+            .eq('id', currentProjectId)
+            .single();
+        
+        if (project && project.owner_id === currentUserId) {
+            currentUserRole = 'owner';
+            return;
+        }
+        
+        // Si no es owner, verificar membresía
+        const { data: member } = await supabase
+            .from('project_members')
+            .select('role')
+            .eq('project_id', currentProjectId)
+            .eq('user_id', currentUserId)
+            .single();
+        
+        currentUserRole = member ? member.role : 'member';
+        
+    } catch (error) {
+        console.error('Error cargando rol:', error);
+        currentUserRole = 'member';
+    }
+}
+
 
 // Mostrar vista de canales (NO SE USA - mantener por compatibilidad)
 function showChannelsView() {
@@ -3935,6 +4097,8 @@ async function backToChannelsList() {
                 
                 // Unirse al canal de Supabase para presencia
                 await joinRealtimeChannel();
+                // Verificar si estamos silenciados
+                await checkIfForceMuted();
                 
                 showToast(`Te uniste al canal "${currentChannelName}"`, 'success');
                 updateConnectionStatus('connected', 'Conectado al canal');
@@ -4001,7 +4165,8 @@ async function backToChannelsList() {
             }
         }
 
-       async function joinRealtimeChannel() {
+    
+async function joinRealtimeChannel() {
     const realtimeChannelName = `voice_presence_${currentChannelId}`;
     
     roomChannel = supabase.channel(realtimeChannelName, {
@@ -4027,6 +4192,30 @@ async function backToChannelsList() {
             console.log(`Usuario ${key} salió`);
             const newState = roomChannel.presenceState();
             updateChannelParticipantCount(currentChannelId, Object.keys(newState).length);
+        })
+        .on('broadcast', { event: 'owner_mute' }, ({ payload }) => {
+            if (payload.userId === currentUserId) {
+                forceMutedByOwner = true;
+                if (localAudioTrack) {
+                    localAudioTrack.setEnabled(false);
+                    isMuted = true;
+                    updateMuteButton();
+                }
+                showToast('Has sido silenciado por el owner', 'warning');
+            }
+        })
+        .on('broadcast', { event: 'owner_unmute' }, ({ payload }) => {
+            if (payload.userId === currentUserId) {
+                forceMutedByOwner = false;
+                updateMuteButton();
+                showToast('El owner te ha quitado el silencio', 'success');
+            }
+        })
+        .on('broadcast', { event: 'owner_kick' }, async ({ payload }) => {
+            if (payload.userId === currentUserId) {
+                showToast('Has sido expulsado del canal por el owner', 'error');
+                await leaveChannel();
+            }
         });
 
     await roomChannel.subscribe(async (status) => {
@@ -4041,6 +4230,9 @@ async function backToChannelsList() {
         }
     });
 }
+
+
+
 
 async function loadAllChannelParticipantCounts() {
     try {
@@ -4185,46 +4377,235 @@ function updateChannelParticipantCount(channelId, count) {
             }, 100);
         }
 
-        async function toggleMute() {
-            if (!localAudioTrack) return;
+    async function toggleMute() {
+    if (!localAudioTrack) return;
 
-            const muteBtn = document.getElementById('mute-btn');
-            showLoadingSpinner(muteBtn);
+    // Si estás silenciado por el owner, no puedes activar el micrófono
+    if (forceMutedByOwner && !isMuted) {
+        showToast('El owner te ha silenciado. No puedes activar el micrófono.', 'error');
+        return;
+    }
 
-            try {
-                isMuted = !isMuted;
-                await localAudioTrack.setEnabled(!isMuted);
+    const muteBtn = document.getElementById('mute-btn');
+    showLoadingSpinner(muteBtn);
 
-                const muteIcon = muteBtn.querySelector('i');
-                
-                if (isMuted) {
-                    muteBtn.classList.add('muted');
-                    muteIcon.className = 'fas fa-microphone-slash';
-                } else {
-                    muteBtn.classList.remove('muted');
-                    muteIcon.className = 'fas fa-microphone';
-                }
+    try {
+        isMuted = !isMuted;
+        await localAudioTrack.setEnabled(!isMuted);
 
-                // Actualizar estado en presencia
-                if (roomChannel) {
-                    await roomChannel.track({
-                        userId: currentUserId,
-                        userName: currentUserName,
-                        channelId: currentChannelId,
-                        isMuted: isMuted,
-                        joinedAt: new Date().toISOString()
-                    });
-                }
+        updateMuteButton();
 
-                showToast(isMuted ? 'Micrófono silenciado' : 'Micrófono activado', 'info');
-                
-            } catch (error) {
-                console.error('Error al cambiar estado del micrófono:', error);
-                showToast('Error al cambiar estado del micrófono', 'error');
-            } finally {
-                hideLoadingSpinner(muteBtn);
-            }
+        // Actualizar estado en presencia
+        if (roomChannel) {
+            await roomChannel.track({
+                userId: currentUserId,
+                userName: currentUserName,
+                channelId: currentChannelId,
+                isMuted: isMuted,
+                joinedAt: new Date().toISOString()
+            });
         }
+
+        showToast(isMuted ? 'Micrófono silenciado' : 'Micrófono activado', 'info');
+        
+    } catch (error) {
+        console.error('Error al cambiar estado del micrófono:', error);
+        showToast('Error al cambiar estado del micrófono', 'error');
+    } finally {
+        hideLoadingSpinner(muteBtn);
+    }
+}
+
+function updateMuteButton() {
+    const muteBtn = document.getElementById('mute-btn');
+    const muteIcon = muteBtn.querySelector('i');
+    
+    if (isMuted || forceMutedByOwner) {
+        muteBtn.classList.add('muted');
+        muteIcon.className = 'fas fa-microphone-slash';
+        
+        if (forceMutedByOwner) {
+            muteBtn.style.opacity = '0.6';
+            muteBtn.title = 'Silenciado por el owner';
+        }
+    } else {
+        muteBtn.classList.remove('muted');
+        muteIcon.className = 'fas fa-microphone';
+        muteBtn.style.opacity = '1';
+        muteBtn.title = 'Silenciar/Activar micrófono';
+    }
+}
+
+
+// Silenciar usuario (solo owner)
+async function ownerMuteUser(targetUserId) {
+    // Ahora owner Y admin pueden usar esta función
+    if (currentUserRole !== 'owner' && currentUserRole !== 'admin') {
+        showToast('No tienes permisos para silenciar usuarios', 'error');
+        return;
+    }
+    
+    // Si eres admin, verificar que no intentes silenciar a owner u otros admins
+    if (currentUserRole === 'admin') {
+        // Verificar si el target es owner
+        const { data: project } = await supabase
+            .from('projects')
+            .select('owner_id')
+            .eq('id', currentProjectId)
+            .single();
+        
+        if (project.owner_id === targetUserId) {
+            showToast('No puedes silenciar al owner del proyecto', 'error');
+            return;
+        }
+        
+        // Verificar si el target es admin
+        const { data: targetMember } = await supabase
+            .from('project_members')
+            .select('role')
+            .eq('project_id', currentProjectId)
+            .eq('user_id', targetUserId)
+            .single();
+        
+        if (targetMember?.role === 'admin') {
+            showToast('No puedes silenciar a otros administradores', 'error');
+            return;
+        }
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('voice_channel_controls')
+            .upsert({
+                channel_id: currentChannelId,
+                user_id: targetUserId,
+                action_type: 'mute',
+                applied_by: currentUserId
+            });
+        
+        if (error) throw error;
+        
+        showToast('Usuario silenciado', 'success');
+        
+        if (roomChannel) {
+            await roomChannel.send({
+                type: 'broadcast',
+                event: 'owner_mute',
+                payload: { userId: targetUserId }
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error silenciando usuario:', error);
+        showToast('Error al silenciar usuario', 'error');
+    }
+}
+
+
+// Quitar silencio (solo owner)
+async function ownerUnmuteUser(targetUserId) {
+    if (currentUserRole !== 'owner' && currentUserRole !== 'admin') {
+        showToast('No tienes permisos', 'error');
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('voice_channel_controls')
+            .delete()
+            .eq('channel_id', currentChannelId)
+            .eq('user_id', targetUserId)
+            .eq('action_type', 'mute');
+        
+        if (error) throw error;
+        
+        showToast('Usuario desactivado del silencio', 'success');
+        
+        if (roomChannel) {
+            await roomChannel.send({
+                type: 'broadcast',
+                event: 'owner_unmute',
+                payload: { userId: targetUserId }
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error quitando silencio:', error);
+    }
+}
+
+// Expulsar usuario (solo owner)
+async function ownerKickUser(userId) {
+    if (currentUserRole !== 'owner') {
+        showToast('Solo el owner puede expulsar usuarios', 'error');
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('voice_channel_controls')
+            .insert({
+                channel_id: currentChannelId,
+                user_id: userId,
+                action_type: 'kick',
+                applied_by: currentUserId,
+                expires_at: new Date(Date.now() + 60000).toISOString() // Expira en 1 min
+            });
+        
+        if (error) throw error;
+        
+        showToast('Usuario expulsado del canal', 'success');
+        
+        if (roomChannel) {
+            await roomChannel.send({
+                type: 'broadcast',
+                event: 'owner_kick',
+                payload: { userId }
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error expulsando usuario:', error);
+        showToast('Error al expulsar usuario', 'error');
+    }
+}
+
+// Silenciar localmente (todos los usuarios)
+function localMuteUser(userId) {
+    if (locallyMutedUsers.has(userId)) {
+        locallyMutedUsers.delete(userId);
+        showToast('Usuario desactivado del silencio local', 'info');
+    } else {
+        locallyMutedUsers.add(userId);
+        showToast('Usuario silenciado localmente (solo para ti)', 'info');
+    }
+    
+    // Aplicar el mute al track de audio
+    const user = remoteUsers[userId];
+    if (user && user.audioTrack) {
+        user.audioTrack.setVolume(locallyMutedUsers.has(userId) ? 0 : 100);
+    }
+    
+    // Actualizar UI
+    updateParticipantMuteStatus(userId);
+}
+
+function updateParticipantMuteStatus(userId) {
+    const participantElement = document.querySelector(`[data-user-id="${userId}"]`);
+    if (participantElement) {
+        const muteIndicator = participantElement.querySelector('.local-mute-indicator');
+        if (locallyMutedUsers.has(userId)) {
+            if (!muteIndicator) {
+                const indicator = document.createElement('div');
+                indicator.className = 'local-mute-indicator';
+                indicator.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                participantElement.appendChild(indicator);
+            }
+        } else if (muteIndicator) {
+            muteIndicator.remove();
+        }
+    }
+}
 
         // FUNCIÓN INTERNA PARA LIMPIAR SIN MOSTRAR LOADING
         async function leaveChannelInternal() {
@@ -4585,33 +4966,49 @@ function openParticipantsPanel() {
             <div class="panel-body">
                 <div class="participants-list">
                     ${participants.length === 0 ? `
-                        <div class="empty-participants">
-                            <i class="fas fa-user-slash"></i>
-                            <p>No hay participantes conectados</p>
-                        </div>
-                    ` : participants.map(participant => `
-                        <div class="participant-item ${participant.isCurrentUser ? 'current-user' : ''}">
-                            <div class="participant-avatar">
-                                ${participant.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div class="participant-details">
-                                <div class="participant-name">
-                                    ${participant.name}
-                                    ${participant.isCurrentUser ? ' (Tú)' : ''}
-                                </div>
-                                <div class="participant-info">
-                                    <span class="join-time">
-                                        Conectado ${formatJoinTime(participant.joinedAt)}
-                                    </span>
-                                    <div class="participant-controls">
-                                        <div class="mic-status ${participant.isMuted ? 'muted' : 'unmuted'}">
-                                            <i class="fas fa-${participant.isMuted ? 'microphone-slash' : 'microphone'}"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('')}
+    <div class="empty-participants">
+        <i class="fas fa-user-slash"></i>
+        <p>No hay participantes conectados</p>
+    </div>
+` : participants.map(participant => `
+    <div class="participant-item ${participant.isCurrentUser ? 'current-user' : ''}">
+        <div class="participant-avatar">
+            ${participant.name.charAt(0).toUpperCase()}
+        </div>
+        <div class="participant-details">
+            <div class="participant-name">
+                ${participant.name}
+                ${participant.isCurrentUser ? ' (Tú)' : ''}
+            </div>
+            <div class="participant-info">
+                <span class="join-time">
+                    Conectado ${formatJoinTime(participant.joinedAt)}
+                </span>
+                <div class="participant-controls">
+                    <div class="mic-status ${participant.isMuted ? 'muted' : 'unmuted'}">
+                        <i class="fas fa-${participant.isMuted ? 'microphone-slash' : 'microphone'}"></i>
+                    </div>
+                   ${!participant.isCurrentUser ? `
+    ${currentUserRole === 'owner' || currentUserRole === 'admin' ? `
+        <button class="control-icon-btn" onclick="ownerMuteUser('${participant.id}')" title="Silenciar usuario">
+            <i class="fas fa-ban"></i>
+        </button>
+        ${currentUserRole === 'owner' ? `
+            <button class="control-icon-btn kick-btn" onclick="ownerKickUser('${participant.id}')" title="Expulsar del canal">
+                <i class="fas fa-user-times"></i>
+            </button>
+        ` : ''}
+    ` : `
+        <button class="control-icon-btn" onclick="localMuteUser('${participant.id}')" title="Silenciar localmente">
+            <i class="fas fa-volume-${locallyMutedUsers.has(participant.id) ? 'mute' : 'up'}"></i>
+        </button>
+    `}
+` : ''}
+                </div>
+            </div>
+        </div>
+    </div>
+`).join('')}
                 </div>
             </div>
         </div>
@@ -5826,6 +6223,40 @@ document.addEventListener('click', function(event) {
     }
 });
 
+// Cerrar paneles al hacer clic fuera
+// Cerrar paneles al hacer clic en el overlay
+document.addEventListener('click', function(event) {
+    // Cerrar panel de configuración
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsBtn = document.querySelector('.settings-btn');
+    
+    if (settingsPanel && settingsPanel.classList.contains('show')) {
+        const panelOverlay = settingsPanel.querySelector('.panel-overlay');
+        const panelContent = settingsPanel.querySelector('.panel-content');
+        
+        // Si hizo clic en el overlay O fuera del panel (pero no en el botón)
+        if (event.target === panelOverlay || 
+            (!settingsBtn.contains(event.target) && !panelContent.contains(event.target))) {
+            closeSettingsPanel();
+        }
+    }
+    
+    // Cerrar panel de participantes
+    const participantsPanel = document.getElementById('participants-panel');
+    const participantsBtn = document.querySelector('.participants-btn');
+    
+    if (participantsPanel && participantsPanel.classList.contains('show')) {
+        const panelOverlay = participantsPanel.querySelector('.panel-overlay');
+        const panelContent = participantsPanel.querySelector('.panel-content');
+        
+        // Si hizo clic en el overlay O fuera del panel (pero no en el botón)
+        if (event.target === panelOverlay || 
+            (!participantsBtn.contains(event.target) && !panelContent.contains(event.target))) {
+            closeParticipantsPanel();
+        }
+    }
+});
+
 // Exponer funciones globales
 // Exponer funciones globales completas y actualizadas
 window.updateUserHeader = updateUserHeader;
@@ -5861,6 +6292,10 @@ window.testMicrophone = testMicrophone;
 window.testSpeakers = testSpeakers;
 window.toggleParticipants = toggleParticipants;
 window.openParticipantsPanel = openParticipantsPanel;
+window.ownerMuteUser = ownerMuteUser;
+window.ownerUnmuteUser = ownerUnmuteUser;
+window.ownerKickUser = ownerKickUser;
+window.localMuteUser = localMuteUser;
 window.closeParticipantsPanel = closeParticipantsPanel;
 // Hacer supabaseClient disponible globalmente para noti.js
 window.supabaseClient = supabase;
