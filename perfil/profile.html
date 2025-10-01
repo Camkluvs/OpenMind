@@ -211,7 +211,36 @@
     </div>
 
 
-
+<!-- Modal de Solicitud de Cambio de Foto -->
+<div class="modal" id="requestPhotoChangeModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Solicitud de Cambio de Foto</h3>
+            <button class="modal-close" onclick="closeRequestModal()">&times;</button>
+        </div>
+        <form id="requestPhotoChangeForm">
+            <div class="form-group">
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Envía tu solicitud para cambiar tu foto de perfil. Nuestro equipo revisará tu petición.
+                </p>
+                <label class="form-label">Tu Nombre</label>
+                <input type="text" id="requestName" class="form-input" readonly>
+                
+                <label class="form-label" style="margin-top: 15px;">Tu Email</label>
+                <input type="email" id="requestEmail" class="form-input" readonly>
+                
+                <label class="form-label" style="margin-top: 15px;">Motivo (opcional)</label>
+                <textarea id="requestReason" class="form-input" rows="3" placeholder="Explica por qué necesitas cambiar tu foto..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeRequestModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Enviar Solicitud
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <!-- Modal de foto única -->
 <div class="modal" id="editModal">
@@ -223,7 +252,7 @@
         <form id="editProfileForm">
             <div class="form-group">
                 <p style="color: #ff9800; margin-bottom: 15px;">
-                    ⚠️ Tienes permiso para cambiar tu foto. Después de usarlo se desactivará.
+                    ⚠️ Este cambio es único 
                 </p>
                 <label class="form-label" for="editAvatar">Imagen de Perfil</label>
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
@@ -242,6 +271,30 @@
     </div>
 </div>
 
+<!-- Modal de Confirmación -->
+<div class="modal" id="confirmUploadModal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-header" >
+            <h3 class="modal-title" style="color: #ff9800;">
+                <i class="fas fa-exclamation-triangle"></i> Confirmar Cambio
+            </h3>
+        </div>
+        <div style="padding: 25px;">
+            <p style="font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;" id="confirmMessage">
+                ¿Estás seguro? Esta será tu foto de perfil.
+            </p>
+          
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" onclick="confirmUpload()">
+                <i class="fas fa-check"></i> Sí, subir foto
+            </button>
+        </div>
+    </div>
+</div>
 
 <script src="../js/noti.js"></script>
     <script>
@@ -447,31 +500,22 @@ function getColorFromName(name) {
 
 async function openEditModal() {
     try {
-        // Verificar si el usuario puede subir/cambiar foto
         const { data: profile } = await supabaseClient
             .from('profiles')
             .select('avatar_url, photo_edit')
             .eq('id', currentUser.id)
             .single();
         
-        // Si no tiene foto, puede subir su primera vez
         if (!profile?.avatar_url) {
             document.getElementById('editModal').style.display = 'flex';
             return;
         }
         
-        // Si ya tiene foto, verificar si tiene permiso para editar
         if (profile?.photo_edit === true) {
             document.getElementById('editModal').style.display = 'flex';
         } else {
-            // Mostrar mensaje con opción de solicitar cambio
-            if (confirm('No puedes cambiar tu foto de perfil.\n\n¿Deseas solicitar un cambio? Se te redirigirá a WhatsApp.')) {
-                // CAMBIA ESTE NÚMERO AL TUYO
-                const whatsappNumber = '573001234567'; 
-                const message = `Hola, solicito permiso para cambiar mi foto de perfil. Mi email es: ${currentUser.email}`;
-                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
-            }
+            // Mostrar modal de solicitud
+            openRequestModal();
         }
         
     } catch (error) {
@@ -484,36 +528,27 @@ async function openEditModal() {
 
 
     function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
 
-        let isProcessing = false;
-        let currentAvatarUrl = null;
+        document.getElementById('editModal').style.display = 'none';
+    }
 
+let isProcessing = false;
+let currentAvatarUrl = null;
+
+
+
+
+let pendingUpload = null;
 
 async function handleProfileUpdate(event) {
     event.preventDefault();
     
     if (isProcessing) return;
     
-    isProcessing = true;
-    
-    const submitButton = document.querySelector('#editProfileForm button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
-    submitButton.disabled = true;
-    
-    const cancelButton = document.querySelector('#editProfileForm button[type="button"]');
-    cancelButton.disabled = true;
-    
     const avatarFile = document.getElementById('editAvatar').files[0];
     
     if (!avatarFile) {
-        alert('Por favor selecciona una imagen');
-        isProcessing = false;
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-        cancelButton.disabled = false;
+        showNotification('Por favor selecciona una imagen', 'error');
         return;
     }
     
@@ -521,27 +556,63 @@ async function handleProfileUpdate(event) {
         // Obtener info actual del perfil
         const { data: currentProfile } = await supabaseClient
             .from('profiles')
-            .select('avatar_url, photo_edit')
+            .select('avatar_url, photo_edit, full_name, username, rank')
             .eq('id', currentUser.id)
             .single();
         
         const isFirstUpload = !currentProfile?.avatar_url;
         
-        // Confirmar acción
-        let confirmMessage = isFirstUpload 
-            ? '¿Estás seguro? Esta será tu foto de perfil.'
-            : '¿Estás seguro de cambiar tu foto? Este permiso se usará y desactivará.';
+        // Guardar datos para procesar después de confirmar
+        pendingUpload = {
+            file: avatarFile,
+            isFirstUpload: isFirstUpload,
+            currentProfile: currentProfile
+        };
         
-        if (!confirm(confirmMessage)) {
-            isProcessing = false;
-            submitButton.textContent = originalText;
-            submitButton.disabled = false;
-            cancelButton.disabled = false;
-            return;
-        }
+        // Cerrar modal de edición primero
+        document.getElementById('editModal').style.display = 'none';
+        
+        // Mostrar modal de confirmación
+        const confirmMessage = isFirstUpload 
+            ? '¿Estás seguro? Esta será tu foto de perfil.'
+            : '¿Estás seguro de cambiar tu foto? Después necesitarás solicitar autorización para cambiarla nuevamente.';
+        
+        document.getElementById('confirmMessage').textContent = confirmMessage;
+        document.getElementById('confirmUploadModal').style.display = 'flex';
+        
+    } catch (error) {
+        console.error('Error preparando subida:', error);
+        showNotification('Error al preparar la subida: ' + error.message, 'error');
+    }
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmUploadModal').style.display = 'none';
+    // NO limpiar pendingUpload aquí, solo si el usuario cancela explícitamente
+    // Reabrir el modal de edición si cancela
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+
+async function confirmUpload() {
+    if (!pendingUpload) {
+        showNotification('Error: No hay archivo pendiente', 'error');
+        return;
+    }
+    
+    // Cerrar modal de confirmación
+    document.getElementById('confirmUploadModal').style.display = 'none';
+    
+    // Mostrar loader
+    showUploadLoader();
+    
+    isProcessing = true;
+    
+    try {
+        const { file, currentProfile } = pendingUpload;
         
         // Subir imagen
-        const fileExt = avatarFile.name.split('.').pop();
+        const fileExt = file.name.split('.').pop();
         const timestamp = Date.now();
         const fileName = `${currentUser.id}_${timestamp}.${fileExt}`;
         const filePath = `${currentUser.id}/${fileName}`;
@@ -562,7 +633,7 @@ async function handleProfileUpdate(event) {
         
         const { error: uploadError } = await supabaseClient.storage
             .from('avatars')
-            .upload(filePath, avatarFile);
+            .upload(filePath, file);
         
         if (uploadError) throw uploadError;
         
@@ -574,7 +645,7 @@ async function handleProfileUpdate(event) {
         const updates = {
             id: currentUser.id,
             avatar_url: publicUrl,
-            photo_edit: false, // AUTOMÁTICAMENTE vuelve a false
+            photo_edit: false,
             updated_at: new Date().toISOString()
         };
         
@@ -590,22 +661,120 @@ async function handleProfileUpdate(event) {
         if (error) throw error;
         
         await loadUserProfile();
+        
+        // Ocultar loader
+        hideUploadLoader();
+        
         closeEditModal();
         
         showNotification('Foto actualizada correctamente', 'success');
         
     } catch (error) {
         console.error('Error uploading photo:', error);
+        hideUploadLoader();
         showNotification('Error al subir la foto: ' + error.message, 'error');
     } finally {
         isProcessing = false;
-        submitButton.textContent = 'Subir Foto';
-        submitButton.disabled = false;
-        cancelButton.disabled = false;
         document.getElementById('editAvatar').value = '';
+        pendingUpload = null;
     }
 }
-// Función para eliminar todas las imágenes antiguas de un usuario (opcional, para limpieza)
+
+// Función para mostrar el loader
+function showUploadLoader() {
+    // Crear loader si no existe
+    let loader = document.getElementById('uploadLoader');
+    if (!loader) {
+        loader = document.createElement('div');
+        loader.id = 'uploadLoader';
+        loader.innerHTML = `
+            <div class="upload-loader-overlay"></div>
+            <div class="upload-loader-content">
+                <div class="spinner"></div>
+                <h3>Subiendo foto...</h3>
+                <p>Por favor espera, esto puede tomar unos segundos</p>
+            </div>
+        `;
+        
+        // Agregar estilos
+        const styles = document.createElement('style');
+        styles.textContent = `
+            #uploadLoader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .upload-loader-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(4px);
+            }
+            .upload-loader-content {
+                position: relative;
+                background: var(--card-bg);
+                padding: 40px;
+                border-radius: 16px;
+                text-align: center;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+                max-width: 350px;
+                z-index: 1;
+            }
+            .spinner {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto 20px;
+                border: 4px solid var(--border-color);
+                border-top: 4px solid var(--primary-color);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .upload-loader-content h3 {
+                margin: 0 0 10px 0;
+                color: var(--text-primary);
+                font-size: 1.2rem;
+            }
+            .upload-loader-content p {
+                margin: 0;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+            }
+        `;
+        document.head.appendChild(styles);
+        
+        document.body.appendChild(loader);
+    } else {
+        loader.style.display = 'flex';
+    }
+}
+
+// Función para ocultar el loader
+function hideUploadLoader() {
+    const loader = document.getElementById('uploadLoader');
+    if (loader) {
+        loader.style.display = 'none';
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    pendingUpload = null;
+}
+
+        // Función para eliminar todas las imágenes antiguas de un usuario (opcional, para limpieza)
 async function cleanupOldAvatars(userId) {
     try {
         // Listar todos los archivos en la carpeta del usuario
@@ -751,7 +920,52 @@ function showNotification(message, type = 'info') {
             div.textContent = text;
             return div.innerHTML;
         }
+function openRequestModal() {
+    const modal = document.getElementById('requestPhotoChangeModal');
+    document.getElementById('requestName').value = document.getElementById('userName').textContent;
+    document.getElementById('requestEmail').value = currentUser.email;
+    document.getElementById('requestReason').value = '';
+    modal.style.display = 'flex';
+}
 
+function closeRequestModal() {
+    document.getElementById('requestPhotoChangeModal').style.display = 'none';
+}
+
+document.getElementById('requestPhotoChangeForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalHtml = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    submitBtn.disabled = true;
+    
+    try {
+        const { error } = await supabaseClient
+            .from('solicitudes')
+            .insert({
+                user_id: currentUser.id,
+                user_name: document.getElementById('requestName').value,
+                user_email: document.getElementById('requestEmail').value,
+                request_type: 'change_photo',
+                reason: document.getElementById('requestReason').value || null,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            });
+        
+        if (error) throw error;
+        
+        showNotification('Solicitud enviada correctamente. Te contactaremos pronto.', 'success');
+        closeRequestModal();
+        
+    } catch (error) {
+        console.error('Error enviando solicitud:', error);
+        showNotification('Error al enviar la solicitud: ' + error.message, 'error');
+    } finally {
+        submitBtn.innerHTML = originalHtml;
+        submitBtn.disabled = false;
+    }
+});
         // Cerrar dropdowns al hacer clic fuera
         document.addEventListener('click', function(event) {
             const userMenu = document.querySelector('.user-menu');

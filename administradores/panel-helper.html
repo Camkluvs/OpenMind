@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Helper - OpenMind AI</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/noti.css">
+    <style>
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .admin-logo {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .admin-nav {
+            padding: 20px 0;
+        }
+
+        .admin-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .admin-nav-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .admin-nav-item.active {
+            background: rgba(74, 158, 255, 0.1);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .admin-main {
+            flex: 1;
+            margin-left: 260px;
+            background: var(--bg-color);
+        }
+
+        .admin-header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .control-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--hover-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-user:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-box .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .stat-box .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .requests-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .filter-tab:hover {
+            background: var(--hover-bg);
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .requests-table th {
+            background: var(--hover-bg);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .requests-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .requests-table tr:hover {
+            background: var(--hover-bg);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-info-cell h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.95rem;
+        }
+
+        .user-info-cell p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .status-approved {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-rejected {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .btn-approve:hover {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-reject {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .btn-reject:hover {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-view {
+            background: rgba(74, 158, 255, 0.2);
+            color: var(--primary-color);
+        }
+
+        .btn-view:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: var(--hover-bg);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .reason-box {
+            background: rgba(74, 158, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .unauthorized {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .unauthorized i {
+            font-size: 5rem;
+            color: #f44336;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div id="unauthorizedScreen" class="unauthorized" style="display: none;">
+        <i class="fas fa-shield-alt"></i>
+        <h1>Acceso Denegado</h1>
+        <p>No tienes permisos para acceder a este panel administrativo.</p>
+        <button class="btn btn-primary" onclick="window.location.href='../index.html'" style="margin-top: 20px;">
+            <i class="fas fa-home"></i> Volver al Inicio
+        </button>
+    </div>
+
+    <div id="adminPanel" class="admin-layout" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <i class="fas fa-shield-alt"></i>
+                Panel Helper
+            </div>
+            <nav class="admin-nav">
+                <a href="#" class="admin-nav-item active">
+                    <i class="fas fa-envelope"></i>
+                    Solicitudes
+                </a>
+                <a href="../index.html" class="admin-nav-item">
+                    <i class="fas fa-home"></i>
+                    Volver al Inicio
+                </a>
+                <a href="profile.html" class="admin-nav-item">
+                    <i class="fas fa-user"></i>
+                    Mi Perfil
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>
+                    <i class="fas fa-envelope"></i>
+                    Solicitudes de Cambio de Foto
+                </h1>
+                <div class="header-controls">
+                    <!-- Botón de tema -->
+                    <button class="control-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                        <span>Tema</span>
+                    </button>
+
+                    <!-- Notificaciones -->
+                    <div class="notifications-container">
+                        <button class="control-btn notifications-btn" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+                        </button>
+                        <div class="notifications-dropdown" id="notificationsDropdown">
+                            <div class="notifications-header">
+                                <h4>Notificaciones</h4>
+                            </div>
+                            <div class="notifications-list" id="notificationsList">
+                                <div class="notification-item loading">Cargando...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown de usuario -->
+                    <div class="user-menu">
+                        <div class="admin-user user-menu-toggle" onclick="toggleUserMenu()">
+                            <div class="admin-avatar" id="adminAvatar">H</div>
+                            <span id="adminName">Helper</span>
+                            <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="profile.html" class="user-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                            <a href="../index.html" class="user-dropdown-item">
+                                <i class="fas fa-home"></i>
+                                Inicio
+                            </a>
+                            <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
+                            <div class="user-dropdown-item logout" onclick="handleLogout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div class="stats-bar">
+                    <div class="stat-box">
+                        <div class="number" id="totalRequests">0</div>
+                        <div class="label">Total Solicitudes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="pendingRequests">0</div>
+                        <div class="label">Pendientes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="approvedRequests">0</div>
+                        <div class="label">Aprobadas</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="rejectedRequests">0</div>
+                        <div class="label">Rechazadas</div>
+                    </div>
+                </div>
+
+                <div class="requests-card">
+                    <div class="card-header">
+                        <h2>Lista de Solicitudes</h2>
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <div style="position: relative;">
+                                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
+                                <input 
+                                    type="text" 
+                                    id="searchInput" 
+                                    placeholder="Buscar por nombre o email..." 
+                                    style="padding: 8px 12px 8px 35px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary); width: 250px; font-size: 0.9rem;"
+                                    oninput="handleSearch()"
+                                >
+                            </div>
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="filterRequests('all')">Todas</button>
+                                <button class="filter-tab" onclick="filterRequests('pending')">Pendientes</button>
+                                <button class="filter-tab" onclick="filterRequests('approved')">Aprobadas</button>
+                                <button class="filter-tab" onclick="filterRequests('rejected')">Rechazadas</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="requestsList">
+                        <div class="empty-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Cargando solicitudes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para ver motivo -->
+    <div class="modal" id="reasonModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Detalles de Solicitud</h3>
+                <button class="modal-close" onclick="closeReasonModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item">
+                    <div class="detail-label">Usuario</div>
+                    <div class="detail-value" id="modalUserName"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value" id="modalUserEmail"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Fecha</div>
+                    <div class="detail-value" id="modalDate"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Estado</div>
+                    <div class="detail-value">
+                        <span class="status-badge" id="modalStatus"></span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Motivo</div>
+                    <div class="reason-box" id="modalReason">Sin motivo especificado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/noti.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
+        
+        let supabaseClient;
+        let currentUser = null;
+        let allRequests = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            applyTheme();
+            await checkAdminAccess();
+        });
+
+        function handleSearch() {
+            searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            displayRequests();
+        }
+
+        async function checkAdminAccess() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = session.user;
+
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('rank, full_name')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (profile?.rank === 'helper') {
+                    document.getElementById('unauthorizedScreen').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'flex';
+                    
+                    const name = profile.full_name || currentUser.email.split('@')[0];
+                    document.getElementById('adminName').textContent = name;
+                    document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
+                    
+                    await loadRequests();
+                } else {
+                    document.getElementById('unauthorizedScreen').style.display = 'flex';
+                    document.getElementById('adminPanel').style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Error checking access:', error);
+                document.getElementById('unauthorizedScreen').style.display = 'flex';
+            }
+        }
+
+        async function loadRequests() {
+            try {
+                const { data: requests, error } = await supabaseClient
+                    .from('solicitudes')
+                    .select('*')
+                    .eq('request_type', 'change_photo')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allRequests = requests || [];
+                updateStats();
+                displayRequests();
+
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                document.getElementById('requestsList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar las solicitudes</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats() {
+            const total = allRequests.length;
+            const pending = allRequests.filter(r => r.status === 'pending').length;
+            const approved = allRequests.filter(r => r.status === 'approved').length;
+            const rejected = allRequests.filter(r => r.status === 'rejected').length;
+
+            document.getElementById('totalRequests').textContent = total;
+            document.getElementById('pendingRequests').textContent = pending;
+            document.getElementById('approvedRequests').textContent = approved;
+            document.getElementById('rejectedRequests').textContent = rejected;
+        }
+
+        function displayRequests() {
+            const container = document.getElementById('requestsList');
+            
+            let filteredRequests = allRequests;
+            if (currentFilter !== 'all') {
+                filteredRequests = allRequests.filter(r => r.status === currentFilter);
+            }
+            
+            if (searchTerm) {
+                filteredRequests = filteredRequests.filter(r => 
+                    r.user_name.toLowerCase().includes(searchTerm) || 
+                    r.user_email.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filteredRequests.length === 0) {
+                const emptyMessage = searchTerm 
+                    ? `No se encontraron resultados para "${searchTerm}"` 
+                    : `No hay solicitudes ${currentFilter !== 'all' ? currentFilter + 's' : ''}`;
+                
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-${searchTerm ? 'search' : 'inbox'}"></i>
+                        <p>${emptyMessage}</p>
+                        ${searchTerm ? '<button class="btn btn-secondary" onclick="clearSearch()" style="margin-top: 15px;"><i class="fas fa-times"></i> Limpiar búsqueda</button>' : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table class="requests-table"><thead><tr>';
+            html += '<th>Usuario</th>';
+            html += '<th>Fecha</th>';
+            html += '<th>Estado</th>';
+            html += '<th>Motivo</th>';
+            html += '<th>Acciones</th>';
+            html += '</tr></thead><tbody>';
+
+            filteredRequests.forEach(request => {
+                const initials = request.user_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                const date = new Date(request.created_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                html += '<tr>';
+                html += `
+                    <td>
+                        <div class="user-cell">
+                            <div class="table-avatar">${initials}</div>
+                            <div class="user-info-cell">
+                                <h4>${escapeHtml(request.user_name)}</h4>
+                                <p>${escapeHtml(request.user_email)}</p>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                html += `<td>${date}</td>`;
+                html += `<td><span class="status-badge status-${request.status}">${getStatusText(request.status)}</span></td>`;
+                html += `<td>${request.reason ? '<button class="btn-icon btn-view" onclick="showReason(\'' + request.id + '\')"><i class="fas fa-eye"></i></button>' : '<span style="color: var(--text-secondary);">Sin motivo</span>'}</td>`;
+                html += '<td><div class="action-buttons">';
+                
+                if (request.status === 'pending') {
+                    html += `<button class="btn-icon btn-approve" onclick="handleRequest('${request.id}', 'approved')" title="Aprobar"><i class="fas fa-check"></i></button>`;
+                    html += `<button class="btn-icon btn-reject" onclick="handleRequest('${request.id}', 'rejected')" title="Rechazar"><i class="fas fa-times"></i></button>`;
+                }
+                
+                html += '</div></td>';
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchTerm = '';
+            displayRequests();
+        }
+
+        function showReason(requestId) {
+            const request = allRequests.find(r => r.id === requestId);
+            if (!request) return;
+
+            const date = new Date(request.created_at).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            document.getElementById('modalUserName').textContent = request.user_name;
+            document.getElementById('modalUserEmail').textContent = request.user_email;
+            document.getElementById('modalDate').textContent = date;
+            
+            const statusBadge = document.getElementById('modalStatus');
+            statusBadge.textContent = getStatusText(request.status);
+            statusBadge.className = `status-badge status-${request.status}`;
+            
+            document.getElementById('modalReason').textContent = request.reason || 'Sin motivo especificado';
+            
+            document.getElementById('reasonModal').style.display = 'flex';
+        }
+
+        function closeReasonModal() {
+            document.getElementById('reasonModal').style.display = 'none';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pending': 'Pendiente',
+                'approved': 'Aprobada',
+                'rejected': 'Rechazada'
+            };
+            return texts[status] || status;
+        }
+
+
+async function handleRequest(requestId, newStatus) {
+    const actionText = newStatus === 'approved' ? 'aprobar' : 'rechazar';
+    
+    if (!confirm(`¿Estás seguro de ${actionText} esta solicitud?`)) {
+        return;
+    }
+
+    try {
+        const request = allRequests.find(r => r.id === requestId);
+        if (!request) throw new Error('Solicitud no encontrada');
+
+        // Primero actualizar el perfil si se aprueba
+        if (newStatus === 'approved') {
+            const { error: profileError } = await supabaseClient
+                .from('profiles')
+                .update({ photo_edit: true })
+                .eq('id', request.user_id);
+
+            if (profileError) throw profileError;
+
+            // Crear notificación de aprobación
+            const { error: notifError } = await supabaseClient
+                .from('solicitudes_aprobadas')
+                .insert({
+                    solicitud_id: request.id,
+                    user_id: request.user_id,
+                    user_name: request.user_name,
+                    user_email: request.user_email,
+                    status: 'unread'
+                });
+
+            if (notifError) throw notifError;
+        }
+
+        // Actualizar estado de la solicitud
+        const { error: updateError } = await supabaseClient
+            .from('solicitudes')
+            .update({ 
+                status: newStatus,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', requestId);
+
+        if (updateError) throw updateError;
+
+        showNotification(
+            `Solicitud ${newStatus === 'approved' ? 'aprobada' : 'rechazada'} correctamente`,
+            'success'
+        );
+
+        await loadRequests();
+
+    } catch (error) {
+        console.error('Error handling request:', error);
+        showNotification('Error al procesar la solicitud: ' + error.message, 'error');
+    }
+}
+
+
+        function filterRequests(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayRequests();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', currentTheme);
+            applyTheme();
+        }
+
+        function applyTheme() {
+            document.body.setAttribute('data-theme', currentTheme);
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = `fas fa-${currentTheme === 'dark' ? 'sun' : 'moon'}`;
+            }
+        }
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        async function handleLogout() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'login.html';
+                
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showNotification('Error al cerrar sesión: ' + error.message, 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '12px 20px';
+            notification.style.borderRadius = '8px';
+            notification.style.color = 'white';
+            notification.style.zIndex = '10000';
+            notification.style.fontWeight = '500';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            
+            if (type === 'success') {
+                notification.style.background = '#4caf50';
+            } else if (type === 'error') {
+                notification.style.background = '#f44336';
+            } else {
+                notification.style.background = '#2196f3';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 4000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('reasonModal');
+            if (event.target === modal) {
+                closeReasonModal();
+            }
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userDropdown && userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

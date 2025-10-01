@@ -23,11 +23,27 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
     color: #ffffff;
     height: 100vh;
     display: flex;
     overflow: hidden;
+}
+
+
+
+
+
+
+/* Tema oscuro por defecto */
+body:not([data-theme="light"]) {
+    background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+    color: white;
+}
+
+/* Tema claro */
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+    color: #1e293b;
 }
 
 /* Clase para layout móvil */
@@ -2424,7 +2440,6 @@ body {
     right: 0 !important;
     width: 350px !important;
     height: 100% !important;
-    background: linear-gradient(145deg, rgba(15, 20, 25, 0.98), rgba(30, 41, 59, 0.95)) !important;
     backdrop-filter: blur(20px) !important;
     border-left: 1px solid rgba(74, 158, 255, 0.3) !important;
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3) !important;
@@ -3109,6 +3124,7 @@ body {
 [data-theme="light"] .channel-item-sidebar {
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
+    color: var(--accent-hover);
 }
 
 [data-theme="light"] .channel-item-sidebar:hover {
@@ -3833,7 +3849,7 @@ body {
         <div class="header-controls">
             <button class="control-btn" onclick="toggleTheme()">
                 <i class="fas fa-moon"></i>
-                <span>Tema</span>
+                <span> Cambiar Tema</span>
             </button>
             
             <div class="language-selector">

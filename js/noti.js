@@ -1,4 +1,3 @@
-
 async function loadNotificationCount() {
     try {
         if (!currentUser) return;
@@ -22,8 +21,17 @@ async function loadNotificationCount() {
             .eq('status', 'unread');
 
         if (mentError) throw mentError;
+
+        // Solicitudes aprobadas no leídas
+        const { data: solicitudes, error: solError } = await supabaseClient
+            .from('solicitudes_aprobadas')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'unread');
+
+        if (solError) throw solError;
         
-        const totalCount = (invitations?.length || 0) + (mentions?.length || 0);
+        const totalCount = (invitations?.length || 0) + (mentions?.length || 0) + (solicitudes?.length || 0);
         const notificationCount = document.getElementById('notificationCount');
         
         if (totalCount === 0) {
@@ -38,7 +46,7 @@ async function loadNotificationCount() {
     }
 }
 
-// Cargar notificaciones completas (MODIFICADO)
+// Cargar notificaciones completas
 async function loadNotifications() {
     try {
         const userEmail = currentUser.email;
@@ -62,15 +70,45 @@ async function loadNotifications() {
             .order('created_at', { ascending: false });
 
         if (mentError) throw mentError;
+
+        // Solicitudes aprobadas
+        const { data: solicitudesAprobadas, error: solError } = await supabaseClient
+            .from('solicitudes_aprobadas')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .eq('status', 'unread')
+            .order('created_at', { ascending: false });
+
+        if (solError) throw solError;
         
         const notificationsList = document.getElementById('notificationsList');
         
-        if ((invitations?.length || 0) === 0 && (mentions?.length || 0) === 0) {
+        if ((invitations?.length || 0) === 0 && (mentions?.length || 0) === 0 && (solicitudesAprobadas?.length || 0) === 0) {
             notificationsList.innerHTML = '<div class="notification-item">No hay notificaciones</div>';
             return;
         }
 
         let html = '';
+
+        // Agregar solicitudes aprobadas PRIMERO
+        if (solicitudesAprobadas?.length > 0) {
+            html += solicitudesAprobadas.map(solicitud => `
+                <div class="notification-item" style="border-left: 3px solid #4caf50;">
+                    <div class="notification-title">
+                        <i class="fas fa-check-circle" style="color: #4caf50;"></i>
+                        Solicitud Aprobada
+                    </div>
+                    <div class="notification-message">
+                        ${solicitud.message}
+                    </div>
+                    <div class="notification-actions">
+                        <button class="notification-btn accept" onclick="dismissSolicitudAprobada('${solicitud.id}', '${solicitud.solicitud_id}')">
+                            <i class="fas fa-check"></i> Entendido
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
         // Agregar invitaciones
         if (invitations?.length > 0) {
@@ -119,6 +157,7 @@ async function loadNotifications() {
         console.error('Error loading notifications:', error);
     }
 }
+
 // Toggle notificaciones
 function toggleNotifications() {
     const dropdown = document.getElementById('notificationsDropdown');
@@ -226,43 +265,15 @@ async function rejectInvitation(invitationId) {
     }
 }
 
-// Auto-cargar contador cada 15 segundos
-setInterval(() => {
-    if (typeof currentUser !== 'undefined' && currentUser) {
-        loadNotificationCount();
-    }
-}, 15000);
-
-// Cargar contador al inicializar (esperar a que currentUser esté disponible)
-const checkUserInterval = setInterval(() => {
-    if (typeof currentUser !== 'undefined' && currentUser) {
-        loadNotificationCount();
-        clearInterval(checkUserInterval);
-    }
-}, 100);
-
-// Cerrar dropdown al hacer clic fuera
-document.addEventListener('click', function(event) {
-    const notificationsContainer = document.querySelector('.notifications-container');
-    const dropdown = document.getElementById('notificationsDropdown');
-    
-    if (dropdown && notificationsContainer && !notificationsContainer.contains(event.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-
 // Ir a mención
 async function goToMention(projectId, discussionId) {
     try {
-        // Marcar mención como leída
         await supabaseClient
             .from('mention_notifications')
             .update({ status: 'read' })
             .eq('user_id', currentUser.id)
             .eq('discussion_id', discussionId);
 
-        // Navegar a la discusión
         window.location.href = `discussions.html?project=${projectId}&discussion=${discussionId}`;
         
     } catch (error) {
@@ -293,34 +304,64 @@ async function markMentionAsRead(mentionId) {
     }
 }
 
-// Función para verificar si el usuario mencionado está viendo la discusión actual
-function isUserViewingDiscussion(mentionedUserId) {
-    // Si no estamos en la página de discusiones, siempre mostrar notificación
-    if (!window.location.pathname.includes('discussions.html')) {
-        return false;
-    }
+// Descartar solicitud aprobada
 
-    // Si estamos en la lista de discusiones, no en una específica
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentDiscussionId = urlParams.get('discussion');
-    
-    if (!currentDiscussionId) {
-        return false;
-    }
 
-    // Aquí podrías implementar lógica más sofisticada
-    // Por ahora, asumimos que si está en la página, está viendo
-    return true;
+// Descartar solicitud aprobada
+async function dismissSolicitudAprobada(notificationId, solicitudId) {
+    try {
+        const button = event.target.closest('button');
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+        
+        console.log('Eliminando notificación:', notificationId);
+        console.log('Eliminando solicitud:', solicitudId);
+        
+        // Eliminar la solicitud original PRIMERO
+        const { error: solicitudError } = await supabaseClient
+            .from('solicitudes')
+            .delete()
+            .eq('id', solicitudId);
+        
+        if (solicitudError) {
+            console.error('Error eliminando solicitud:', solicitudError);
+            throw solicitudError;
+        }
+        
+        console.log('Solicitud eliminada correctamente');
+
+        // Luego eliminar la notificación de aprobación
+        const { error: notifError } = await supabaseClient
+            .from('solicitudes_aprobadas')
+            .delete()
+            .eq('id', notificationId);
+        
+        if (notifError) {
+            console.error('Error eliminando notificación:', notifError);
+            throw notifError;
+        }
+        
+        console.log('Notificación eliminada correctamente');
+        
+        showToast('Perfecto! Ya puedes cambiar tu foto de perfil', 'success');
+        
+        setTimeout(() => {
+            loadNotifications();
+            loadNotificationCount();
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error dismissing notification:', error);
+        showToast('Error: ' + error.message, 'error');
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-check"></i> Entendido';
+    }
 }
 
-
-// AGREGAR AL FINAL DE TU ARCHIVO noti.js
-
-// Suscripción realtime para menciones (para todas las páginas)
+// Suscripción realtime para menciones
 function initializeMentionNotifications() {
-    // Solo ejecutar si NO estamos en discussions.html
     if (window.location.pathname.includes('discussions.html')) {
-        return; // En discussions.html ya se maneja por separado
+        return;
     }
     
     if (typeof supabaseClient !== 'undefined' && currentUser) {
@@ -332,19 +373,17 @@ function initializeMentionNotifications() {
                 table: 'mention_notifications',
                 filter: `user_id=eq.${currentUser.id}`
             }, (payload) => {
-                // En otras páginas, SIEMPRE mostrar notificaciones de menciones
                 loadNotificationCount();
                 showGlobalMentionNotification(payload.new);
             })
             .subscribe();
             
-        console.log('Notificaciones de menciones inicializadas para página:', window.location.pathname);
+        console.log('Notificaciones de menciones inicializadas');
     }
 }
 
 // Mostrar notificación global de mención
 function showGlobalMentionNotification(mention) {
-    // Crear notificación flotante específica para menciones
     const notification = document.createElement('div');
     notification.className = 'global-mention-notification';
     notification.innerHTML = `
@@ -366,7 +405,6 @@ function showGlobalMentionNotification(mention) {
         </div>
     `;
 
-    // Agregar estilos si no existen
     if (!document.getElementById('global-mention-styles')) {
         const styles = document.createElement('style');
         styles.id = 'global-mention-styles';
@@ -433,12 +471,10 @@ function showGlobalMentionNotification(mention) {
 
     document.body.appendChild(notification);
 
-    // Mostrar animación
     setTimeout(() => {
         notification.classList.add('show');
     }, 100);
 
-    // Auto-ocultar después de 8 segundos
     setTimeout(() => {
         if (notification.parentNode) {
             notification.classList.remove('show');
@@ -451,13 +487,10 @@ function showGlobalMentionNotification(mention) {
     }, 8000);
 }
 
-// Ir a mención desde notificación global
 function goToMentionFromGlobal(projectId, discussionId) {
-    // Marcar como leída y navegar
     markMentionAsReadAndNavigate(discussionId, projectId);
 }
 
-// Marcar mención como leída y navegar
 async function markMentionAsReadAndNavigate(discussionId, projectId) {
     try {
         await supabaseClient
@@ -466,17 +499,14 @@ async function markMentionAsReadAndNavigate(discussionId, projectId) {
             .eq('user_id', currentUser.id)
             .eq('discussion_id', discussionId);
 
-        // Navegar a la discusión
         window.location.href = `discussions.html?project=${projectId}&discussion=${discussionId}`;
         
     } catch (error) {
         console.error('Error going to mention:', error);
-        // Navegar aunque haya error
         window.location.href = `discussions.html?project=${projectId}&discussion=${discussionId}`;
     }
 }
 
-// Cerrar notificación global
 function dismissGlobalMention(button) {
     const notification = button.closest('.global-mention-notification');
     if (notification) {
@@ -489,7 +519,44 @@ function dismissGlobalMention(button) {
     }
 }
 
-// Auto-inicializar notificaciones de menciones
+// Suscripción realtime para solicitudes aprobadas
+function initializeSolicitudNotifications() {
+    if (typeof supabaseClient !== 'undefined' && currentUser) {
+        const solicitudesChannel = supabaseClient
+            .channel('solicitudes_aprobadas_' + currentUser.id)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'solicitudes_aprobadas',
+                filter: `user_id=eq.${currentUser.id}`
+            }, (payload) => {
+                console.log('Notificación de aprobación recibida:', payload);
+                loadNotificationCount();
+            })
+            .subscribe((status) => {
+                console.log('Estado de suscripción solicitudes:', status);
+            });
+            
+        console.log('Notificaciones de aprobación inicializadas');
+    }
+}
+
+// Auto-cargar contador cada 15 segundos
+setInterval(() => {
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        loadNotificationCount();
+    }
+}, 15000);
+
+// Cargar contador al inicializar
+const checkUserInterval = setInterval(() => {
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        loadNotificationCount();
+        clearInterval(checkUserInterval);
+    }
+}, 100);
+
+// Auto-inicializar menciones
 const initMentionNotificationsChecker = setInterval(() => {
     if (typeof currentUser !== 'undefined' && currentUser && 
         typeof supabaseClient !== 'undefined') {
@@ -498,25 +565,33 @@ const initMentionNotificationsChecker = setInterval(() => {
     }
 }, 1000);
 
-// También inicializar cuando se detecte que currentUser está disponible
-if (typeof window !== 'undefined') {
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if (typeof currentUser !== 'undefined' && currentUser) {
-                initializeMentionNotifications();
-            }
-        }, 2000);
-    });
-}
+// Auto-inicializar solicitudes
+const initSolicitudNotificationsChecker = setInterval(() => {
+    if (typeof currentUser !== 'undefined' && currentUser && 
+        typeof supabaseClient !== 'undefined') {
+        initializeSolicitudNotifications();
+        clearInterval(initSolicitudNotificationsChecker);
+    }
+}, 1000);
+
+// Cerrar dropdown al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const notificationsContainer = document.querySelector('.notifications-container');
+    const dropdown = document.getElementById('notificationsDropdown');
+    
+    if (dropdown && notificationsContainer && !notificationsContainer.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
 
 // Exponer funciones globales
 window.goToMentionFromGlobal = goToMentionFromGlobal;
 window.dismissGlobalMention = dismissGlobalMention;
 window.markMentionAsReadAndNavigate = markMentionAsReadAndNavigate;
-// Exponer funciones globales (AGREGAR AL FINAL)
 window.goToMention = goToMention;
 window.markMentionAsRead = markMentionAsRead;
 window.toggleNotifications = toggleNotifications;
 window.acceptInvitation = acceptInvitation;
 window.rejectInvitation = rejectInvitation;
 window.loadNotificationCount = loadNotificationCount;
+window.dismissSolicitudAprobada = dismissSolicitudAprobada;
