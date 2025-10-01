@@ -4112,6 +4112,29 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Fondo principal para tema claro */
+[data-theme="light"] .content-wrapper {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+}
+
+[data-theme="light"] .view {
+    background: transparent;
+}
+
+[data-theme="light"] .discussions-list-view {
+    background: transparent;
+}
+
+/* Asegurar que el main-content también tenga el fondo correcto */
+[data-theme="light"] .main-content {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+}
+
+/* Si el problema persiste, agregar esto también */
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%) !important;
+}
     </style>
 </head>
 
