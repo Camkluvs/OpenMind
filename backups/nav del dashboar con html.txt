@@ -1,0 +1,46 @@
+    <nav>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-link-text">Inicio</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="discussions.html" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span class="nav-link-text">Foros</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="code-editor.html"class="nav-link">
+                    <i class="fas fa-code"></i>
+                    <span class="nav-link-text">Editor de Código</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="chat-ai.html" class="nav-link">
+                    <i class="fas fa-robot"></i>
+                    <span class="nav-link-text">MindAssist IA</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="members.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-link-text">Miembros</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="voice-calls.html" class="nav-link">
+                    <i class="fas fa-phone"></i>
+                    <span class="nav-link-text">Llamadas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-link-text">Configuración</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
