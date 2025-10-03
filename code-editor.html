@@ -2636,337 +2636,7 @@ select:focus {
 
 
 
-/* CONSOLA PYTHON - Agregar al final de tu CSS */
-.console-panel {
-    position: fixed;
-    bottom: 0;
-    left: 260px;
-    right: 0;
-    height: 35%;
-    background: #1a1a1a;
-    border-top: 2px solid #4a9eff;
-    display: none;
-    flex-direction: column;
-    z-index: 50;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-}
 
-.console-panel.open {
-    display: flex;
-}
-
-.console-header {
-    background: #2d2d30;
-    color: #cccccc;
-    padding: 10px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #3c3c3c;
-    min-height: 45px;
-}
-
-.console-tabs {
-    display: flex;
-    gap: 15px;
-}
-
-.console-tab {
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
-    color: #8892a6;
-}
-
-.console-tab.active {
-    background: #4a9eff;
-    color: white;
-}
-
-.console-tab:hover:not(.active) {
-    background: rgba(74, 158, 255, 0.2);
-    color: #4a9eff;
-}
-
-.console-controls {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.console-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #cccccc;
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.console-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.console-btn.run-btn {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.console-btn.run-btn:hover {
-    background: rgba(34, 197, 94, 0.3);
-}
-
-.console-btn.close:hover {
-    background: #dc3545;
-    color: white;
-}
-
-.console-content {
-    flex: 1;
-    overflow: hidden;
-}
-
-.console-tab-content {
-    display: none;
-    height: 100%;
-    overflow-y: auto;
-}
-
-.console-tab-content.active {
-    display: block;
-}
-
-.console-output {
-    padding: 12px;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    line-height: 1.4;
-    height: 100%;
-    overflow-y: auto;
-    background: #1a1a1a;
-}
-
-.console-line {
-    margin: 3px 0;
-    padding: 4px 8px;
-    border-radius: 3px;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    word-wrap: break-word;
-}
-
-.console-line.output {
-    color: #d4d4d4;
-}
-
-.console-line.error {
-    color: #f48771;
-    background: rgba(244, 135, 113, 0.1);
-}
-
-.console-line.warning {
-    color: #dcdcaa;
-    background: rgba(220, 220, 170, 0.1);
-}
-
-.console-line.info {
-    color: #4fc1ff;
-}
-
-.console-line.success {
-    color: #4ec9b0;
-    background: rgba(78, 201, 176, 0.1);
-}
-
-.console-toggle-wrapper {
-    position: fixed;
-    bottom: 20px;
-    left: 280px;
-    z-index: 100;
-}
-
-.console-toggle-btn {
-    background: rgba(74, 158, 255, 0.9);
-    border: 1px solid #4a9eff;
-    color: white;
-    padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
-}
-
-.console-toggle-btn:hover {
-    background: #4a9eff;
-    transform: translateY(-2px);
-}
-
-.console-toggle-btn.active {
-    background: #ef4444;
-    border-color: #ef4444;
-}
-
-.dependencies-container {
-    padding: 15px;
-    height: 100%;
-    background: #1e1e1e;
-}
-
-.dependencies-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #3c3c3c;
-}
-
-.dependencies-header h4 {
-    color: #4a9eff;
-    margin: 0;
-    font-size: 16px;
-}
-
-.scan-deps-btn {
-    background: rgba(74, 158, 255, 0.2);
-    border: 1px solid #4a9eff;
-    color: #4a9eff;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-}
-
-.scan-deps-btn:hover {
-    background: rgba(74, 158, 255, 0.3);
-}
-
-.dependencies-list {
-    overflow-y: auto;
-    max-height: calc(100% - 60px);
-}
-
-.empty-deps {
-    text-align: center;
-    color: #8892a6;
-    padding: 40px 20px;
-}
-
-.empty-deps i {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    opacity: 0.5;
-    display: block;
-}
-
-.dependency-item {
-    background: rgba(74, 158, 255, 0.1);
-    border: 1px solid rgba(74, 158, 255, 0.2);
-    border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.dependency-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.dependency-name {
-    font-weight: 600;
-    color: #4a9eff;
-    font-size: 14px;
-}
-
-.dependency-version {
-    font-size: 12px;
-    color: #8892a6;
-}
-
-.dependency-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.dependency-status.installed {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
-}
-
-.dependency-status.missing {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-}
-
-.execution-url {
-    background: rgba(74, 158, 255, 0.1);
-    border: 1px solid #4a9eff;
-    border-radius: 6px;
-    padding: 12px;
-    margin: 10px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.execution-url a {
-    color: #4a9eff;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.execution-url button {
-    background: none;
-    border: none;
-    color: #4a9eff;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.execution-url button:hover {
-    background: rgba(74, 158, 255, 0.2);
-}
-
-@media (max-width: 768px) {
-    .console-panel {
-        left: 0;
-        height: 40%;
-    }
-    
-    .console-toggle-wrapper {
-        left: 20px;
-    }
-}
 
 /* Estilo VS Code-like para el editor */
 .editor-main {
@@ -7070,7 +6740,462 @@ select:focus {
     background: #2563eb !important;
 }
 
+/* ================================
+   CONSOLA OPM - CON ANIMACIONES SUAVES
+================================ */
 
+.console-panel {
+    position: fixed;
+    bottom: 0;
+    left: 330px;
+    right: 0;
+    height: 35%;
+    background: #1a1a1a;
+    border-top: 2px solid #4a9eff;
+    box-sizing: border-box;
+    max-width: 1359px;
+    overflow: hidden;
+    margin-right: 1px;
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    
+    /* Animación de entrada */
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+}
+
+.console-panel.open {
+    display: flex;
+    animation: slideUpConsole 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.console-panel.closing {
+    animation: slideDownConsole 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Animación de apertura */
+@keyframes slideUpConsole {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Animación de cierre */
+@keyframes slideDownConsole {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+.console-header {
+    background: #2d2d30;
+    color: #cccccc;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3c3c3c;
+    min-height: 45px;
+    flex-shrink: 0;
+}
+
+.console-tabs {
+    display: flex;
+    gap: 15px;
+}
+
+.console-tab {
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: #8892a6;
+    background: none;
+    border: none;
+}
+
+.console-tab.active {
+    background: #4a9eff;
+    color: white;
+}
+
+.console-tab:hover:not(.active) {
+    background: rgba(74, 158, 255, 0.2);
+    color: #4a9eff;
+}
+
+.console-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.console-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #cccccc;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.console-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.console-btn.close:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.console-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.console-tab-content {
+    display: none;
+    height: 100%;
+    flex-direction: column;
+}
+
+.console-tab-content.active {
+    display: flex;
+}
+
+.console-output {
+    flex: 1;
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-y: auto;
+    background: #1a1a1a;
+}
+
+.console-line {
+    margin: 3px 0;
+    padding: 4px 8px;
+    border-radius: 3px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    word-wrap: break-word;
+}
+
+.console-line.output {
+    color: #d4d4d4;
+}
+
+.console-line.error {
+    color: #f48771;
+    background: rgba(244, 135, 113, 0.1);
+}
+
+.console-line.warning {
+    color: #dcdcaa;
+    background: rgba(220, 220, 170, 0.1);
+}
+
+.console-line.info {
+    color: #4fc1ff;
+}
+
+.console-line.success {
+    color: #4ec9b0;
+    background: rgba(78, 201, 176, 0.1);
+}
+
+.console-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #1a1a1a;
+    border-top: 1px solid #3c3c3c;
+    flex-shrink: 0;
+}
+
+.console-prompt {
+    color: #4a9eff;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.console-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    outline: none;
+}
+
+.console-input::placeholder {
+    color: #666;
+}
+
+/* Botón flotante */
+.console-toggle-wrapper {
+    
+    bottom: 20px;
+    left: 280px;
+    z-index: 100;
+}
+
+.console-toggle-btn {
+    background: rgba(74, 158, 255, 0.9);
+    border: 1px solid #4a9eff;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.console-toggle-btn:hover {
+    background: #4a9eff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 158, 255, 0.4);
+}
+
+.console-toggle-btn.active {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+
+.console-toggle-btn.active:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+/* Scrollbar */
+.console-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.console-output::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.console-output::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4a9eff, #00d4ff);
+    border-radius: 4px;
+}
+
+.console-output::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5aa8ff, #20ddff);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .console-panel {
+        left: 0;
+        width: 100%;
+        height: 40%;
+        max-width: 100%;
+        margin-right: 0;
+    }
+    
+    .console-toggle-wrapper {
+        left: 20px;
+    }
+}
+
+
+
+
+/* Manija de redimensionamiento (drag handle) */
+.console-resize-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: transparent;
+    cursor: ns-resize;
+    z-index: 10;
+    transition: background 0.2s ease;
+}
+
+.console-resize-handle:hover {
+    background: #4a9eff;
+}
+
+.console-resize-handle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 3px;
+    background: rgba(74, 158, 255, 0.3);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.console-resize-handle:hover::before {
+    background: #4a9eff;
+    width: 60px;
+}
+
+/* Actualizar console-panel para permitir resize */
+.console-panel {
+    position: fixed;
+    bottom: 0;
+    left: 330px;
+    right: 0;
+    height: 35%;
+    min-height: 150px; /* Altura mínima */
+    max-height: 80vh; /* Altura máxima */
+    background: #1a1a1a;
+    border-top: 2px solid #4a9eff;
+    box-sizing: border-box;
+    max-width: 1359px;
+    overflow: hidden;
+    margin-right: 1px;
+    z-index: 5;
+    display: none;
+    flex-direction: column;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+}
+
+/* Clase para cuando se está arrastrando */
+.console-panel.resizing {
+    transition: none; /* Desactivar transiciones durante resize */
+    user-select: none;
+}
+
+body.console-resizing {
+    cursor: ns-resize !important;
+    user-select: none !important;
+}
+
+body.console-resizing * {
+    cursor: ns-resize !important;
+    user-select: none !important;
+}
+
+/* Panel de Historial */
+.history-panel {
+    position: fixed;
+    bottom: 0;
+    left: 330px;
+    right: 0;
+    height: 35%;
+    background: #1a1a1a;
+    border-top: 2px solid #22c55e;
+    display: none;
+    flex-direction: column;
+    z-index: 5;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-panel.open {
+    display: flex;
+    transform: translateY(0);
+}
+
+.history-header {
+    background: #2d2d30;
+    color: #cccccc;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+.history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.commit-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-left: 3px solid #22c55e;
+}
+
+.commit-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.commit-message {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.commit-meta {
+    color: #8892a6;
+    font-size: 12px;
+}
+
+.commit-files {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #8892a6;
+}
+
+.history-toggle-btn {
+    position: fixed;
+    bottom: 60px;
+    left: 280px;
+    background: rgba(34, 197, 94, 0.9);
+    border: 1px solid #22c55e;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    z-index: 100;
+}
         </style>
 
 
@@ -7335,8 +7460,8 @@ select:focus {
                 <span class="menu-shortcut">Ctrl+Shift+E</span>
             </div>
             <div class="menu-dropdown-item" onclick="toggleTerminal()" style="display: none;">
-                <span>Terminal</span>
-                <span class="menu-shortcut">Ctrl+`</span>
+                <span>Console</span>
+                <span class="menu-shortcut">Ctrl + Ñ</span>
             </div>
             <div class="menu-separator"></div>
             <div class="menu-dropdown-item" onclick="zoomIn()">
@@ -7449,6 +7574,11 @@ select:focus {
                                 <i class="fas fa-save"></i>
                                 <span>Guardado</span>
                             </div>
+                            <div class="console-toggle-wrapper">
+    <button class="preview-btn" id="console-toggle-btn" onclick="toggleOPMConsole()">
+        <i class="fas fa-terminal"></i> Console
+    </button>
+</div>
                             <button class="preview-btn" id="preview-btn">
                                 <i class="fas fa-eye"></i>
                                 Vista Previa
@@ -7677,6 +7807,10 @@ select:focus {
 
 <div class="editor-status-bar">
     <div class="status-left">
+        <div class="status-item" id="branch-status" style="background: rgba(74, 158, 255, 0.2); padding: 2px 8px; border-radius: 4px; color: #4a9eff; font-weight: 600;">
+            <i class="fas fa-code-branch"></i>
+            <span>main</span>
+        </div>
         <div class="status-item" id="cursor-position">
             <span>Ln 1, Col 1</span>
         </div>
@@ -7699,6 +7833,84 @@ select:focus {
         </div>
     </div>
 </div>
+
+
+<!-- Panel de Historial de Cambios -->
+<div class="history-panel" id="history-panel">
+    <div class="history-resize-handle" id="history-resize-handle"></div>
+    <div class="history-header">
+        <div class="history-tabs">
+            <div class="history-tab active">Historial de Cambios</div>
+        </div>
+        <div class="history-controls">
+            <button class="history-btn refresh" onclick="loadCommitHistory()">
+                <i class="fas fa-sync"></i>
+            </button>
+            <button class="history-btn close" onclick="toggleHistoryPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="history-content">
+        <div class="history-list" id="history-list">
+            <!-- Los commits se cargarán aquí -->
+        </div>
+    </div>
+</div>
+
+<!-- Botón para abrir historial -->
+<button class="history-toggle-btn" id="history-toggle-btn" onclick="toggleHistoryPanel()">
+    <i class="fas fa-history"></i> Historial
+</button>
+
+
+
+<!-- CONSOLA OPM -->
+<div class="console-panel" id="console-panel">
+    <div class="console-resize-handle" id="console-resize-handle"></div>
+    <div class="console-header">
+        <div class="console-tabs">
+            <div class="console-tab active">Terminal OPM</div>
+        </div>
+        <div class="console-controls">
+            <button class="console-btn close" onclick="toggleOPMConsole()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="console-content">
+        <div class="console-tab-content active">
+            <div class="console-output" id="console-output">
+                <div class="console-line info">
+                    OpenMind AI Console v1.0
+                </div>
+                <div class="console-line info">
+                    Escribe "opm help" para ver los comandos disponibles
+                </div>
+            </div>
+            <div class="console-input-wrapper">
+                <span class="console-prompt" id="console-prompt">OpenMind></span>
+                <input 
+                    type="text" 
+                    class="console-input" 
+                    id="console-input" 
+                    placeholder="Escribe un comando..."
+                    onkeydown="handleConsoleKeydown(event)"
+                    onkeypress="processOPMCommand(event)"
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón flotante para abrir consola -->
+
+
+
 
 
     </main>
@@ -7760,7 +7972,9 @@ select:focus {
 
 <script>
 
-
+let currentBranch = null;
+let consoleHistory = [];
+let historyIndex = -1;
 
 // Funciones de tema e idioma optimizadas
 
@@ -7909,35 +8123,128 @@ async function createRepository() {
     }
 
     try {
-        const { data, error } = await supabaseClient
+        // Verificar que el usuario esté autenticado
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+        if (userError || !user) {
+            showToast('Debes estar autenticado para crear repositorios', 'error');
+            return;
+        }
+
+        // Crear el repositorio
+        const { data: repository, error: repoError } = await supabaseClient
             .from('repositories')
             .insert([{
                 name: name,
                 description: description,
                 project_id: currentProject.id,
-                created_by: currentUser.id
+                created_by: user.id
             }])
             .select()
             .single();
 
-        if (error) throw error;
+        if (repoError) {
+            console.error('Error creando repositorio:', repoError);
+            
+            if (repoError.code === '42501') {
+                showToast('No tienes permisos para crear repositorios', 'error');
+            } else if (repoError.code === '23505') {
+                showToast('Ya existe un repositorio con ese nombre', 'error');
+            } else {
+                showToast('Error creando el repositorio: ' + repoError.message, 'error');
+            }
+            return;
+        }
+
+        // Crear rama main automáticamente
+        const { error: branchError } = await supabaseClient
+            .from('branches')
+            .insert([{
+                repository_id: repository.id,
+                branch_name: 'main',
+                is_main: true,
+                created_by: user.id
+            }]);
+
+        if (branchError) {
+            console.error('Error creando rama main:', branchError);
+            // Continuar aunque falle la rama, el repositorio ya se creó
+        }
 
         showToast('Repositorio creado correctamente');
+        
+        // Cerrar modal y recargar
+        const modal = document.querySelector('.unified-modal-overlay');
+        if (modal) modal.remove();
+        
         await loadProjectRepositories(currentProject.id);
 
     } catch (error) {
-        console.error('Error creating repository:', error);
-        showToast('Error creando el repositorio', 'error');
+        console.error('Error inesperado:', error);
+        showToast('Error inesperado creando el repositorio', 'error');
     }
 }
 
-function openRepository(repository) {
+
+async function openRepository(repository) {
     selectedRepository = repository;
     currentViewMode = 'files';
-    loadRepositoryFiles(repository.id);
+    
+    try {
+        // ✅ CORRECCIÓN: SOLO CARGAR rama main, NO CREARLA aquí si no existe.
+        // La creación inicial de 'main' debe estar en createRepository().
+        let { data: mainBranch, error: mainBranchError } = await supabaseClient
+            .from('branches')
+            .select('*')
+            .eq('repository_id', repository.id)
+            .eq('is_main', true)
+            .single();
+        
+        if (mainBranchError || !mainBranch) {
+            // Si la rama main no se encuentra, es un estado inesperado.
+            // Registra un error, notifica al usuario, y quizás redirige o evita abrir el repo.
+            console.error('Error: No se encontró la rama "main" para el repositorio:', repository.name, mainBranchError);
+            showToast('Error crítico: El repositorio no tiene una rama principal (main).', 'error');
+            // Aquí podrías querer volver a la vista de repositorios o tomar otra acción
+            currentViewMode = 'repositories';
+            selectedRepository = null;
+            clearEditor();
+            return; // Detener la ejecución si no hay rama main
+        }
+        
+        currentBranch = mainBranch;
+        await updateOPMContext(repository); // Esto también actualiza opmConsole.currentBranch
+        updateBranchStatus();
+        await loadRepositoryFiles(repository.id);
+        
+    } catch (error) {
+        console.error('Error abriendo repositorio:', error);
+        showToast('Error cargando repositorio', 'error');
+    }
 }
 
-
+// Actualizar status bar con rama actual
+function updateBranchStatus() {
+    const branchElement = document.getElementById('branch-status');
+    if (!branchElement) return;
+    
+    if (currentBranch) {
+        branchElement.innerHTML = `
+            <i class="fas fa-code-branch"></i>
+            <span>${currentBranch.branch_name}</span>
+        `;
+        branchElement.style.display = 'flex';
+    } else if (selectedRepository) {
+        // Si no hay rama pero hay repositorio
+        branchElement.innerHTML = `
+            <i class="fas fa-code-branch"></i>
+            <span>Sin rama</span>
+        `;
+        branchElement.style.opacity = '0.5';
+    } else {
+        // Si no hay repositorio
+        branchElement.style.display = 'none';
+    }
+}
 
 
 function showDeleteRepositoryModal(repository) {
@@ -8218,6 +8525,7 @@ async function createNewFile() {
                 repository_id: selectedRepository.id,
                 file_name: fileName,
                 file_path: fullPath,
+                branch_id: currentBranch.id, // ← AGREGAR ESTA LÍNEA
                 file_type: fileType,
                 content: getDefaultContent(fileType),
                 is_folder: isFolder,
@@ -9913,20 +10221,22 @@ const translations = {
 // Sistema de colaboración en tiempo real simplificado
 class RealTimeCollaboration {
     constructor(supabaseClient, monacoEditor) {
-        this.supabase = supabaseClient;
-        this.editor = monacoEditor;
-        this.currentUser = null;
-        this.activeFile = null;
-        this.collaborators = new Map();
-        this.decorationCollections = new Map();
-        this.isConnected = false;
-        this.isApplyingRemoteChange = false;
-        this.fileChannel = null;
-        this.collaborationChannel = null;
-        this.SAVE_DELAY = 300;
-        this.CURSOR_UPDATE_DELAY = 100;
-        this.initializeRealTime();
-    }
+    this.supabase = supabaseClient;
+    this.editor = monacoEditor;
+    this.currentUser = null;
+    this.activeFile = null;
+    this.collaborators = new Map();
+    this.decorationCollections = new Map();
+    this.isConnected = false;
+    this.isApplyingRemoteChange = false;
+    this.fileChannel = null;
+    this.collaborationChannel = null;
+    this.SAVE_DELAY = 300;
+    this.CURSOR_UPDATE_DELAY = 100;
+    this.contentDisposable = null; // ⭐ AGREGAR ESTA LÍNEA
+    this.cursorDisposable = null;  // ⭐ AGREGAR ESTA LÍNEA
+    this.initializeRealTime();
+}
 
     async initializeRealTime() {
         try {
@@ -9975,22 +10285,31 @@ class RealTimeCollaboration {
     }
 
     setupEditorEvents() {
-        if (!this.editor) return;
+    if (!this.editor) return;
 
-        this.editor.onDidChangeModelContent((e) => {
-            if (!this.isApplyingRemoteChange && this.activeFile && this.currentUser) {
-                this.handleLocalTextChange(e);
-            }
-        });
-
-        this.editor.onDidChangeCursorPosition(
-            this.debounce((e) => {
-                if (this.activeFile) {
-                    this.broadcastCursorPosition(e.position);
-                }
-            }, this.CURSOR_UPDATE_DELAY)
-        );
+    // ⭐ LIMPIAR LISTENERS ANTERIORES
+    if (this.contentDisposable) {
+        this.contentDisposable.dispose();
     }
+    if (this.cursorDisposable) {
+        this.cursorDisposable.dispose();
+    }
+
+    // Guardar referencias para poder limpiarlos después
+    this.contentDisposable = this.editor.onDidChangeModelContent((e) => {
+        if (!this.isApplyingRemoteChange && this.activeFile && this.currentUser) {
+            this.handleLocalTextChange(e);
+        }
+    });
+
+    this.cursorDisposable = this.editor.onDidChangeCursorPosition(
+        this.debounce((e) => {
+            if (this.activeFile) {
+                this.broadcastCursorPosition(e.position);
+            }
+        }, this.CURSOR_UPDATE_DELAY)
+    );
+}
 
     handleLocalTextChange(changeEvent) {
         const changes = changeEvent.changes;
@@ -10408,6 +10727,14 @@ async function checkAuthenticationAndLoadData() {
         }
 
         currentUser = session.user;
+
+        // Verificar que el token sea válido
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+        if (userError || !user) {
+            console.log('Invalid user session, redirecting to login');
+            window.location.href = 'login.html';
+            return;
+        }
         
         await updateUserHeader();
         await ensureUserProfile();
@@ -10436,6 +10763,10 @@ async function checkAuthenticationAndLoadData() {
         ]);
 
         console.log('Code editor loaded successfully');
+        
+        // ⭐ AGREGAR AQUÍ - AL FINAL DE LA FUNCIÓN
+        await initializeOPMConsole();
+        updatePrompt();
 
     } catch (error) {
         console.error('Error in checkAuthenticationAndLoadData:', error);
@@ -10445,7 +10776,6 @@ async function checkAuthenticationAndLoadData() {
     initializeSidebar();
     setupMenuToggle();
 }
-
 function initMonacoEditor() {
     if (monacoInitialized) return Promise.resolve();
     
@@ -11037,6 +11367,7 @@ async function processUploadedFileWithProgress(file, progressInfo) {
                 repository_id: selectedRepository?.id,
                 file_name: file.name,
                 file_path: fullPath,
+                 branch_id: currentBranch.id, // ← AGREGAR ESTA LÍNEA
                 file_type: fileType,
                 content: content,
                 is_folder: false,
@@ -11346,18 +11677,24 @@ async function loadProjectData(projectId) {
 }
 
 async function loadRepositoryFiles(repositoryId) {
+    if (!currentBranch) {
+        showToast('No hay rama seleccionada', 'error');
+        return;
+    }
+    
     try {
         const { data: files, error } = await supabaseClient
             .from('project_files')
             .select('*')
             .eq('repository_id', repositoryId)
+            .eq('branch_id', currentBranch.id) // ← FILTRAR POR RAMA
             .order('file_path', { ascending: true });
 
         if (error && error.code !== 'PGRST116') throw error;
 
         projectFiles = files || [];
         renderRepositoryFiles();
-        console.log('Archivos del repositorio cargados:', projectFiles.length);
+        updateBranchStatus();
 
     } catch (error) {
         console.error('Error loading repository files:', error);
@@ -11411,15 +11748,23 @@ function renderRepositoryFiles() {
 function backToRepositories() {
     currentViewMode = 'repositories';
     selectedRepository = null;
+     currentBranch = null; // Agregar
     
-    // Remover clase de vista de archivos
+    // ⭐ AGREGAR ESTAS LÍNEAS
+    if (opmConsole) {
+        opmConsole.currentRepository = null;
+        opmConsole.currentBranch = null;
+        currentBranch = null;
+    }
+    updatePrompt();
+    updateBranchStatus();
+   
     const fileTree = document.getElementById('file-tree');
     if (fileTree && fileTree.parentElement) {
         fileTree.parentElement.classList.remove('repository-files-view');
     }
     
     renderRepositories();
-
 }
 
 
@@ -12166,6 +12511,9 @@ function setActiveTab(tab) {
     
     if (activeTab && realTimeCollab) {
         realTimeCollab.leaveFile();
+    }
+     if (monacoEditor && monacoEditor.getModel()) {
+        monacoEditor.getModel().dispose();
     }
     
     activeTab = tab;
@@ -13711,10 +14059,13 @@ function showKeyboardShortcuts() {
         Vista:
         • Ctrl+Shift+E - Toggle explorador
         • Alt+P - Vista previa
+        • Ctrl+Ñ - Toggle consola OPM
+        • Ctrl+\` - Toggle consola OPM (alternativo)
     `;
     alert(shortcuts);
     closeAllMenus();
 }
+
 
 function showAbout() {
     showToast('OpenMind AI Editor v1.0 - Editor colaborativo', 'info');
@@ -13743,6 +14094,12 @@ function setupKeyboardShortcuts() {
             saveCurrentFile();
         }
         
+
+         if (e.ctrlKey && e.key === 'ñ') {
+            e.preventDefault();
+            toggleOPMConsole();
+        }
+
         // Alt+P - Preview
         if (e.altKey && e.key === 'p') {
             e.preventDefault();
@@ -14453,6 +14810,919 @@ if (document.getElementById('monaco-editor-container')) {
         attributeFilter: ['style']
     });
 }
+
+class OPMConsole {
+    constructor(supabase, currentUser, currentProject) {
+        this.supabase = supabase;
+        this.currentUser = currentUser;
+        this.currentProject = currentProject;
+        this.currentRepository = null;
+        this.currentBranch = null;
+        this.commands = this.initializeCommands();
+    }
+
+    initializeCommands() {
+        return {
+            'clone': this.cloneRepository.bind(this),
+            'delete': this.handleDelete.bind(this),
+            'create': this.handleCreate.bind(this),
+            'switch': this.switchBranch.bind(this),
+            'merge': this.mergeBranch.bind(this),
+            'list': this.listBranches.bind(this),
+            'current': this.showCurrent.bind(this),
+            'help': this.showHelp.bind(this),
+            'clear': this.clearConsole.bind(this)
+        };
+    }
+
+    // ================================
+    // COMANDO: opm clone <código>
+    // ================================
+   async cloneRepository(args) {
+    if (!args[0]) {
+        return { success: false, message: 'Error: Debes proporcionar un código de clonación\nUso: opm clone <código>' };
+    }
+
+    const cloneCode = args[0].toUpperCase();
+
+    try {
+        // ✅ CORRECCIÓN: Usar .eq() correctamente sin el prefijo "eq."
+        const { data: sourceRepo, error: repoError } = await this.supabase
+            .from('repositories')
+            .select('*')
+            .eq('clone_code', cloneCode)  // ← CAMBIO AQUÍ
+            .single();
+
+        if (repoError || !sourceRepo) {
+            return { success: false, message: `Error: No se encontró repositorio con código "${cloneCode}"` };
+        }
+
+        // 2. Verificar que no sea del mismo proyecto
+        if (sourceRepo.project_id === this.currentProject.id) {
+            return { success: false, message: 'Error: No puedes clonar un repositorio del mismo proyecto' };
+        }
+
+        // 3. Crear nuevo repositorio
+        const newRepoName = `${sourceRepo.name}-clonado`;
+        const { data: newRepo, error: createError } = await this.supabase
+            .from('repositories')
+            .insert([{
+                name: newRepoName,
+                description: `Clonado de: ${sourceRepo.name}`,
+                project_id: this.currentProject.id,
+                created_by: this.currentUser.id
+            }])
+            .select()
+            .single();
+
+        if (createError) throw createError;
+
+        // 4. Obtener rama main del repositorio clonado
+        const { data: sourceBranch } = await this.supabase
+            .from('branches')
+            .select('id')
+            .eq('repository_id', sourceRepo.id)
+            .eq('is_main', true)
+            .single();
+
+        if (!sourceBranch) {
+            throw new Error('El repositorio original no tiene rama main');
+        }
+
+        // 5. Obtener todos los archivos del repositorio original
+        const { data: sourceFiles, error: filesError } = await this.supabase
+            .from('project_files')
+            .select('*')
+            .eq('repository_id', sourceRepo.id)
+            .eq('branch_id', sourceBranch.id);
+
+        if (filesError) throw filesError;
+
+        // 6. Crear rama main en el nuevo repositorio
+        const { data: newBranch, error: branchError } = await this.supabase
+            .from('branches')
+            .insert([{
+                repository_id: newRepo.id,
+                branch_name: 'main',
+                is_main: true,
+                created_by: this.currentUser.id
+            }])
+            .select()
+            .single();
+
+        if (branchError) throw branchError;
+
+        // 7. Clonar archivos
+        if (sourceFiles && sourceFiles.length > 0) {
+            const filesToInsert = sourceFiles.map(file => ({
+                project_id: this.currentProject.id,
+                repository_id: newRepo.id,
+                branch_id: newBranch.id,
+                file_name: file.file_name,
+                file_path: file.file_path,
+                file_type: file.file_type,
+                content: file.content,
+                is_folder: file.is_folder,
+                created_by: this.currentUser.id
+            }));
+
+            const { error: insertError } = await this.supabase
+                .from('project_files')
+                .insert(filesToInsert);
+
+            if (insertError) throw insertError;
+        }
+
+        return {
+            success: true,
+            message: `✓ Repositorio clonado exitosamente\n  Nombre: ${newRepoName}\n  Archivos clonados: ${sourceFiles?.length || 0}\n  Rama: main`
+        };
+
+    } catch (error) {
+        console.error('Error clonando repositorio:', error);
+        return { success: false, message: `Error: ${error.message}` };
+    }
+}
+
+    // ================================
+    // COMANDO: opm delete repo <nombre>
+    // ================================
+    async handleDelete(args) {
+        if (!args[0] || args[0] !== 'repo') {
+            return { success: false, message: 'Error: Uso correcto: opm delete repo <nombre>' };
+        }
+
+        if (!args[1]) {
+            return { success: false, message: 'Error: Debes especificar el nombre del repositorio' };
+        }
+
+        const repoName = args.slice(1).join(' ');
+
+        try {
+            // Buscar repositorio
+            const { data: repo, error: findError } = await this.supabase
+                .from('repositories')
+                .select('id, name')
+                .eq('project_id', this.currentProject.id)
+                .ilike('name', repoName)
+                .single();
+
+            if (findError || !repo) {
+                return { success: false, message: `Error: No se encontró repositorio "${repoName}"` };
+            }
+
+            // Eliminar (CASCADE eliminará branches y files automáticamente)
+            const { error: deleteError } = await this.supabase
+                .from('repositories')
+                .delete()
+                .eq('id', repo.id);
+
+            if (deleteError) throw deleteError;
+
+            return {
+                success: true,
+                message: `✓ Repositorio "${repo.name}" eliminado exitosamente`
+            };
+
+        } catch (error) {
+            console.error('Error eliminando repositorio:', error);
+            return { success: false, message: `Error: ${error.message}` };
+        }
+    }
+
+    // ================================
+    // COMANDO: opm create branch <nombre>
+    // ================================
+
+    // ================================
+// COMANDO: opm create branch <nombre> - VERSIÓN CORREGIDA
+// ================================
+
+
+ async handleCreate(args) {
+        if (!args[0] || args[0] !== 'branch') {
+            return { success: false, message: 'Error: Uso correcto: opm create branch <nombre>' };
+        }
+
+        if (!args[1]) {
+            return { success: false, message: 'Error: Debes especificar el nombre de la rama' };
+        }
+
+        const branchName = args[1];
+
+        // --- INICIO DE DEPURACIÓN CRÍTICA ---
+        if (!this.currentRepository) {
+            console.error('DEBUG: OPMConsole.handleCreate: currentRepository es null o undefined.');
+            return { success: false, message: 'Error: No hay repositorio seleccionado. Por favor, selecciona o crea uno.' };
+        }
+        console.log(`DEBUG: OPMConsole.handleCreate: Intentando crear rama "${branchName}" en repositorio ID: ${this.currentRepository.id}`);
+        // --- FIN DE DEPURACIÓN CRÍTICA ---
+
+        try {
+            // Verificar autenticación
+            const { data: { user }, error: userError } = await this.supabase.auth.getUser();
+            if (userError || !user) {
+                return { success: false, message: 'Error: Debes estar autenticado para crear ramas.' };
+            }
+
+            // Verificar si la rama ya existe en ESTE REPOSITORIO
+            const { data: existing, error: checkError } = await this.supabase
+                .from('branches')
+                .select('id')
+                .eq('repository_id', this.currentRepository.id) // <-- CRÍTICO: Asegura que el ID del repo sea el correcto
+                .eq('branch_name', branchName)
+                .maybeSingle(); // Usar maybeSingle() para obtener null si no existe
+
+            if (checkError) {
+                console.error('Error al verificar rama existente:', checkError);
+                throw checkError;
+            }
+            if (existing) {
+                // Esta es la validación que debería atrapar el "duplicate key" antes de intentar el insert
+                return { success: false, message: `Error: La rama "${branchName}" ya existe en este repositorio.` };
+            }
+
+            // Antes de clonar archivos, debemos asegurarnos de que la rama actual exista
+            if (!this.currentBranch) {
+                 console.error('DEBUG: OPMConsole.handleCreate: currentBranch es null o undefined al intentar clonar archivos.');
+                return { success: false, message: 'Error: No se puede crear la rama. No hay una rama actual desde la cual copiar los archivos.' };
+            }
+
+            // 1. Crear nueva rama
+            const { data: newBranch, error: branchError } = await this.supabase
+                .from('branches')
+                .insert([{
+                    repository_id: this.currentRepository.id, // Asegura que se asocie al repositorio actual
+                    branch_name: branchName,
+                    is_main: false,
+                    created_by: user.id
+                }])
+                .select() // Esto es importante para obtener los datos de la nueva rama
+                .single();
+
+            if (branchError) {
+                if (branchError.code === '42501') {
+                    return { success: false, message: 'Error: No tienes permisos para crear ramas.' };
+                }
+                console.error('Error insertando nueva rama:', branchError);
+                throw branchError;
+            }
+
+            // 2. Obtener archivos de la rama actual (desde la que estamos creando la nueva)
+            const { data: currentFiles, error: filesError } = await this.supabase
+                .from('project_files')
+                .select('*')
+                .eq('repository_id', this.currentRepository.id)
+                .eq('branch_id', this.currentBranch.id); // Clonamos los archivos de la rama actual
+
+            if (filesError) {
+                console.error('Error al obtener archivos de la rama actual:', filesError);
+                throw filesError;
+            }
+
+            // 3. Clonar archivos a la nueva rama
+            if (currentFiles && currentFiles.length > 0) {
+                const filesToInsert = currentFiles.map(file => ({
+                    project_id: file.project_id,
+                    repository_id: file.repository_id,
+                    branch_id: newBranch.id, // <-- Asignar al ID de la NUEVA rama
+                    file_name: file.file_name,
+                    file_path: file.file_path,
+                    file_type: file.file_type,
+                    content: file.content,
+                    is_folder: file.is_folder,
+                    created_by: user.id
+                }));
+
+                const { error: insertError } = await this.supabase
+                    .from('project_files')
+                    .insert(filesToInsert);
+
+                if (insertError) {
+                    console.error('Error al clonar archivos a la nueva rama:', insertError);
+                    throw insertError;
+                }
+            }
+
+            return {
+                success: true,
+                message: `✓ Rama "${branchName}" creada exitosamente.\n  Archivos clonados: ${currentFiles?.length || 0}.`
+            };
+
+        } catch (error) {
+            console.error('ERROR EN OPMConsole.handleCreate:', error);
+            return { success: false, message: `Error al crear rama: ${error.message}` };
+        }
+    }
+
+
+// ================================
+    // COMANDO: opm switch <rama>
+    // ================================
+    async switchBranch(args) {
+        if (!args[0]) {
+            return { success: false, message: 'Error: Debes especificar el nombre de la rama\nUso: opm switch <rama>' };
+        }
+
+        if (!this.currentRepository) {
+            return { success: false, message: 'Error: Debes estar dentro de un repositorio' };
+        }
+
+        const branchName = args[0];
+
+        try {
+            const { data: branch, error } = await this.supabase
+                .from('branches')
+                .select('*')
+                .eq('repository_id', this.currentRepository.id)
+                .eq('branch_name', branchName)
+                .single();
+
+            if (error || !branch) {
+                return { success: false, message: `Error: La rama "${branchName}" no existe` };
+            }
+
+            this.currentBranch = branch;
+              currentBranch = branch; // Agregar esta línea
+              updateBranchStatus();   // Agregar esta línea
+
+               // Cerrar archivos abiertos de la rama anterior
+        openTabs.forEach(tab => {
+            closeTab(tab.id);
+        });
+        
+        // Cargar archivos de la nueva rama
+        await loadRepositoryFiles(selectedRepository.id);
+
+            return {
+                success: true,
+                message: `✓ Cambiado a rama "${branchName}"`,
+                reload: true
+            };
+
+        } catch (error) {
+            console.error('Error cambiando de rama:', error);
+            return { success: false, message: `Error: ${error.message}` };
+        }
+    }
+
+    // ================================
+    // COMANDO: opm merge main
+    // ================================
+    async mergeBranch(args) {
+        if (!args[0] || args[0] !== 'main') {
+            return { success: false, message: 'Error: Por ahora solo puedes hacer merge a main\nUso: opm merge main' };
+        }
+
+        if (!this.currentRepository || !this.currentBranch) {
+            return { success: false, message: 'Error: Debes estar en una rama para hacer merge' };
+        }
+
+        if (this.currentBranch.is_main) {
+            return { success: false, message: 'Error: Ya estás en la rama main' };
+        }
+
+        try {
+            // Obtener rama main
+            const { data: mainBranch } = await this.supabase
+                .from('branches')
+                .select('id')
+                .eq('repository_id', this.currentRepository.id)
+                .eq('is_main', true)
+                .single();
+
+            // Obtener archivos de rama actual
+            const { data: currentFiles } = await this.supabase
+                .from('project_files')
+                .select('*')
+                .eq('branch_id', this.currentBranch.id);
+
+            // Obtener archivos de main
+            const { data: mainFiles } = await this.supabase
+                .from('project_files')
+                .select('*')
+                .eq('branch_id', mainBranch.id);
+
+            let updated = 0;
+            let inserted = 0;
+
+            for (const file of currentFiles) {
+                const mainFile = mainFiles.find(f => f.file_path === file.file_path);
+
+                if (mainFile) {
+                    // Actualizar archivo existente
+                    await this.supabase
+                        .from('project_files')
+                        .update({ content: file.content })
+                        .eq('id', mainFile.id);
+                    updated++;
+                } else {
+                    // Insertar nuevo archivo
+                    await this.supabase
+                        .from('project_files')
+                        .insert([{
+                            project_id: file.project_id,
+                            repository_id: file.repository_id,
+                            branch_id: mainBranch.id,
+                            file_name: file.file_name,
+                            file_path: file.file_path,
+                            file_type: file.file_type,
+                            content: file.content,
+                            is_folder: file.is_folder,
+                            created_by: this.currentUser.id
+                        }]);
+                    inserted++;
+                }
+            }
+
+            return {
+                success: true,
+                message: `✓ Merge completado exitosamente\n  Archivos actualizados: ${updated}\n  Archivos nuevos: ${inserted}`
+            };
+
+        } catch (error) {
+            console.error('Error haciendo merge:', error);
+            return { success: false, message: `Error: ${error.message}` };
+        }
+    }
+
+    // ================================
+    // COMANDO: opm list branches
+    // ================================
+    async listBranches(args) {
+        if (!args[0] || args[0] !== 'branches') {
+            return { success: false, message: 'Error: Uso correcto: opm list branches' };
+        }
+
+        if (!this.currentRepository) {
+            return { success: false, message: 'Error: Debes estar dentro de un repositorio' };
+        }
+
+        try {
+            const { data: branches, error } = await this.supabase
+                .from('branches')
+                .select('*')
+                .eq('repository_id', this.currentRepository.id)
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+
+            let output = '\nRamas disponibles:\n';
+            branches.forEach(branch => {
+                const indicator = branch.id === this.currentBranch?.id ? '* ' : '  ';
+                const mainTag = branch.is_main ? ' (main)' : '';
+                output += `${indicator}${branch.branch_name}${mainTag}\n`;
+            });
+
+            return { success: true, message: output };
+
+        } catch (error) {
+            console.error('Error listando ramas:', error);
+            return { success: false, message: `Error: ${error.message}` };
+        }
+    }
+
+    // ================================
+    // COMANDO: opm current
+    // ================================
+    async showCurrent() {
+        let output = '\n';
+        output += `Proyecto: ${this.currentProject?.name || 'Sin proyecto'}\n`;
+        output += `Repositorio: ${this.currentRepository?.name || 'Sin repositorio'}\n`;
+        output += `Rama: ${this.currentBranch?.branch_name || 'Sin rama'}\n`;
+
+        if (this.currentRepository) {
+            const { data: repo } = await this.supabase
+                .from('repositories')
+                .select('clone_code')
+                .eq('id', this.currentRepository.id)
+                .single();
+
+            if (repo) {
+                output += `Código de clonación: ${repo.clone_code}\n`;
+            }
+        }
+
+        return { success: true, message: output };
+    }
+
+    // ================================
+    // COMANDO: opm help
+    // ================================
+    showHelp() {
+        const helpText = `
+Comandos disponibles de OPM:
+
+opm clone <código>           → Clona un repositorio usando su código único
+opm delete repo <nombre>     → Elimina un repositorio del proyecto
+opm create branch <nombre>   → Crea una nueva rama desde la rama actual
+opm switch <rama>            → Cambia a otra rama
+opm merge main              → Fusiona la rama actual con main
+opm list branches           → Lista todas las ramas del repositorio
+opm current                 → Muestra información del contexto actual
+opm help                    → Muestra esta ayuda
+opm clear                   → Limpia la consola
+
+Ejemplos:
+  opm clone ABC12XYZ
+  opm create branch desarrollo
+  opm switch main
+  opm merge main
+`;
+        return { success: true, message: helpText };
+    }
+
+    clearConsole() {
+        return { success: true, clear: true };
+    }
+
+    // ================================
+    // MÉTODO PRINCIPAL
+    // ================================
+    async execute(input) {
+        const parts = input.trim().split(/\s+/);
+        const command = parts[1]?.toLowerCase();
+        const args = parts.slice(2);
+
+        if (parts[0] !== 'opm') {
+            return { success: false, message: 'Error: Los comandos deben empezar con "opm"' };
+        }
+
+        if (!command) {
+            return { success: false, message: 'Error: Debes especificar un comando. Usa "opm help" para ver la lista.' };
+        }
+
+        const handler = this.commands[command];
+        if (!handler) {
+            return { success: false, message: `Error: Comando desconocido "${command}". Usa "opm help" para ver los comandos disponibles.` };
+        }
+
+        return await handler(args);
+    }
+}
+
+
+let opmConsole = null;
+
+async function initializeOPMConsole() {
+    if (currentUser && currentProject && supabaseClient) {
+        opmConsole = new OPMConsole(supabaseClient, currentUser, currentProject);
+        
+        // Cargar rama actual si hay repositorio seleccionado
+        if (selectedRepository) {
+            const { data: mainBranch } = await supabaseClient
+                .from('branches')
+                .select('*')
+                .eq('repository_id', selectedRepository.id)
+                .eq('is_main', true)
+                .single();
+            
+            if (mainBranch) {
+                opmConsole.currentRepository = selectedRepository;
+                opmConsole.currentBranch = mainBranch;
+                currentBranch = mainBranch;
+            }
+        }
+    }
+}
+
+
+// Actualizar contexto cuando cambie el repositorio
+async function updateOPMContext(repository) {
+    if (opmConsole && repository) {
+        opmConsole.currentRepository = repository;
+        
+        const { data: mainBranch } = await supabaseClient
+            .from('branches')
+            .select('*')
+            .eq('repository_id', repository.id)
+            .eq('is_main', true)
+            .single();
+        
+        if (mainBranch) {
+            opmConsole.currentBranch = mainBranch;
+            currentBranch = mainBranch;
+        }
+    }
+}
+
+// Función para mostrar/ocultar consola
+function toggleOPMConsole() {
+    const panel = document.getElementById('console-panel');
+    const btn = document.getElementById('console-toggle-btn');
+    
+    if (panel.classList.contains('open')) {
+        // Cerrar con animación
+        panel.classList.add('closing');
+        panel.classList.remove('open');
+        btn.classList.remove('active');
+        
+        // Ocultar después de la animación
+        setTimeout(() => {
+            panel.style.display = 'none';
+            panel.classList.remove('closing');
+        }, 300); // Duración de la animación de cierre
+        
+    } else {
+        // Abrir con animación
+        panel.style.display = 'flex';
+        
+        // Pequeño delay para que el display:flex se aplique antes de la animación
+        requestAnimationFrame(() => {
+            panel.classList.add('open');
+            btn.classList.add('active');
+            
+            setTimeout(() => {
+                document.getElementById('console-input')?.focus();
+            }, 400); // Después de la animación de apertura
+        });
+    }
+}
+
+// Procesar comando ingresado
+async function processOPMCommand(event) {
+    if (event.key !== 'Enter') return;
+    
+    const input = event.target;
+    const command = input.value.trim();
+    
+    if (!command) return;
+    
+    // Agregar a historial
+    consoleHistory.push(command);
+    historyIndex = consoleHistory.length;
+    
+    // Mostrar comando en output
+    appendToConsole(`$ ${command}`, 'output');
+    
+    // Ejecutar comando
+    if (opmConsole) {
+        const result = await opmConsole.execute(command);
+        
+        if (result.clear) {
+            clearConsoleOutput();
+        } else {
+            const type = result.success ? 'success' : 'error';
+            appendToConsole(result.message, type);
+        }
+        
+        if (result.reload && selectedRepository) {
+            // Recargar archivos con nueva rama
+            await loadRepositoryFiles(selectedRepository.id);
+        }
+    } else {
+        appendToConsole('Error: Consola no inicializada', 'error');
+    }
+    
+    input.value = '';
+    updatePrompt();
+}
+
+// Navegar historial con flechas
+function handleConsoleKeydown(event) {
+    const input = event.target;
+    
+    if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (historyIndex > 0) {
+            historyIndex--;
+            input.value = consoleHistory[historyIndex];
+        }
+    } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (historyIndex < consoleHistory.length - 1) {
+            historyIndex++;
+            input.value = consoleHistory[historyIndex];
+        } else {
+            historyIndex = consoleHistory.length;
+            input.value = '';
+        }
+    }
+}
+
+function appendToConsole(text, type) {
+    const output = document.getElementById('console-output');
+    const line = document.createElement('div');
+    line.className = `console-line ${type}`;
+    line.textContent = text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+}
+
+function clearConsoleOutput() {
+    document.getElementById('console-output').innerHTML = '';
+}
+
+function updatePrompt() {
+    const prompt = document.getElementById('console-prompt');
+    let path = 'OpenMind';
+    
+    if (currentProject) {
+        path += `:/projects/${currentProject.name}`;
+        
+        if (selectedRepository) {
+            path += `/${selectedRepository.name}`;
+            
+            if (currentBranch && !currentBranch.is_main) {
+                path += ` (${currentBranch.branch_name})`;
+            }
+        }
+    }
+    
+    prompt.textContent = path + '>';
+}
+
+// Exportar funciones globales necesarias
+window.toggleOPMConsole = toggleOPMConsole;
+window.processOPMCommand = processOPMCommand;
+window.handleConsoleKeydown = handleConsoleKeydown;
+window.initializeOPMConsole = initializeOPMConsole;
+window.updateOPMContext = updateOPMContext;
+window.updatePrompt = updatePrompt;
+
+console.log('✓ Sistema de Consola OPM cargado correctamente');
+
+
+// ================================
+// RESIZE DE CONSOLA (DRAG VERTICAL)
+// ================================
+
+let isResizing = false;
+let startY = 0;
+let startHeight = 0;
+
+function initConsoleResize() {
+    const handle = document.getElementById('console-resize-handle');
+    const panel = document.getElementById('console-panel');
+    
+    if (!handle || !panel) return;
+    
+    handle.addEventListener('mousedown', startResize);
+}
+
+function startResize(e) {
+    isResizing = true;
+    const panel = document.getElementById('console-panel');
+    
+    startY = e.clientY;
+    startHeight = panel.offsetHeight;
+    
+    panel.classList.add('resizing');
+    document.body.classList.add('console-resizing');
+    
+    document.addEventListener('mousemove', doResize);
+    document.addEventListener('mouseup', stopResize);
+    
+    e.preventDefault();
+}
+
+function doResize(e) {
+    if (!isResizing) return;
+    
+    const panel = document.getElementById('console-panel');
+    const deltaY = startY - e.clientY; // Invertido porque crece hacia arriba
+    let newHeight = startHeight + deltaY;
+    
+    // Límites
+    const minHeight = 150;
+    const maxHeight = window.innerHeight * 0.8;
+    
+    newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+    
+    panel.style.height = newHeight + 'px';
+    
+    e.preventDefault();
+}
+
+function stopResize() {
+    if (!isResizing) return;
+    
+    isResizing = false;
+    const panel = document.getElementById('console-panel');
+    
+    panel.classList.remove('resizing');
+    document.body.classList.remove('console-resizing');
+    
+    document.removeEventListener('mousemove', doResize);
+    document.removeEventListener('mouseup', stopResize);
+}
+
+// Inicializar cuando cargue el DOM
+document.addEventListener('DOMContentLoaded', function() {
+    initConsoleResize();
+});
+
+// Asegurarse de que se inicialice también si ya se cargó el DOM
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initConsoleResize();
+}
+
+
+// Sistema de historial de commits
+async function createCommit(message) {
+    if (!selectedRepository || !currentBranch) return;
+    
+    try {
+        const { data: commit, error } = await supabaseClient
+            .from('commits')
+            .insert([{
+                repository_id: selectedRepository.id,
+                branch_id: currentBranch.id,
+                message: message,
+                author_id: currentUser.id,
+                author_name: currentUser.email.split('@')[0],
+                files_changed: 1,
+                insertions: 0,
+                deletions: 0
+            }])
+            .select()
+            .single();
+            
+        if (!error) {
+            showToast('Cambios guardados en historial', 'success');
+            loadCommitHistory();
+        }
+    } catch (error) {
+        console.error('Error creando commit:', error);
+    }
+}
+
+async function loadCommitHistory() {
+    if (!selectedRepository) return;
+    
+    try {
+        const { data: commits, error } = await supabaseClient
+            .from('commits')
+            .select('*')
+            .eq('repository_id', selectedRepository.id)
+            .order('created_at', { ascending: false })
+            .limit(50);
+            
+        if (!error && commits) {
+            renderCommitHistory(commits);
+        }
+    } catch (error) {
+        console.error('Error loading commits:', error);
+    }
+}
+
+function renderCommitHistory(commits) {
+    const historyList = document.getElementById('history-list');
+    if (!historyList) return;
+    
+    if (commits.length === 0) {
+        historyList.innerHTML = '<div style="color: #8892a6; text-align: center;">No hay commits aún</div>';
+        return;
+    }
+    
+    historyList.innerHTML = commits.map(commit => `
+        <div class="commit-item">
+            <div class="commit-header">
+                <div class="commit-message">${commit.message}</div>
+                <div class="commit-meta">
+                    ${new Date(commit.created_at).toLocaleDateString('es-ES')}
+                </div>
+            </div>
+            <div class="commit-files">
+                <span><i class="fas fa-user"></i> ${commit.author_name}</span>
+                <span><i class="fas fa-file"></i> ${commit.files_changed} archivos</span>
+                <span style="color: #22c55e;">+${commit.insertions}</span>
+                <span style="color: #ef4444;">-${commit.deletions}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleHistoryPanel() {
+    const panel = document.getElementById('history-panel');
+    const btn = document.getElementById('history-toggle-btn');
+    
+    if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        btn.classList.remove('active');
+    } else {
+        panel.style.display = 'flex';
+        panel.classList.add('open');
+        btn.classList.add('active');
+        loadCommitHistory();
+    }
+}
+
+// Modificar autoSave para crear commits
+const originalAutoSave = autoSave;
+autoSave = async function() {
+    await originalAutoSave();
+    if (activeTab && activeTab.modified) {
+        await createCommit(`Actualización de ${activeTab.name}`);
+    }
+};
+
+// Llamar a updateBranchStatus cuando se cargue
+document.addEventListener('DOMContentLoaded', function() {
+    if (currentBranch) {
+        updateBranchStatus();
+    }
+});
 </script>
 
 

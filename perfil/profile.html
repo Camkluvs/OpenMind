@@ -322,7 +322,7 @@
                 const { data: { session }, error } = await supabaseClient.auth.getSession();
                 
                 if (!session || !session.user) {
-                    window.location.href = 'login.html';
+                    window.location.href = './login.html';
                     return;
                 }
 
@@ -331,7 +331,7 @@
                 
             } catch (error) {
                 console.error('Error checking auth:', error);
-                window.location.href = 'login.html';
+                window.location.href = './login.html';
             }
         }
 
