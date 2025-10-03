@@ -7578,7 +7578,12 @@ body.console-resizing * {
     <button class="preview-btn" id="console-toggle-btn" onclick="toggleOPMConsole()">
         <i class="fas fa-terminal"></i> Console
     </button>
+                    <!-- Botón para abrir historial -->
+
 </div>
+<button class="preview-btn" id="history-toggle-btn" onclick="toggleHistoryPanel()">
+    <i class="fas fa-history"></i> Historial
+</button>
                             <button class="preview-btn" id="preview-btn">
                                 <i class="fas fa-eye"></i>
                                 Vista Previa
@@ -7590,6 +7595,7 @@ body.console-resizing * {
                     Exportar
                     <i class="fas fa-chevron-down"></i>
                 </button>
+
                 <div class="export-dropdown-menu" id="export-dropdown-menu">
                     <button class="export-option" id="export-file-btn">
                         <i class="fas fa-file"></i>
@@ -7859,10 +7865,7 @@ body.console-resizing * {
     </div>
 </div>
 
-<!-- Botón para abrir historial -->
-<button class="history-toggle-btn" id="history-toggle-btn" onclick="toggleHistoryPanel()">
-    <i class="fas fa-history"></i> Historial
-</button>
+
 
 
 
@@ -7971,7 +7974,15 @@ body.console-resizing * {
    <script src="js/noti.js"></script>
 
 <script>
-
+// Agregar al inicio del archivo, después de DOMContentLoaded
+window.addEventListener('error', function(event) {
+    // Suprimir errores conocidos de Monaco Editor
+    if (event.message && event.message.includes('getModifierState')) {
+        event.preventDefault();
+        console.warn('Monaco Editor keyboard event warning (ignorado):', event.message);
+        return true;
+    }
+});
 let currentBranch = null;
 let consoleHistory = [];
 let historyIndex = -1;
@@ -8113,6 +8124,7 @@ function showCreateRepositoryModal() {
 
 
 
+
 async function createRepository() {
     const name = document.getElementById('repo-name').value.trim();
     const description = document.getElementById('repo-description').value.trim();
@@ -8123,7 +8135,7 @@ async function createRepository() {
     }
 
     try {
-        // Verificar que el usuario esté autenticado
+        // Verificar autenticación
         const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
         if (userError || !user) {
             showToast('Debes estar autenticado para crear repositorios', 'error');
@@ -8155,23 +8167,40 @@ async function createRepository() {
             return;
         }
 
-        // Crear rama main automáticamente
-        const { error: branchError } = await supabaseClient
+        // ⭐ VERIFICAR SI LA RAMA MAIN YA EXISTE
+        const { data: existingBranch, error: checkError } = await supabaseClient
             .from('branches')
-            .insert([{
-                repository_id: repository.id,
-                branch_name: 'main',
-                is_main: true,
-                created_by: user.id
-            }]);
+            .select('id')
+            .eq('repository_id', repository.id)
+            .eq('branch_name', 'main')
+            .maybeSingle();
 
-        if (branchError) {
-            console.error('Error creando rama main:', branchError);
-            // Continuar aunque falle la rama, el repositorio ya se creó
+        if (checkError) {
+            console.error('Error verificando rama main:', checkError);
         }
 
-        showToast('Repositorio creado correctamente');
-        
+        // ⭐ SOLO CREAR LA RAMA SI NO EXISTE
+        if (!existingBranch) {
+            const { error: branchError } = await supabaseClient
+                .from('branches')
+                .insert([{
+                    repository_id: repository.id,
+                    branch_name: 'main',
+                    is_main: true,
+                    created_by: user.id
+                }]);
+
+            if (branchError) {
+                console.error('Error creando rama main:', branchError);
+                // ⚠️ No hacer return aquí - el repositorio ya se creó
+                showToast('Repositorio creado pero sin rama main', 'warning');
+            } else {
+                showToast('Repositorio creado correctamente', 'success');
+            }
+        } else {
+            showToast('Repositorio creado correctamente', 'success');
+        }
+
         // Cerrar modal y recargar
         const modal = document.querySelector('.unified-modal-overlay');
         if (modal) modal.remove();
@@ -8183,6 +8212,7 @@ async function createRepository() {
         showToast('Error inesperado creando el repositorio', 'error');
     }
 }
+
 
 
 async function openRepository(repository) {
@@ -12615,6 +12645,7 @@ function debounceAutoSave() {
     saveTimeout = setTimeout(autoSave, 2000);
 }
 
+
 async function autoSave() {
     if (!activeTab || !activeTab.modified) return;
     
@@ -12641,12 +12672,18 @@ async function autoSave() {
         activeTab.modified = false;
         renderTabs();
         updateSaveStatus('saved');
+        
+        // ⭐ CREAR COMMIT AUTOMÁTICAMENTE
+        await createCommit(`Guardado automático: ${activeTab.name}`);
 
     } catch (error) {
         console.error('Error auto-saving:', error);
         updateSaveStatus('error');
     }
 }
+
+// Exportar función global
+window.toggleHistoryPanel = toggleHistoryPanel;
 
 function updateSaveStatus(status) {
     const statusElement = document.getElementById('save-status');
@@ -14838,31 +14875,57 @@ class OPMConsole {
     // ================================
     // COMANDO: opm clone <código>
     // ================================
-   async cloneRepository(args) {
+  
+async cloneRepository(args) {
     if (!args[0]) {
-        return { success: false, message: 'Error: Debes proporcionar un código de clonación\nUso: opm clone <código>' };
+        return { 
+            success: false, 
+            message: 'Error: Debes proporcionar un código de clonación\nUso: opm clone <código>' 
+        };
     }
 
-    const cloneCode = args[0].toUpperCase();
+    // Verificar que no estés dentro de un repositorio
+    if (this.currentRepository) {
+        return { 
+            success: false, 
+            message: 'Error: Debes salir del repositorio actual antes de clonar.\nUsa el botón "← Volver" para regresar a la lista de repositorios.' 
+        };
+    }
+
+    const cloneCode = args[0].trim();
 
     try {
-        // ✅ CORRECCIÓN: Usar .eq() correctamente sin el prefijo "eq."
+        // Búsqueda case-insensitive para aceptar cualquier formato
         const { data: sourceRepo, error: repoError } = await this.supabase
             .from('repositories')
             .select('*')
-            .eq('clone_code', cloneCode)  // ← CAMBIO AQUÍ
-            .single();
+            .ilike('clone_code', cloneCode)
+            .maybeSingle();
 
-        if (repoError || !sourceRepo) {
-            return { success: false, message: `Error: No se encontró repositorio con código "${cloneCode}"` };
+        if (repoError) {
+            console.error('Error buscando repositorio:', repoError);
+            return { 
+                success: false, 
+                message: `Error al buscar repositorio: ${repoError.message}` 
+            };
         }
 
-        // 2. Verificar que no sea del mismo proyecto
+        if (!sourceRepo) {
+            return { 
+                success: false, 
+                message: `Error: No se encontró repositorio con código "${cloneCode}"` 
+            };
+        }
+
+        // Verificar que no sea del mismo proyecto
         if (sourceRepo.project_id === this.currentProject.id) {
-            return { success: false, message: 'Error: No puedes clonar un repositorio del mismo proyecto' };
+            return { 
+                success: false, 
+                message: 'Error: No puedes clonar un repositorio del mismo proyecto' 
+            };
         }
 
-        // 3. Crear nuevo repositorio
+        // Crear nuevo repositorio
         const newRepoName = `${sourceRepo.name}-clonado`;
         const { data: newRepo, error: createError } = await this.supabase
             .from('repositories')
@@ -14875,31 +14938,41 @@ class OPMConsole {
             .select()
             .single();
 
-        if (createError) throw createError;
+        if (createError) {
+            console.error('Error creando repositorio:', createError);
+            throw createError;
+        }
 
-        // 4. Obtener rama main del repositorio clonado
-        const { data: sourceBranch } = await this.supabase
+        // Obtener rama main del repositorio origen
+        const { data: sourceBranch, error: branchError } = await this.supabase
             .from('branches')
             .select('id')
             .eq('repository_id', sourceRepo.id)
             .eq('is_main', true)
-            .single();
+            .maybeSingle();
 
-        if (!sourceBranch) {
-            throw new Error('El repositorio original no tiene rama main');
+        if (branchError || !sourceBranch) {
+            console.error('Error obteniendo rama main:', branchError);
+            return { 
+                success: false, 
+                message: 'Error: El repositorio original no tiene rama main' 
+            };
         }
 
-        // 5. Obtener todos los archivos del repositorio original
+        // Obtener archivos del repositorio origen
         const { data: sourceFiles, error: filesError } = await this.supabase
             .from('project_files')
             .select('*')
             .eq('repository_id', sourceRepo.id)
             .eq('branch_id', sourceBranch.id);
 
-        if (filesError) throw filesError;
+        if (filesError) {
+            console.error('Error obteniendo archivos:', filesError);
+            throw filesError;
+        }
 
-        // 6. Crear rama main en el nuevo repositorio
-        const { data: newBranch, error: branchError } = await this.supabase
+        // Crear rama main en el nuevo repositorio
+        const { data: newBranch, error: newBranchError } = await this.supabase
             .from('branches')
             .insert([{
                 repository_id: newRepo.id,
@@ -14910,9 +14983,12 @@ class OPMConsole {
             .select()
             .single();
 
-        if (branchError) throw branchError;
+        if (newBranchError) {
+            console.error('Error creando rama main:', newBranchError);
+            throw newBranchError;
+        }
 
-        // 7. Clonar archivos
+        // Clonar archivos
         if (sourceFiles && sourceFiles.length > 0) {
             const filesToInsert = sourceFiles.map(file => ({
                 project_id: this.currentProject.id,
@@ -14930,17 +15006,30 @@ class OPMConsole {
                 .from('project_files')
                 .insert(filesToInsert);
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('Error insertando archivos:', insertError);
+                throw insertError;
+            }
         }
+
+        // Recargar lista de repositorios
+        await loadProjectRepositories(this.currentProject.id);
 
         return {
             success: true,
-            message: `✓ Repositorio clonado exitosamente\n  Nombre: ${newRepoName}\n  Archivos clonados: ${sourceFiles?.length || 0}\n  Rama: main`
+            message: `✓ Repositorio clonado exitosamente
+  Nombre: ${newRepoName}
+  Archivos clonados: ${sourceFiles?.length || 0}
+  Rama: main`,
+            reload: true
         };
 
     } catch (error) {
         console.error('Error clonando repositorio:', error);
-        return { success: false, message: `Error: ${error.message}` };
+        return { 
+            success: false, 
+            message: `Error inesperado: ${error.message}` 
+        };
     }
 }
 
@@ -15620,9 +15709,15 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 
 // Sistema de historial de commits
 async function createCommit(message) {
-    if (!selectedRepository || !currentBranch) return;
+    if (!selectedRepository || !currentBranch) {
+        console.log('No hay repositorio o rama seleccionada');
+        return;
+    }
     
     try {
+        // Contar archivos modificados
+        const modifiedFiles = openTabs.filter(tab => tab.modified).length;
+        
         const { data: commit, error } = await supabaseClient
             .from('commits')
             .insert([{
@@ -15631,24 +15726,37 @@ async function createCommit(message) {
                 message: message,
                 author_id: currentUser.id,
                 author_name: currentUser.email.split('@')[0],
-                files_changed: 1,
+                files_changed: modifiedFiles || 1,
                 insertions: 0,
                 deletions: 0
             }])
             .select()
             .single();
             
-        if (!error) {
-            showToast('Cambios guardados en historial', 'success');
-            loadCommitHistory();
+        if (error) {
+            console.error('Error creando commit:', error);
+            return;
         }
+        
+        console.log('Commit creado:', commit);
+        
+        // Recargar historial si el panel está abierto
+        const historyPanel = document.getElementById('history-panel');
+        if (historyPanel && historyPanel.classList.contains('open')) {
+            await loadCommitHistory();
+        }
+        
     } catch (error) {
-        console.error('Error creando commit:', error);
+        console.error('Error en createCommit:', error);
     }
 }
 
+
 async function loadCommitHistory() {
-    if (!selectedRepository) return;
+    if (!selectedRepository) {
+        console.log('No hay repositorio seleccionado');
+        return;
+    }
     
     try {
         const { data: commits, error } = await supabaseClient
@@ -15658,20 +15766,31 @@ async function loadCommitHistory() {
             .order('created_at', { ascending: false })
             .limit(50);
             
-        if (!error && commits) {
-            renderCommitHistory(commits);
+        if (error) {
+            console.error('Error loading commits:', error);
+            return;
         }
+        
+        renderCommitHistory(commits || []);
+        
     } catch (error) {
-        console.error('Error loading commits:', error);
+        console.error('Error en loadCommitHistory:', error);
     }
 }
+
 
 function renderCommitHistory(commits) {
     const historyList = document.getElementById('history-list');
     if (!historyList) return;
     
     if (commits.length === 0) {
-        historyList.innerHTML = '<div style="color: #8892a6; text-align: center;">No hay commits aún</div>';
+        historyList.innerHTML = `
+            <div style="color: #8892a6; text-align: center; padding: 40px 20px;">
+                <i class="fas fa-history" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                <p>No hay commits registrados aún</p>
+                <small style="display: block; margin-top: 8px; opacity: 0.7;">Los cambios guardados aparecerán aquí</small>
+            </div>
+        `;
         return;
     }
     
@@ -15680,14 +15799,19 @@ function renderCommitHistory(commits) {
             <div class="commit-header">
                 <div class="commit-message">${commit.message}</div>
                 <div class="commit-meta">
-                    ${new Date(commit.created_at).toLocaleDateString('es-ES')}
+                    ${new Date(commit.created_at).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}
                 </div>
             </div>
             <div class="commit-files">
                 <span><i class="fas fa-user"></i> ${commit.author_name}</span>
-                <span><i class="fas fa-file"></i> ${commit.files_changed} archivos</span>
-                <span style="color: #22c55e;">+${commit.insertions}</span>
-                <span style="color: #ef4444;">-${commit.deletions}</span>
+                <span><i class="fas fa-file"></i> ${commit.files_changed} archivo${commit.files_changed !== 1 ? 's' : ''}</span>
+                ${commit.insertions > 0 ? `<span style="color: #22c55e;">+${commit.insertions}</span>` : ''}
+                ${commit.deletions > 0 ? `<span style="color: #ef4444;">-${commit.deletions}</span>` : ''}
             </div>
         </div>
     `).join('');
@@ -15697,17 +15821,25 @@ function toggleHistoryPanel() {
     const panel = document.getElementById('history-panel');
     const btn = document.getElementById('history-toggle-btn');
     
+    if (!panel || !btn) {
+        console.error('Panel o botón de historial no encontrado');
+        return;
+    }
+    
     if (panel.classList.contains('open')) {
         panel.classList.remove('open');
         btn.classList.remove('active');
     } else {
         panel.style.display = 'flex';
-        panel.classList.add('open');
-        btn.classList.add('active');
-        loadCommitHistory();
+        
+        // Pequeño delay para la animación
+        requestAnimationFrame(() => {
+            panel.classList.add('open');
+            btn.classList.add('active');
+            loadCommitHistory();
+        });
     }
 }
-
 // Modificar autoSave para crear commits
 const originalAutoSave = autoSave;
 autoSave = async function() {

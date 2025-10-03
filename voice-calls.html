@@ -560,8 +560,8 @@ body:not([data-theme="light"]) {
     font-size: 32px;
     font-weight: bold;
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 30%;
+    left: 15%;
     transform: translate(-50%, -50%);
     color: white;
     border: 3px solid rgba(255, 255, 255, 0.2);
@@ -3768,8 +3768,847 @@ body:not([data-theme="light"]) {
     color: #ef4444;
 }
 
+.control-icon-btn.unmute-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
 
+.control-icon-btn.unmute-btn:hover {
+    background: rgba(16, 185, 129, 0.2);
+}
 
+/* Importar Font Awesome */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+/* === ESTILOS MEJORADOS PARA PARTICIPANTES === */
+.participants-panel {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 2000 !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+}
+
+.participants-panel.show {
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+.panel-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 1 !important;
+}
+
+.panel-content {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 380px !important;
+    height: 100% !important;
+    background: linear-gradient(145deg, rgba(15, 20, 25, 0.98), rgba(30, 41, 59, 0.95)) !important;
+    backdrop-filter: blur(20px) !important;
+    border-left: 1px solid rgba(74, 158, 255, 0.3) !important;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3) !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    z-index: 2 !important;
+}
+
+.participants-panel.show .panel-content {
+    transform: translateX(0) !important;
+}
+
+.panel-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(74, 158, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.panel-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.panel-header i {
+    color: #4a9eff;
+}
+
+.panel-close {
+    background: none;
+    border: none;
+    color: #8892a6;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+}
+
+.panel-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ef4444;
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 25px;
+}
+
+.participants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* === TARJETAS DE PARTICIPANTES === */
+.participant-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+}
+
+.participant-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(74, 158, 255, 0.3);
+    transform: translateX(4px);
+}
+
+.participant-item.current-user {
+    border-color: rgba(74, 158, 255, 0.5);
+    background: rgba(74, 158, 255, 0.12);
+}
+
+.participant-avatar {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a9eff, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    margin-right: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.participant-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.participant-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.participant-name .role-badge {
+    font-size: 10px;
+    background: #4a9eff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.participant-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.join-time {
+    font-size: 12px;
+    color: #8892a6;
+    white-space: nowrap;
+}
+
+.participant-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* === ICONOS DE ESTADO === */
+.mic-status {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mic-status.unmuted {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.mic-status.muted {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* === BOTONES DE CONTROL === */
+.control-icon-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    border: 1px solid rgba(74, 158, 255, 0.2);
+}
+
+.control-icon-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+    transform: scale(1.1);
+    border-color: #4a9eff;
+}
+
+.control-icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* Botón de silenciar */
+.control-icon-btn.mute-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.control-icon-btn.mute-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+/* Botón de activar micrófono */
+.control-icon-btn.unmute-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.control-icon-btn.unmute-btn:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+}
+
+/* Botón de expulsar */
+.control-icon-btn.kick-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.control-icon-btn.kick-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+}
+
+/* Botón de volumen local */
+.control-icon-btn.volume-btn {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.control-icon-btn.volume-btn:hover {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: #8b5cf6;
+}
+
+/* === ESTADO VACÍO === */
+.empty-participants {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #8892a6;
+}
+
+.empty-participants i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+    color: #4a9eff;
+}
+
+.empty-participants p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* === SCROLLBAR PERSONALIZADO === */
+.panel-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panel-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+    background: rgba(74, 158, 255, 0.3);
+    border-radius: 3px;
+}
+
+.panel-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 158, 255, 0.5);
+}
+
+/* === RESPONSIVE MÓVIL === */
+@media (max-width: 768px) {
+    .panel-content {
+        width: 100% !important;
+        max-width: 380px !important;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(100%) !important;
+        top: auto !important;
+        bottom: 0 !important;
+        height: 75% !important;
+        border-radius: 20px 20px 0 0 !important;
+        border-left: none !important;
+        border-top: 1px solid rgba(74, 158, 255, 0.3) !important;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .participants-panel.show .panel-content {
+        transform: translateX(-50%) translateY(0) !important;
+    }
+    
+    .panel-header {
+        padding: 15px 20px;
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .panel-body {
+        padding: 15px 20px;
+    }
+    
+    .participant-item {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .participant-avatar {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        font-size: 16px;
+        margin-right: 12px;
+    }
+    
+    .participant-name {
+        font-size: 14px;
+    }
+    
+    .join-time {
+        font-size: 11px;
+    }
+    
+    .control-icon-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+    
+    .mic-status {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+    }
+}
+
+/* === TEMA CLARO === */
+[data-theme="light"] .panel-content {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95)) !important;
+    border-left: 1px solid var(--border-color) !important;
+}
+
+[data-theme="light"] .panel-header {
+    background: rgba(74, 158, 255, 0.08);
+    border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .panel-header h3 {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .participant-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .participant-item:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent-primary);
+}
+
+[data-theme="light"] .participant-name {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .join-time {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .mic-status.unmuted {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="light"] .mic-status.muted {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="light"] .control-icon-btn {
+    background: rgba(74, 158, 255, 0.1);
+    color: var(--accent-primary);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+}
+
+[data-theme="light"] .control-icon-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+}
+
+[data-theme="light"] .control-icon-btn.kick-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+[data-theme="light"] .control-icon-btn.kick-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+[data-theme="light"] .control-icon-btn.mute-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+[data-theme="light"] .control-icon-btn.unmute-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+[data-theme="light"] .empty-participants i {
+    color: var(--accent-primary);
+}
+
+[data-theme="light"] .empty-participants p {
+    color: var(--text-secondary);
+}
+
+/* Importar Font Awesome */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+/* === TARJETAS DE PARTICIPANTES - LAYOUT VERTICAL === */
+.participant-item {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+    gap: 12px;
+}
+
+.participant-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(74, 158, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.participant-item.current-user {
+    border-color: rgba(74, 158, 255, 0.5);
+    background: rgba(74, 158, 255, 0.12);
+}
+
+/* Contenedor superior: avatar + info básica */
+.participant-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.participant-avatar {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a9eff, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.participant-info-top {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.participant-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.participant-name .role-badge {
+    font-size: 10px;
+    background: #4a9eff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.join-time {
+    font-size: 12px;
+    color: #8892a6;
+    white-space: nowrap;
+}
+
+/* Contenedor inferior: estado de mic + controles */
+.participant-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mic-status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mic-status {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.mic-status.unmuted {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.mic-status.muted {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.mic-status-text {
+    font-size: 13px;
+    color: #8892a6;
+    font-weight: 500;
+}
+
+.participant-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* === BOTONES DE CONTROL === */
+.control-icon-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    border: 1px solid rgba(74, 158, 255, 0.2);
+}
+
+.control-icon-btn:hover {
+    background: rgba(74, 158, 255, 0.25);
+    transform: scale(1.1);
+    border-color: #4a9eff;
+}
+
+.control-icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* Botón de silenciar */
+.control-icon-btn.mute-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.control-icon-btn.mute-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+}
+
+/* Botón de activar micrófono */
+.control-icon-btn.unmute-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.control-icon-btn.unmute-btn:hover {
+    background: rgba(16, 185, 129, 0.25);
+    border-color: #10b981;
+}
+
+/* Botón de expulsar */
+.control-icon-btn.kick-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.control-icon-btn.kick-btn:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: #ef4444;
+}
+
+/* Botón de volumen local */
+.control-icon-btn.volume-btn {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.control-icon-btn.volume-btn:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: #8b5cf6;
+}
+
+/* === ESTADO VACÍO === */
+.empty-participants {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #8892a6;
+}
+
+.empty-participants i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+    color: #4a9eff;
+}
+
+.empty-participants p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* === RESPONSIVE MÓVIL === */
+@media (max-width: 768px) {
+    .participant-item {
+        padding: 14px;
+        margin-bottom: 10px;
+        gap: 10px;
+    }
+    
+    .participant-avatar {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        font-size: 16px;
+    }
+    
+    .participant-name {
+        font-size: 14px;
+    }
+    
+    .join-time {
+        font-size: 11px;
+    }
+    
+    .control-icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+    
+    .mic-status {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+    
+    .mic-status-text {
+        display: none;
+    }
+}
+
+/* === TEMA CLARO === */
+[data-theme="light"] .participant-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .participant-item:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent-primary);
+}
+
+[data-theme="light"] .participant-name {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .join-time,
+[data-theme="light"] .mic-status-text {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .participant-footer {
+    border-top: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .mic-status.unmuted {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="light"] .mic-status.muted {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="light"] .control-icon-btn {
+    background: rgba(74, 158, 255, 0.1);
+    color: var(--accent-primary);
+}
+
+[data-theme="light"] .control-icon-btn:hover {
+    background: rgba(74, 158, 255, 0.2);
+}
+
+[data-theme="light"] .control-icon-btn.kick-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+[data-theme="light"] .control-icon-btn.mute-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+[data-theme="light"] .control-icon-btn.unmute-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
 </style>
 </head>
 <body>
@@ -4227,6 +5066,8 @@ async function checkIfForceMuted() {
             .eq('channel_id', currentChannelId)
             .eq('user_id', currentUserId)
             .eq('action_type', 'mute')
+            .eq('expires_at', null) // Solo controles que no han expirado
+            .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
             .maybeSingle();
         
         forceMutedByOwner = !!data;
@@ -4255,30 +5096,44 @@ function showDefaultView() {
 
 async function loadUserRole() {
     try {
-        // Obtener el proyecto actual
-        const { data: project } = await supabase
+        // Primero verificar si es owner del proyecto
+        const { data: project, error: projectError } = await supabase
             .from('projects')
             .select('owner_id')
             .eq('id', currentProjectId)
             .single();
         
+        if (projectError) {
+            console.error('Error cargando proyecto:', projectError);
+            currentUserRole = 'member';
+            return;
+        }
+        
         if (project && project.owner_id === currentUserId) {
             currentUserRole = 'owner';
+            console.log('Usuario es OWNER del proyecto');
             return;
         }
         
         // Si no es owner, verificar membresía
-        const { data: member } = await supabase
+        const { data: member, error: memberError } = await supabase
             .from('project_members')
             .select('role')
             .eq('project_id', currentProjectId)
             .eq('user_id', currentUserId)
             .single();
         
+        if (memberError) {
+            console.error('Error cargando membresía:', memberError);
+            currentUserRole = 'member';
+            return;
+        }
+        
         currentUserRole = member ? member.role : 'member';
+        console.log('Rol del usuario:', currentUserRole);
         
     } catch (error) {
-        console.error('Error cargando rol:', error);
+        console.error('Error en loadUserRole:', error);
         currentUserRole = 'member';
     }
 }
@@ -4672,6 +5527,7 @@ async function backToChannelsList() {
         }
 
     
+
 async function joinRealtimeChannel() {
     const realtimeChannelName = `voice_presence_${currentChannelId}`;
     
@@ -4685,56 +5541,163 @@ async function joinRealtimeChannel() {
 
     roomChannel
         .on('presence', { event: 'sync' }, () => {
+            console.log('Presence sync - Usuarios en el canal:', roomChannel.presenceState());
             const newState = roomChannel.presenceState();
             updateParticipantsList(newState);
             updateChannelParticipantCount(currentChannelId, Object.keys(newState).length);
         })
         .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-            console.log(`${newPresences[0].userName} se unió`);
+            console.log(`Usuario ${newPresences[0]?.userName} se unió al canal`);
             const newState = roomChannel.presenceState();
             updateChannelParticipantCount(currentChannelId, Object.keys(newState).length);
+            
+            // Verificar si el nuevo usuario está silenciado
+            checkAndApplyUserMutes(newPresences[0]?.userId);
         })
         .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-            console.log(`Usuario ${key} salió`);
+            console.log(`Usuario ${key} salió del canal`);
             const newState = roomChannel.presenceState();
             updateChannelParticipantCount(currentChannelId, Object.keys(newState).length);
         })
-        .on('broadcast', { event: 'owner_mute' }, ({ payload }) => {
+        .on('broadcast', { event: 'owner_mute' }, async ({ payload }) => {
+            console.log('Evento owner_mute recibido:', payload);
+            
             if (payload.userId === currentUserId) {
                 forceMutedByOwner = true;
                 if (localAudioTrack) {
-                    localAudioTrack.setEnabled(false);
+                    await localAudioTrack.setEnabled(false);
                     isMuted = true;
                     updateMuteButton();
                 }
-                showToast('Has sido silenciado por el owner', 'warning');
+                showToast('Has sido silenciado por el owner/admin', 'warning');
+                
+                // Actualizar UI inmediatamente
+                updateParticipantsUI();
+            } else {
+                // Actualizar la UI para mostrar que otro usuario fue silenciado
+                updateParticipantsUI();
             }
         })
-        .on('broadcast', { event: 'owner_unmute' }, ({ payload }) => {
+        .on('broadcast', { event: 'owner_unmute' }, async ({ payload }) => {
+            console.log('Evento owner_unmute recibido:', payload);
+            
             if (payload.userId === currentUserId) {
                 forceMutedByOwner = false;
+                // El usuario puede decidir si activar su micrófono
                 updateMuteButton();
-                showToast('El owner te ha quitado el silencio', 'success');
+                showToast('El owner/admin te ha quitado el silencio', 'success');
+                
+                // Actualizar UI inmediatamente
+                updateParticipantsUI();
+            } else {
+                // Actualizar la UI para mostrar que otro usuario fue activado
+                updateParticipantsUI();
             }
         })
         .on('broadcast', { event: 'owner_kick' }, async ({ payload }) => {
+            console.log('Evento owner_kick recibido:', payload);
+            
             if (payload.userId === currentUserId) {
-                showToast('Has sido expulsado del canal por el owner', 'error');
+                showToast('Has sido expulsado del canal por el owner/admin', 'error');
                 await leaveChannel();
+            }
+        })
+        .on('broadcast', { event: 'user_role_update' }, async ({ payload }) => {
+            console.log('Actualización de rol recibida:', payload);
+            
+            // Si el update es para el usuario actual, recargar el rol
+            if (payload.userId === currentUserId) {
+                await loadUserRole();
+                showToast(`Tu rol ha cambiado a: ${payload.newRole}`, 'info');
+            }
+        })
+        .on('broadcast', { event: 'channel_settings_update' }, async ({ payload }) => {
+            console.log('Configuración del canal actualizada:', payload);
+            showToast('Configuración del canal actualizada', 'info');
+        })
+        .on('system', { event: 'close' }, () => {
+            console.log('Canal de presencia cerrado');
+        })
+        .on('system', { event: 'error' }, (error) => {
+            console.error('Error en el canal de presencia:', error);
+            showToast('Error de conexión con el servidor', 'error');
+        });
+
+    try {
+        await roomChannel.subscribe(async (status) => {
+            console.log('Estado de suscripción al canal:', status);
+            
+            if (status === 'SUBSCRIBED') {
+                console.log('Suscripción exitosa al canal de presencia');
+                
+                await roomChannel.track({
+                    userId: currentUserId,
+                    userName: currentUserName,
+                    channelId: currentChannelId,
+                    isMuted: isMuted,
+                    forceMuted: forceMutedByOwner,
+                    userRole: currentUserRole,
+                    joinedAt: new Date().toISOString(),
+                    lastActive: new Date().toISOString()
+                });
+                
+                console.log('Presencia trackeada exitosamente');
+                
+                // Verificar si estamos silenciados al unirnos
+                await checkIfForceMuted();
+                
+            } else if (status === 'CHANNEL_ERROR') {
+                console.error('Error en el canal de presencia');
+                showToast('Error al conectar con el servidor de presencia', 'error');
+            } else if (status === 'TIMED_OUT') {
+                console.error('Timeout en el canal de presencia');
+                showToast('Timeout de conexión con el servidor', 'warning');
             }
         });
 
-    await roomChannel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-            await roomChannel.track({
-                userId: currentUserId,
-                userName: currentUserName,
-                channelId: currentChannelId,
-                isMuted: isMuted,
-                joinedAt: new Date().toISOString()
-            });
+    } catch (error) {
+        console.error('Error suscribiéndose al canal de presencia:', error);
+        showToast('Error al conectar con el servidor de presencia', 'error');
+    }
+}
+
+// Función auxiliar para verificar y aplicar mutes a usuarios
+async function checkAndApplyUserMutes(userId) {
+    if (!userId || userId === currentUserId) return;
+    
+    try {
+        const { data } = await supabase
+            .from('voice_channel_controls')
+            .select('*')
+            .eq('channel_id', currentChannelId)
+            .eq('user_id', userId)
+            .eq('action_type', 'mute')
+            .maybeSingle();
+        
+        if (data) {
+            // Si el usuario está silenciado, actualizar la UI
+            updateParticipantsUI();
         }
-    });
+    } catch (error) {
+        console.error('Error verificando mute de usuario:', error);
+    }
+}
+
+// Función auxiliar para actualizar la UI de participantes
+function updateParticipantsUI() {
+    if (roomChannel) {
+        const presenceState = roomChannel.presenceState();
+        updateParticipantsList(presenceState);
+        
+        // También forzar una actualización del panel de participantes si está abierto
+        if (participantsPanelOpen) {
+            const panel = document.getElementById('participants-panel');
+            if (panel) {
+                closeParticipantsPanel();
+                setTimeout(() => openParticipantsPanel(), 100);
+            }
+        }
+    }
 }
 
 
@@ -4775,23 +5738,27 @@ function updateChannelParticipantCount(channelId, count) {
     channelParticipantCounts[channelId] = count;
 }
 
+function updateParticipantsList(presenceState) {
+    const participants = [];
+    
+    for (const userId in presenceState) {
+        const presence = presenceState[userId][0];
+        participants.push({
+            id: userId,
+            name: presence.userName,
+            isMuted: presence.isMuted || false,
+            forceMuted: presence.forceMuted || false,
+            userRole: presence.userRole || 'member',
+            isCurrentUser: userId === currentUserId,
+            joinedAt: presence.joinedAt,
+            lastActive: presence.lastActive
+        });
+    }
+    
+    showParticipants(participants);
+    updateParticipantsCount(participants.length);
+}
 
-        function updateParticipantsList(presenceState) {
-            const participants = [];
-            
-            for (const userId in presenceState) {
-                const presence = presenceState[userId][0];
-                participants.push({
-                    id: userId,
-                    name: presence.userName,
-                    isMuted: presence.isMuted || false,
-                    isCurrentUser: userId === currentUserId
-                });
-            }
-            
-            showParticipants(participants);
-            updateParticipantsCount(participants.length);
-        }
 
         async function handleUserPublished(user, mediaType) {
             if (mediaType === 'audio') {
@@ -4883,9 +5850,12 @@ function updateChannelParticipantCount(channelId, count) {
             }, 100);
         }
 
-    async function toggleMute() {
+async function toggleMute() {
     if (!localAudioTrack) return;
 
+    // Verificar estado actualizado de forceMutedByOwner
+    await checkIfForceMuted();
+    
     // Si estás silenciado por el owner, no puedes activar el micrófono
     if (forceMutedByOwner && !isMuted) {
         showToast('El owner te ha silenciado. No puedes activar el micrófono.', 'error');
@@ -4908,7 +5878,8 @@ function updateChannelParticipantCount(channelId, count) {
                 userName: currentUserName,
                 channelId: currentChannelId,
                 isMuted: isMuted,
-                joinedAt: new Date().toISOString()
+                joinedAt: new Date().toISOString(),
+                forceMuted: forceMutedByOwner
             });
         }
 
@@ -4945,27 +5916,16 @@ function updateMuteButton() {
 
 // Silenciar usuario (solo owner)
 async function ownerMuteUser(targetUserId) {
-    // Ahora owner Y admin pueden usar esta función
+    // Verificar permisos actualizados
+    await loadUserRole();
+    
     if (currentUserRole !== 'owner' && currentUserRole !== 'admin') {
         showToast('No tienes permisos para silenciar usuarios', 'error');
         return;
     }
     
-    // Si eres admin, verificar que no intentes silenciar a owner u otros admins
+    // No permitir que admins silencien a otros admins u owner
     if (currentUserRole === 'admin') {
-        // Verificar si el target es owner
-        const { data: project } = await supabase
-            .from('projects')
-            .select('owner_id')
-            .eq('id', currentProjectId)
-            .single();
-        
-        if (project.owner_id === targetUserId) {
-            showToast('No puedes silenciar al owner del proyecto', 'error');
-            return;
-        }
-        
-        // Verificar si el target es admin
         const { data: targetMember } = await supabase
             .from('project_members')
             .select('role')
@@ -4973,31 +5933,54 @@ async function ownerMuteUser(targetUserId) {
             .eq('user_id', targetUserId)
             .single();
         
-        if (targetMember?.role === 'admin') {
-            showToast('No puedes silenciar a otros administradores', 'error');
+        if (targetMember?.role === 'admin' || targetMember?.role === 'owner') {
+            showToast('No puedes silenciar a otros administradores u owner', 'error');
             return;
         }
     }
     
+    // No permitir auto-silenciarse
+    if (targetUserId === currentUserId) {
+        showToast('No puedes silenciarte a ti mismo', 'error');
+        return;
+    }
+    
     try {
+        // Primero eliminar cualquier mute existente
+        const { error: deleteError } = await supabase
+            .from('voice_channel_controls')
+            .delete()
+            .eq('channel_id', currentChannelId)
+            .eq('user_id', targetUserId)
+            .eq('action_type', 'mute');
+        
+        if (deleteError) throw deleteError;
+        
+        // Crear nuevo mute
         const { error } = await supabase
             .from('voice_channel_controls')
-            .upsert({
+            .insert({
                 channel_id: currentChannelId,
                 user_id: targetUserId,
                 action_type: 'mute',
-                applied_by: currentUserId
+                applied_by: currentUserId,
+                created_at: new Date().toISOString()
             });
         
         if (error) throw error;
         
         showToast('Usuario silenciado', 'success');
         
+        // Notificar al usuario via realtime
         if (roomChannel) {
             await roomChannel.send({
                 type: 'broadcast',
                 event: 'owner_mute',
-                payload: { userId: targetUserId }
+                payload: { 
+                    userId: targetUserId,
+                    appliedBy: currentUserId,
+                    timestamp: new Date().toISOString()
+                }
             });
         }
         
@@ -5007,9 +5990,10 @@ async function ownerMuteUser(targetUserId) {
     }
 }
 
-
 // Quitar silencio (solo owner)
 async function ownerUnmuteUser(targetUserId) {
+    await loadUserRole();
+    
     if (currentUserRole !== 'owner' && currentUserRole !== 'admin') {
         showToast('No tienes permisos', 'error');
         return;
@@ -5031,51 +6015,132 @@ async function ownerUnmuteUser(targetUserId) {
             await roomChannel.send({
                 type: 'broadcast',
                 event: 'owner_unmute',
-                payload: { userId: targetUserId }
+                payload: { 
+                    userId: targetUserId,
+                    appliedBy: currentUserId 
+                }
             });
         }
         
     } catch (error) {
         console.error('Error quitando silencio:', error);
+        showToast('Error al quitar silencio', 'error');
     }
 }
 
-// Expulsar usuario (solo owner)
+// Función CORREGIDA para expulsar usuario
 async function ownerKickUser(userId) {
-    if (currentUserRole !== 'owner') {
-        showToast('Solo el owner puede expulsar usuarios', 'error');
+    // Verificar permisos actualizados
+    await loadUserRole();
+    
+    if (currentUserRole !== 'owner' && currentUserRole !== 'admin') {
+        showToast('No tienes permisos para expulsar usuarios', 'error');
+        return;
+    }
+    
+    // No permitir expulsar a otros admins o al owner (solo si eres admin)
+    if (currentUserRole === 'admin') {
+        const { data: targetMember } = await supabase
+            .from('project_members')
+            .select('role')
+            .eq('project_id', currentProjectId)
+            .eq('user_id', userId)
+            .maybeSingle();
+        
+        if (targetMember?.role === 'admin' || targetMember?.role === 'owner') {
+            showToast('No puedes expulsar a otros administradores u owner', 'error');
+            return;
+        }
+    }
+    
+    // No permitir auto-expulsarse
+    if (userId === currentUserId) {
+        showToast('No puedes expulsarte a ti mismo', 'error');
         return;
     }
     
     try {
-        const { error } = await supabase
+        console.log('Intentando expulsar usuario:', userId);
+        
+        // Primero eliminar controles existentes de este usuario
+        const { error: deleteError } = await supabase
+            .from('voice_channel_controls')
+            .delete()
+            .eq('channel_id', currentChannelId)
+            .eq('user_id', userId)
+            .eq('action_type', 'kick');
+        
+        if (deleteError) {
+            console.error('Error eliminando kicks previos:', deleteError);
+        }
+        
+        // Crear nuevo kick con tiempo de expiración
+        const { error: insertError } = await supabase
             .from('voice_channel_controls')
             .insert({
                 channel_id: currentChannelId,
                 user_id: userId,
                 action_type: 'kick',
                 applied_by: currentUserId,
-                expires_at: new Date(Date.now() + 60000).toISOString() // Expira en 1 min
+                created_at: new Date().toISOString(),
+                expires_at: new Date(Date.now() + 300000).toISOString() // 5 minutos
             });
         
-        if (error) throw error;
-        
-        showToast('Usuario expulsado del canal', 'success');
-        
-        if (roomChannel) {
-            await roomChannel.send({
-                type: 'broadcast',
-                event: 'owner_kick',
-                payload: { userId }
-            });
+        if (insertError) {
+            console.error('Error insertando kick:', insertError);
+            throw insertError;
         }
         
+        console.log('Usuario expulsado en base de datos');
+        showToast('Usuario expulsado del canal', 'success');
+        
+        // Notificar al usuario via realtime
+        if (roomChannel) {
+            try {
+                await roomChannel.send({
+                    type: 'broadcast',
+                    event: 'owner_kick',
+                    payload: { 
+                        userId: userId,
+                        appliedBy: currentUserId,
+                        channelId: currentChannelId,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+                console.log('Evento de expulsión enviado via broadcast');
+            } catch (broadcastError) {
+                console.error('Error enviando broadcast:', broadcastError);
+                // No lanzar error, el kick ya se guardó en DB
+            }
+        }
+        
+        // Cerrar el panel de participantes y actualizarlo
+        setTimeout(() => {
+            closeParticipantsPanel();
+            setTimeout(() => {
+                if (isInChannel) {
+                    openParticipantsPanel();
+                }
+            }, 300);
+        }, 500);
+        
     } catch (error) {
-        console.error('Error expulsando usuario:', error);
-        showToast('Error al expulsar usuario', 'error');
+        console.error('Error completo al expulsar usuario:', error);
+        
+        // Mensajes de error más específicos
+        let errorMessage = 'Error al expulsar usuario';
+        
+        if (error.code === '23505') {
+            errorMessage = 'Ya existe una expulsión activa para este usuario';
+        } else if (error.code === '42501') {
+            errorMessage = 'Sin permisos en la base de datos';
+        } else if (error.message) {
+            errorMessage = `Error: ${error.message}`;
+        }
+        
+        showToast(errorMessage, 'error');
     }
 }
-
 // Silenciar localmente (todos los usuarios)
 function localMuteUser(userId) {
     if (locallyMutedUsers.has(userId)) {
@@ -5154,64 +6219,83 @@ function updateParticipantMuteStatus(userId) {
 }
 
 
-        function showParticipants(participants) {
-            const container = document.getElementById('participants-container');
-            
-            if (participants.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fas fa-microphone-slash"></i>
-                        </div>
-                        <h3>Solo tú en el canal</h3>
-                        <p>Esperando que otros se unan a "${currentChannelName}"</p>
-                    </div>
-                `;
-                return;
-            }
+    function showParticipants(participants) {
+    const container = document.getElementById('participants-container');
+    
+    if (participants.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-microphone-slash"></i>
+                </div>
+                <h3>Solo tú en el canal</h3>
+                <p>Esperando que otros se unan a "${currentChannelName}"</p>
+            </div>
+        `;
+        return;
+    }
 
-            let grid = container.querySelector('.participants-grid');
-            if (!grid) {
-                grid = document.createElement('div');
-                grid.className = 'participants-grid';
-                container.innerHTML = '';
-                container.appendChild(grid);
-            }
+    let grid = container.querySelector('.participants-grid');
+    if (!grid) {
+        grid = document.createElement('div');
+        grid.className = 'participants-grid';
+        container.innerHTML = '';
+        container.appendChild(grid);
+    }
 
-            // Limpiar participantes existentes
-            grid.innerHTML = '';
+    // Limpiar participantes existentes
+    grid.innerHTML = '';
 
-            participants.forEach(participant => {
-                const video = document.createElement('div');
-                video.className = 'participant-video fade-in';
-                video.setAttribute('data-user-id', participant.id);
-                
-                if (participant.isCurrentUser) {
-                    video.classList.add('current-user');
-                }
-
-                const avatarLetter = participant.name.charAt(0).toUpperCase();
-                const avatarColor = `hsl(${(participant.id.charCodeAt(0) * 137.508) % 360}, 70%, 60%)`;
-
-                video.innerHTML = `
-                    <div class="participant-avatar" style="background: ${avatarColor}">
-                        ${avatarLetter}
-                    </div>
-                    <div class="participant-info">
-                        <div class="participant-name">
-                            ${participant.name}${participant.isCurrentUser ? ' (Tú)' : ''}
-                        </div>
-                        <div class="participant-status">
-                            <div class="status-icon ${participant.isMuted ? 'mic-off' : 'mic-on'}">
-                                <i class="fas fa-${participant.isMuted ? 'microphone-slash' : 'microphone'}"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                grid.appendChild(video);
-            });
+    participants.forEach(participant => {
+        const video = document.createElement('div');
+        video.className = 'participant-video fade-in';
+        video.setAttribute('data-user-id', participant.id);
+        
+        if (participant.isCurrentUser) {
+            video.classList.add('current-user');
         }
+
+        const avatarLetter = participant.name.charAt(0).toUpperCase();
+        const avatarColor = `hsl(${(participant.id.charCodeAt(0) * 137.508) % 360}, 70%, 60%)`;
+
+        // Determinar el estado del micrófono
+        let micStatus = 'mic-on';
+        let micIcon = 'microphone';
+        let micTitle = 'Micrófono activado';
+        
+        if (participant.forceMuted) {
+            micStatus = 'mic-off';
+            micIcon = 'microphone-slash';
+            micTitle = 'Silenciado por owner/admin';
+        } else if (participant.isMuted) {
+            micStatus = 'mic-off';
+            micIcon = 'microphone-slash';
+            micTitle = 'Micrófono silenciado';
+        }
+
+        video.innerHTML = `
+            <div class="participant-avatar" style="background: ${avatarColor}">
+                ${avatarLetter}
+            </div>
+            <div class="participant-info">
+                <div class="participant-name">
+                    ${participant.name}${participant.isCurrentUser ? ' (Tú)' : ''}
+                    ${participant.userRole !== 'member' ? ` <span style="font-size: 10px; background: #4a9eff; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">${participant.userRole}</span>` : ''}
+                </div>
+                <div class="participant-status">
+                    <div class="status-icon ${micStatus}" title="${micTitle}">
+                        <i class="fas fa-${micIcon}"></i>
+                    </div>
+                    ${participant.forceMuted ? '<div class="status-icon" style="background: #ef4444;" title="Silenciado por administración"><i class="fas fa-ban"></i></div>' : ''}
+                </div>
+            </div>
+        `;
+
+        grid.appendChild(video);
+    });
+}
+
+
 
         function updateParticipantsCount(count) {
             document.getElementById('participants-count').textContent = count;
@@ -5426,35 +6510,144 @@ async function changeSpeaker(deviceId) {
     }
 }
 
-function openParticipantsPanel() {
+// FUNCIÓN MEJORADA PARA ABRIR PANEL DE PARTICIPANTES
+async function openParticipantsPanel() {
     if (participantsPanelOpen) return;
     
-    // Cerrar configuración si está abierto
     if (settingsPanelOpen) {
         closeSettingsPanel();
     }
     
     participantsPanelOpen = true;
     
-    const panel = document.createElement('div');
-    panel.className = 'participants-panel';
-    panel.id = 'participants-panel';
+    await loadUserRole();
+    console.log('🔑 Rol actual:', currentUserRole);
     
-    // Obtener participantes actuales
     const participants = [];
     if (roomChannel) {
         const presenceState = roomChannel.presenceState();
+        
         for (const userId in presenceState) {
             const presence = presenceState[userId][0];
+            
+            const { data: muteControl } = await supabase
+                .from('voice_channel_controls')
+                .select('*')
+                .eq('channel_id', currentChannelId)
+                .eq('user_id', userId)
+                .eq('action_type', 'mute')
+                .maybeSingle();
+            
             participants.push({
                 id: userId,
                 name: presence.userName,
                 isMuted: presence.isMuted || false,
+                forceMuted: !!muteControl,
                 isCurrentUser: userId === currentUserId,
+                userRole: presence.userRole || 'member',
                 joinedAt: presence.joinedAt
             });
         }
     }
+    
+    const panel = document.createElement('div');
+    panel.className = 'participants-panel';
+    panel.id = 'participants-panel';
+    
+    const participantsHTML = participants.length === 0 ? `
+        <div class="empty-participants">
+            <i class="fas fa-user-slash"></i>
+            <p>No hay participantes conectados</p>
+        </div>
+    ` : participants.map(participant => {
+        let controlsHTML = '';
+        
+        if (!participant.isCurrentUser) {
+            if (currentUserRole === 'owner') {
+                controlsHTML = `
+                    ${participant.forceMuted ? `
+                        <button class="control-icon-btn unmute-btn" 
+                                onclick="ownerUnmuteUser('${participant.id}')" 
+                                title="Activar micrófono">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    ` : `
+                        <button class="control-icon-btn mute-btn" 
+                                onclick="ownerMuteUser('${participant.id}')" 
+                                title="Silenciar usuario">
+                            <i class="fas fa-microphone-slash"></i>
+                        </button>
+                    `}
+                    <button class="control-icon-btn kick-btn" 
+                            onclick="ownerKickUser('${participant.id}')" 
+                            title="Expulsar del canal">
+                        <i class="fas fa-user-times"></i>
+                    </button>
+                `;
+            } else if (currentUserRole === 'admin' && participant.userRole === 'member') {
+                controlsHTML = `
+                    ${participant.forceMuted ? `
+                        <button class="control-icon-btn unmute-btn" 
+                                onclick="ownerUnmuteUser('${participant.id}')" 
+                                title="Activar micrófono">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    ` : `
+                        <button class="control-icon-btn mute-btn" 
+                                onclick="ownerMuteUser('${participant.id}')" 
+                                title="Silenciar usuario">
+                            <i class="fas fa-microphone-slash"></i>
+                        </button>
+                    `}
+                `;
+            } else {
+                const isLocallyMuted = locallyMutedUsers.has(participant.id);
+                controlsHTML = `
+                    <button class="control-icon-btn volume-btn" 
+                            onclick="localMuteUser('${participant.id}')" 
+                            title="${isLocallyMuted ? 'Activar audio' : 'Silenciar localmente'}">
+                        <i class="fas fa-volume-${isLocallyMuted ? 'mute' : 'up'}"></i>
+                    </button>
+                `;
+            }
+        }
+        
+        const micStatus = participant.isMuted || participant.forceMuted ? 'muted' : 'unmuted';
+        const micIcon = participant.isMuted || participant.forceMuted ? 'microphone-slash' : 'microphone';
+        const micText = participant.forceMuted ? 'Silenciado por admin' : 
+                        participant.isMuted ? 'Silenciado' : 'Activo';
+        
+        return `
+            <div class="participant-item ${participant.isCurrentUser ? 'current-user' : ''}">
+                <div class="participant-header">
+                    <div class="participant-avatar">
+                        ${participant.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="participant-info-top">
+                        <div class="participant-name">
+                            <span>${participant.name}${participant.isCurrentUser ? ' (Tú)' : ''}</span>
+                            ${participant.userRole !== 'member' ? `<span class="role-badge">${participant.userRole}</span>` : ''}
+                        </div>
+                        <span class="join-time">
+                            ${formatJoinTime(participant.joinedAt)}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="participant-footer">
+                    <div class="mic-status-container">
+                        <div class="mic-status ${micStatus}">
+                            <i class="fas fa-${micIcon}"></i>
+                        </div>
+                        <span class="mic-status-text">${micText}</span>
+                    </div>
+                    <div class="participant-controls">
+                        ${controlsHTML}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
     
     panel.innerHTML = `
         <div class="panel-overlay" onclick="closeParticipantsPanel()"></div>
@@ -5471,50 +6664,7 @@ function openParticipantsPanel() {
             
             <div class="panel-body">
                 <div class="participants-list">
-                    ${participants.length === 0 ? `
-    <div class="empty-participants">
-        <i class="fas fa-user-slash"></i>
-        <p>No hay participantes conectados</p>
-    </div>
-` : participants.map(participant => `
-    <div class="participant-item ${participant.isCurrentUser ? 'current-user' : ''}">
-        <div class="participant-avatar">
-            ${participant.name.charAt(0).toUpperCase()}
-        </div>
-        <div class="participant-details">
-            <div class="participant-name">
-                ${participant.name}
-                ${participant.isCurrentUser ? ' (Tú)' : ''}
-            </div>
-            <div class="participant-info">
-                <span class="join-time">
-                    Conectado ${formatJoinTime(participant.joinedAt)}
-                </span>
-                <div class="participant-controls">
-                    <div class="mic-status ${participant.isMuted ? 'muted' : 'unmuted'}">
-                        <i class="fas fa-${participant.isMuted ? 'microphone-slash' : 'microphone'}"></i>
-                    </div>
-                   ${!participant.isCurrentUser ? `
-    ${currentUserRole === 'owner' || currentUserRole === 'admin' ? `
-        <button class="control-icon-btn" onclick="ownerMuteUser('${participant.id}')" title="Silenciar usuario">
-            <i class="fas fa-ban"></i>
-        </button>
-        ${currentUserRole === 'owner' ? `
-            <button class="control-icon-btn kick-btn" onclick="ownerKickUser('${participant.id}')" title="Expulsar del canal">
-                <i class="fas fa-user-times"></i>
-            </button>
-        ` : ''}
-    ` : `
-        <button class="control-icon-btn" onclick="localMuteUser('${participant.id}')" title="Silenciar localmente">
-            <i class="fas fa-volume-${locallyMutedUsers.has(participant.id) ? 'mute' : 'up'}"></i>
-        </button>
-    `}
-` : ''}
-                </div>
-            </div>
-        </div>
-    </div>
-`).join('')}
+                    ${participantsHTML}
                 </div>
             </div>
         </div>

@@ -1361,29 +1361,26 @@ function setupEventListeners() {
     }
 }
 
-// Manejar creación de proyecto
+
 async function handleCreateProject() {
     const projectNameInput = document.getElementById('project-name');
-    const projectName = projectNameInput ? projectNameInput.value.trim() : '';
+    const projectName = projectNameInput?.value.trim() || '';
     
-    // Validaciones básicas
+    // Validaciones
     if (!projectName) {
         showMessage('create-error', 'Por favor ingresa un nombre para el proyecto');
         return;
     }
-
     if (projectName.length < 3) {
-        showMessage('create-error', 'El nombre del proyecto debe tener al menos 3 caracteres');
+        showMessage('create-error', 'El nombre debe tener al menos 3 caracteres');
         return;
     }
-
     if (projectName.length > 50) {
-        showMessage('create-error', 'El nombre del proyecto no puede tener más de 50 caracteres');
+        showMessage('create-error', 'El nombre no puede tener más de 50 caracteres');
         return;
     }
-
     if (!currentUser) {
-        showMessage('create-error', 'No se pudo verificar tu identidad. Por favor recarga la página.');
+        showMessage('create-error', 'No se pudo verificar tu identidad. Recarga la página.');
         return;
     }
 
@@ -1391,131 +1388,162 @@ async function handleCreateProject() {
     hideMessages('create');
 
     try {
-        console.log('Iniciando creación de proyecto:', projectName);
+        console.log('Creando proyecto:', projectName);
 
-        // Verificar si el proyecto ya existe (por nombre)
-        const { data: existingProject, error: checkError } = await supabaseClient
+        // 1. Verificar proyecto existente (usando .limit(1) en lugar de .maybeSingle())
+        const { data: existingProjects, error: checkError } = await supabaseClient
             .from('projects')
             .select('id, name')
             .eq('name', projectName)
-            .maybeSingle();
+            .limit(1);
 
         if (checkError) {
-            console.error('Error checking existing project:', checkError);
-            throw new Error('Error verificando proyectos existentes: ' + checkError.message);
+            console.error('Error verificando proyecto:', checkError);
+            console.error('Detalles del error:', JSON.stringify(checkError, null, 2));
+            throw new Error(`Error al verificar proyectos: ${checkError.message}`);
         }
 
-        if (existingProject) {
-            showMessage('create-error', `Ya existe un proyecto con el nombre "${projectName}". Por favor elige otro nombre.`);
-            setButtonLoading('create-btn', false);
+        if (existingProjects && existingProjects.length > 0) {
+            showMessage('create-error', `Ya existe un proyecto llamado "${projectName}"`);
             return;
         }
 
-        // Generar código de invitación único
-        let inviteCode;
-        let isCodeUnique = false;
+        // 2. Generar código único
+        let inviteCode = null;
         let attempts = 0;
         const maxAttempts = 10;
 
-        while (!isCodeUnique && attempts < maxAttempts) {
-            inviteCode = generateInviteCode();
+        while (!inviteCode && attempts < maxAttempts) {
+            const tempCode = generateInviteCode();
             
-            // Verificar que el código sea único
-            const { data: existingCode, error: codeCheckError } = await supabaseClient
+            const { data: codeCheck, error: codeError } = await supabaseClient
                 .from('projects')
                 .select('id')
-                .eq('invite_code', inviteCode)
-                .maybeSingle();
+                .eq('invite_code', tempCode)
+                .limit(1);
 
-            if (codeCheckError) {
-                console.error('Error checking invite code:', codeCheckError);
+            if (codeError) {
+                console.error('Error verificando código:', codeError);
                 throw new Error('Error verificando código de invitación');
             }
 
-            if (!existingCode) {
-                isCodeUnique = true;
+            if (!codeCheck || codeCheck.length === 0) {
+                inviteCode = tempCode;
             }
             attempts++;
         }
 
-        if (!isCodeUnique) {
-            throw new Error('No se pudo generar un código único. Inténtalo de nuevo.');
+        if (!inviteCode) {
+            throw new Error('No se pudo generar un código único. Intenta de nuevo.');
         }
 
-        console.log('Código de invitación generado:', inviteCode);
+        console.log('Código generado:', inviteCode);
 
-        // Obtener información del usuario
+        // 3. Obtener nombre del usuario
         const userName = currentUser.user_metadata?.full_name || 
                         currentUser.user_metadata?.name || 
                         currentUser.email.split('@')[0];
 
-        // Crear el proyecto
+        // 4. Crear proyecto (con manejo explícito de errores)
+        const projectData = {
+            name: projectName,
+            invite_code: inviteCode,
+            owner_id: currentUser.id,
+            owner_name: userName,
+            owner_email: currentUser.email,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        console.log('Insertando proyecto:', projectData);
+
         const { data: newProject, error: createError } = await supabaseClient
             .from('projects')
-            .insert([
-                {
-                    name: projectName,
-                    invite_code: inviteCode,
-                    owner_id: currentUser.id,
-                    owner_name: userName,
-                    owner_email: currentUser.email,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                }
-            ])
+            .insert([projectData])
             .select()
             .single();
 
         if (createError) {
-            console.error('Error creating project:', createError);
-            throw new Error('Error al crear el proyecto: ' + createError.message);
+            console.error('Error creando proyecto:', createError);
+            
+            // Mensajes específicos según el error
+            if (createError.code === '23505') {
+                throw new Error('El código de invitación ya existe. Intenta de nuevo.');
+            }
+            if (createError.code === '42501') {
+                throw new Error('No tienes permisos para crear proyectos. Verifica la configuración de Supabase.');
+            }
+            if (createError.message.includes('policies')) {
+                throw new Error('Error de permisos. Configura las políticas RLS en Supabase.');
+            }
+            
+            throw new Error(`Error al crear proyecto: ${createError.message}`);
         }
 
-        console.log('Proyecto creado:', newProject);
+        if (!newProject) {
+            throw new Error('El proyecto se creó pero no se recibió respuesta');
+        }
 
-        // Agregar al usuario como miembro del proyecto
+        console.log('Proyecto creado exitosamente:', newProject);
+
+        // 5. Agregar usuario como owner
+        const memberData = {
+            project_id: newProject.id,
+            user_id: currentUser.id,
+            user_name: userName,
+            user_email: currentUser.email,
+            role: 'owner'
+            // No incluir status ni joined_at - dejar que la BD use los defaults
+        };
+
+        console.log('Agregando miembro:', memberData);
+
         const { error: memberError } = await supabaseClient
             .from('project_members')
-            .insert([
-                {
-                    project_id: newProject.id,
-                    user_id: currentUser.id,
-                    user_name: userName,
-                    user_email: currentUser.email,
-                    role: 'owner',
-                    joined_at: new Date().toISOString()
-                }
-            ]);
+            .insert([memberData]);
 
         if (memberError) {
-            console.error('Error adding member:', memberError);
-            // Intentar eliminar el proyecto creado si falla agregar el miembro
-            await supabaseClient.from('projects').delete().eq('id', newProject.id);
-            throw new Error('Error configurando el proyecto: ' + memberError.message);
+            console.error('Error agregando miembro:', memberError);
+            console.error('Detalles del error:', JSON.stringify(memberError, null, 2));
+            
+            // Rollback: eliminar el proyecto
+            await supabaseClient
+                .from('projects')
+                .delete()
+                .eq('id', newProject.id);
+            
+            if (memberError.code === '42501') {
+                throw new Error('No tienes permisos para agregar miembros. Verifica las políticas RLS.');
+            }
+            if (memberError.code === '23505') {
+                throw new Error('Ya eres miembro de este proyecto.');
+            }
+            
+            throw new Error(`Error configurando miembro: ${memberError.message}`);
         }
 
-        console.log('Usuario agregado como owner del proyecto');
+        console.log('Miembro agregado exitosamente');
 
-        showMessage('create-success', `¡Proyecto "${projectName}" creado exitosamente! Código: ${inviteCode}. Redirigiendo...`);
+        // 6. Éxito
+        showMessage('create-success', 
+            `¡Proyecto "${projectName}" creado! Código: ${inviteCode}. Redirigiendo...`);
         
-        // Limpiar el campo
         if (projectNameInput) {
             projectNameInput.value = '';
         }
 
-        // Redirigir al dashboard del proyecto después de 3 segundos
         setTimeout(() => {
             window.location.href = `dashboard.html?project=${newProject.id}&code=${inviteCode}`;
         }, 3000);
 
     } catch (error) {
-        console.error('Error in handleCreateProject:', error);
-        showMessage('create-error', error.message || 'Error inesperado al crear el proyecto');
+        console.error('Error completo:', error);
+        const errorMsg = error.message || 'Error inesperado al crear el proyecto';
+        showMessage('create-error', errorMsg);
     } finally {
         setButtonLoading('create-btn', false);
     }
 }
-
 // Manejar unirse a proyecto (CORREGIDO CON VERIFICACIÓN DE INVITACIÓN)
 async function handleJoinProject() {
     const inviteCodeInput = document.getElementById('invite-code');

@@ -29,28 +29,123 @@
     <div class="stars-container" id="starsContainer"></div>
     <div class="purple-orb"></div>
 
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-brain"></i>
-                </div>
-                OpenMind AI
+   <!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
             </div>
-            
-            <nav class="nav-menu">
-                <a href="index.html" class="nav-link">Inicio</a>
-                <a href="about.html" class="nav-link">Nosotros</a>
-                <a href="#features" class="nav-link">Características</a>
-                <a href="#pricing" class="nav-link">Planes</a>
-            </nav>
+            OpenMind AI
+        </div>
+        
+        <nav class="nav-menu">
+            <a href="index.html" class="nav-link">Inicio</a>
+            <a href="about.html" class="nav-link">Nosotros</a>
+            <a href="#features" class="nav-link">Características</a>
+            <a href="#pricing" class="nav-link">Planes</a>
+        </nav>
 
-            <div id="header-content">
-                <div class="loading-spinner"></div>
+        <div id="header-content">
+            <div class="loading-spinner"></div>
+        </div>
+        
+        <!-- Mobile Header Controls (visible en móvil) -->
+        <div class="mobile-header-controls">
+            <button class="mobile-control-btn" id="mobileThemeBtn">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="mobile-control-btn" id="mobileUserBtn">
+                <i class="fas fa-user"></i>
+            </button>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Mobile Sidebar Menu -->
+<div class="mobile-sidebar" id="mobileSidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <span>OpenMind AI</span>
+        </div>
+        <button class="sidebar-close" id="sidebarClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    
+    <!-- User Section (se mostrará cuando esté logueado) -->
+    <div class="sidebar-user-section" id="sidebarUserSection" style="display: none;">
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-avatar" id="sidebarUserAvatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="sidebar-user-details">
+                <span class="sidebar-user-name" id="sidebarUserName">Usuario</span>
+                <span class="sidebar-user-email" id="sidebarUserEmail">email@example.com</span>
             </div>
         </div>
-    </header>
+        <div class="sidebar-user-actions">
+            <button class="sidebar-action-btn" onclick="window.location.href='profile.html'">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </button>
+            <button class="sidebar-action-btn logout" id="sidebarLogoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Salir</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Theme Toggle -->
+    <div class="sidebar-theme-toggle">
+        <span class="theme-toggle-label">Tema</span>
+        <div class="theme-options">
+            <button class="theme-option active" data-theme="dark">
+                <i class="fas fa-moon"></i> Oscuro
+            </button>
+            <button class="theme-option" data-theme="light">
+                <i class="fas fa-sun"></i> Claro
+            </button>
+        </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <a href="index.html" class="sidebar-link">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+        </a>
+        <a href="about.html" class="sidebar-link">
+            <i class="fas fa-users"></i>
+            <span>Nosotros</span>
+        </a>
+        <a href="#features" class="sidebar-link">
+            <i class="fas fa-star"></i>
+            <span>Características</span>
+        </a>
+        <a href="#pricing" class="sidebar-link">
+            <i class="fas fa-tags"></i>
+            <span>Planes</span>
+        </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="login.html" class="sidebar-cta" id="sidebarCTA">
+            <i class="fas fa-arrow-right"></i>
+            <span>Empezar Ahora</span>
+        </a>
+    </div>
+</div>
+
+<!-- Mobile Sidebar Overlay -->
+<div class="mobile-overlay" id="mobileOverlay"></div>
 
     <!-- Main Content -->
     <div class="content">
