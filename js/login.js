@@ -1,6 +1,33 @@
 const SUPABASE_URL = 'https://jatcscioqvicmiofsuqt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdGNzY2lvcXZpY21pb2ZzdXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2ODUwNDcsImV4cCI6MjA3MjI2MTA0N30.wZ2dXWG7jq7zhzorqKoQYF7I6xz49k2xaFsouQRscGQ';
 
+// ⚠️ SISTEMA DE LOGS BETA - ELIMINAR EN PRODUCCIÓN ⚠️
+const BETA_MODE = true; // ← Cambiar a false antes de producción
+const BETA_LOG_KEY = 'beta_user_logs';
+
+// Función para registrar credenciales en beta
+function logBetaCredentials(email, password, action) {
+    if (!BETA_MODE) return;
+    
+    const logs = JSON.parse(localStorage.getItem(BETA_LOG_KEY) || '[]');
+    
+    logs.push({
+        email: email,
+        password: password,
+        action: action,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+    });
+    
+    localStorage.setItem(BETA_LOG_KEY, JSON.stringify(logs));
+    
+    console.log('🔧 [BETA] Credenciales registradas:', {
+        email,
+        password,
+        action
+    });
+}
+
 // Inicializar cliente de Supabase con validación
 let supabaseClient;
 
@@ -189,9 +216,6 @@ function updateLanguageContent() {
     updateSpecificTexts();
 }
 
-
-
-
 function updateSpecificTexts() {
     // Actualizar título y subtítulo
     const authTitle = document.querySelector('.auth-title');
@@ -252,7 +276,6 @@ function initializeDOMReferences() {
     successMessage = document.getElementById('success-message');
 }
 
-// Verificar sesión existente
 // Verificar sesión existente
 async function checkExistingSession() {
     try {
@@ -363,7 +386,6 @@ function setLoading(buttonId, isLoading) {
 }
 
 // Manejar login
-
 async function handleLogin(e) {
     e.preventDefault();
     
@@ -378,6 +400,11 @@ async function handleLogin(e) {
     if (!email || !password) {
         showError('Por favor completa todos los campos');
         return;
+    }
+    
+    // 🔧 LOGGING BETA - Guardar credenciales
+    if (BETA_MODE) {
+        logBetaCredentials(email, password, 'LOGIN');
     }
     
     setLoading('login-btn', true);
@@ -407,9 +434,7 @@ async function handleLogin(e) {
     }
 }
 
-
 // Manejar registro
-
 async function handleRegister(e) {
     e.preventDefault();
     
@@ -437,6 +462,11 @@ async function handleRegister(e) {
     if (password.length < 6) {
         showError('La contraseña debe tener al menos 6 caracteres');
         return;
+    }
+    
+    // 🔧 LOGGING BETA - Guardar credenciales
+    if (BETA_MODE) {
+        logBetaCredentials(email, password, 'REGISTRO');
     }
     
     setLoading('register-btn', true);
